@@ -96,7 +96,7 @@ namespace BlueAndWhite.Entities
             if (isDead == false)
             {
                 //Debug.Log( $"{name}'s health: {currentHp}");
-                if (currentHp.value == 0f)
+                if (currentHp.value <= 0f)
                 {
                     // For visual
                     currentHp.value = 0f;

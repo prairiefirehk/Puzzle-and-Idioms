@@ -132,7 +132,7 @@ namespace BlueAndWhite.Abilities
             
             public void SetStatValue(float inputValue)
             {
-                this.value = inputValue; //????????
+                this.value = inputValue;
             }
             
         }

@@ -102,7 +102,10 @@ namespace BlueAndWhite.Entities
         public virtual void TakeDamage(float damagePoint)
         {
             Debug.Log("Entities.TakeDamage (start)");
+            //float newHp = currentHp.GetStatValue() - damagePoint;
+            float newHp = currentHp.value - damagePoint;
 
+            //currentHp.SetStatValue(newHp);
             currentHp.value -= damagePoint;
 
             Debug.Log("Entities.TakeDamage (end)");
@@ -111,7 +114,10 @@ namespace BlueAndWhite.Entities
         public virtual void Heal(float hpHealPoint)
         {
             Debug.Log("Entities.Heal (start)");
+            //float newHp = currentHp.GetStatValue() + hpHealPoint;
+            float newHp = currentHp.value + hpHealPoint;
 
+            //currentHp.SetStatValue(newHp);
             currentHp.value += hpHealPoint;
 
             Debug.Log("Entities.Heal (end)");

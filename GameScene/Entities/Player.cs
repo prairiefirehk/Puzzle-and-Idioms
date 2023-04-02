@@ -84,19 +84,21 @@ namespace BlueAndWhite.Entities
             Debug.Log($"$player's currentHp = {currentHp.value}");
             Debug.Log($"$player's maxHp = {maxHp.value}");
 
-            if (currentHp.GetStatValue() < 0)
+            if (currentHp.value < 0)//(currentHp.GetStatValue() < 0)
             {
-                currentHp.SetStatValue(0f);
+                //currentHp.SetStatValue(0f);
+                currentHp.value = 0f;
             }
 
-            if (currentHp.GetStatValue() > maxHp.GetStatValue() && (currentHp.GetStatValue() != maxHp.GetStatValue()))
+            if (currentHp.value > maxHp.value && (currentHp.value != maxHp.value))//(currentHp.GetStatValue() > maxHp.GetStatValue() && (currentHp.GetStatValue() != maxHp.GetStatValue()))
             {
-                currentHp.SetStatValue(maxHp.GetStatValue());
+                //currentHp.SetStatValue(maxHp.GetStatValue());
+                currentHp.value = maxHp.value;
             }
             
             if (!isDead)
             {
-                if (currentHp.GetStatValue() <= 0)
+                if (currentHp.value <= 0)//(currentHp.GetStatValue() <= 0)
                 {
                     Debug.Log("player just dead!");
                     // Trigger here to send msg to event subscribers that player is defeated
@@ -129,7 +131,8 @@ namespace BlueAndWhite.Entities
             //Debug.Log(roundData.roundTeammates.Count);
             for (int i = 0; i < roundData.roundTeammates.Count; i++)
             {
-                playerMaxHp += roundData.roundTeammates[i].maxHp.GetStatValue();
+                //playerMaxHp += roundData.roundTeammates[i].maxHp.GetStatValue();
+                playerMaxHp += roundData.roundTeammates[i].maxHp.value;
                 //Debug.Log(playerMaxHp);
             }
 
@@ -173,7 +176,7 @@ namespace BlueAndWhite.Entities
             Debug.Log(tile.interactTeammate.name);
 
             //Heal(maxHp.value * tile.interactTeammate.defencePoint);
-            if (currentHp.value < maxHp.value)
+            if (currentHp.value < maxHp.value)//(currentHp.GetStatValue() < maxHp.GetStatValue())
             {
                 Heal(maxHp.value * 0.15f);
                 Debug.Log($"$healed hp = {maxHp.value * 0.15f}");

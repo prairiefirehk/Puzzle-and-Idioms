@@ -303,7 +303,7 @@ namespace BlueAndWhite.RoundManaging
 
             // Set the original data, however mob data had been initialized?
             //currentMob.currentHp = currentMob.maxHp;
-            player.currentHp = player.maxHp;
+            player.currentHp.SetStatValue(player.maxHp.GetStatValue());
             //currentMob.currentAttackInterval = currentMob.maxAttackInterval;
             currentRoundText.text = currentRound.ToString() + "/" + roundMobsNumber;
             //mobHealthBars.InitializeBar(mobHealthBars, currentMob.currentHp, currentMob.maxHp);
