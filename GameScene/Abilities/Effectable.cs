@@ -42,7 +42,7 @@ namespace BlueAndWhite.Abilities
 
         public void Burning(Entity target, int effectTurns, int effectLevel)
         {
-            StatModifier mod1 = new StatModifier(-10, StatModifierType.Flat); 
+            target.attackPoint.AddModifier(new StatModifier(-10, StatModifierType.Flat, this)); 
 
             if (target.currentEffects[0].effectTurns > 0)
             {
