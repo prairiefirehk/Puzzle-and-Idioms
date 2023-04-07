@@ -137,6 +137,10 @@ namespace BlueAndWhite.Abilities
                     {
                         finalValue *= 1 + mod.value;
                     }
+                    else if (mod.type == StatModifierType.Equal)
+                    {
+                        finalValue = mod.value;
+                    }
                     
                 }
                 return (float)System.Math.Round(finalValue, 0);

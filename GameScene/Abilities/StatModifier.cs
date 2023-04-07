@@ -16,6 +16,9 @@ namespace BlueAndWhite.Abilities
 
         // Will multiply no matter what, will calculate after percentAdd, eg. 50% (original will become 120*1.5 = 180%)
         PercentMultiple = 300, 
+
+        // Directly set the number equal to that number (eg. = 20)
+        Equal = 400
     }
 
     [System.Serializable]
