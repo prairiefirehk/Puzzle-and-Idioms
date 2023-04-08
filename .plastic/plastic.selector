@@ -1,0 +1,4 @@
+repository "Puzzle and Idioms@Siuchoi@cloud"
+  path "/"
+    br "/main"
+    co "/main"

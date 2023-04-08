@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{d8028493-97a4-c370-dcd3-38446a6407f7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nobi.UiRoundedCorners", "Nobi.UiRoundedCorners.csproj", "{45047654-1524-2f4c-a4e3-98b5248fe66c}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{115e9357-5a51-ab7c-3942-04858d8e6a80}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{d8028493-97a4-c370-dcd3-38446a6407f7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{d8028493-97a4-c370-dcd3-38446a6407f7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45047654-1524-2f4c-a4e3-98b5248fe66c}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45047654-1524-2f4c-a4e3-98b5248fe66c}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{115e9357-5a51-ab7c-3942-04858d8e6a80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{115e9357-5a51-ab7c-3942-04858d8e6a80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

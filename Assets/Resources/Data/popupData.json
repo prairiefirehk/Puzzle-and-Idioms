@@ -1,0 +1,52 @@
+﻿{
+    "popup":[
+    {
+        "sizeType": "small",
+        "caseRefID": "0",
+        "title": "提示",
+        "body": "load緊啦",
+        "confirmText": "",
+        "dismissText": ""
+    },
+    {
+        "sizeType": "small",
+        "caseRefID": "1",
+        "title": "提示",
+        "body": "再煩就打柒你",
+        "confirmText": "收到",
+        "dismissText": ""
+    },
+    {
+        "sizeType": "medium",
+        "caseRefID": "2",
+        "title": "關卡1",
+        "body": "第一關",
+        "confirmText": "殺!",
+        "dismissText": "不了"
+    },
+    {
+        "sizeType": "medium",
+        "caseRefID": "3",
+        "title": "確認",
+        "body": "真係要走",
+        "confirmText": "係",
+        "dismissText": "唔係"
+    },
+    {
+        "sizeType": "gameover",
+        "caseRefID": "4",
+        "title": "你死了",
+        "body": "bruh",
+        "confirmText": "睇埋廣告",
+        "dismissText": "走先"
+    },
+    {
+        "sizeType": "gameover",
+        "caseRefID": "5",
+        "title": "打完了",
+        "body": "打曬所有怪，公起曬",
+        "confirmText": "睇埋廣告",
+        "dismissText": "走先"
+    }
+    ]   
+}
