@@ -1,15 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using BlueAndWhite.DataManaging;
 
-namespace BlueAndWhite.Objects
+// Store the idiom to a "library"
+[System.Serializable]
+public class TeammateList
 {
-    //store the idiom to a "library"
-    [System.Serializable]
-    public class TeammateList
-    {
-        public TeammateData[] teammate;
-    }
-
+    public TeammateData[] teammate;
 }

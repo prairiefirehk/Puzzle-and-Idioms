@@ -273,6 +273,12 @@
      <Compile Include="Assets\com.unity.uiextensions\Runtime\Scripts\Layout\ScrollSnap.cs" />
      <Compile Include="Assets\Scripts\GameScene\Abilities\StatusEffect.cs" />
      <Compile Include="Assets\Scripts\GameScene\Abilities\StatusEffectType.cs" />
+     <Compile Include="Assets\Scripts\GameScene\StateMachine\GameState.cs" />
+     <Compile Include="Assets\Scripts\GameScene\StateMachine\TileState.cs" />
+     <Compile Include="Assets\Scripts\GameScene\StateMachine\TurnState.cs" />
+     <Compile Include="Assets\Scripts\GameScene\StateMachine\StateMachine.cs" />
+     <Compile Include="Assets\Scripts\GameScene\StateMachine\State.cs" />
+     <Compile Include="Assets\Scripts\GameScene\StateMachine\EntityState.cs" />
      <None Include="Assets\com.unity.uiextensions\Runtime\Resources\Shaders\UIAdditive.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
