@@ -29,10 +29,11 @@ public class Player : Entity
     public int currentCombo;
     public int highestComob;
     public bool isWaitingForReset;
+    public bool isActioned = false;
     #endregion
 
     #region Events
-    public static event Action<GameState.State> OnDefeatedEvent;
+    //public static event Action<GameState.State> OnDefeatedEvent;
     #endregion
 
     #region Flow
@@ -44,13 +45,7 @@ public class Player : Entity
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
 
-        isDead = false;
-        // Temp
-        maxHp = new EntityStat(GetPlayerMaxHp());
-        currentHp = new EntityStat(maxHp.GetStatValue());
-        //attackPoint = 5000;
-        defencePoint.value = 125f;
-        dexterityPoint = new EntityStat(10f);
+        // Temp solution before creating/transfering + importing player data
 
         Debug.Log($"Player.Awake (end)");
     }
@@ -74,8 +69,8 @@ public class Player : Entity
 
     void Update()
     {
-        Debug.Log($"$player's currentHp = {currentHp.value}");
-        Debug.Log($"$player's maxHp = {maxHp.value}");
+        //Debug.Log($"$player's currentHp = {currentHp.value}");
+        //Debug.Log($"$player's maxHp = {maxHp.value}");
 
         /*
         if (currentHp.value < 0)//(currentHp.GetStatValue() < 0)
@@ -101,6 +96,12 @@ public class Player : Entity
             }
         }
         */
+        if (isActioned)
+        {
+            roundData.currentTurnState = TurnState.State.BeforePlayerMoveEnd;
+            isActioned = false;
+            BeforeMoveEnd();
+        }
     }
 
     void OnDisable()
@@ -117,12 +118,31 @@ public class Player : Entity
     #endregion
 
     #region Player functions
+
+    // Temp solution before creating/transfering + importing player data
+    public void InitPlayer()
+    {
+        Debug.Log($"Player.InitPlayer (start)");
+
+        maxHp = new EntityStat(GetPlayerMaxHp());
+        currentHp = new EntityStat(maxHp.GetStatValue());
+        defencePoint = new EntityStat(125f);
+        dexterityPoint = new EntityStat(10f);
+
+        currentState = EntityState.State.Alive;
+
+        Debug.Log($"Player.InitPlayer (end)");
+    }
     public override void BeforeMoveStart()
     {
+        Debug.Log($"Player.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
+
         Debug.Log($"^RoundData is null? {roundData == null}");
+
         // How come null
         roundData.currentTurnState = TurnState.State.BeforePlayerMoveStart;
         CheckStatusEffects();
+
         if (!isStun)
         {
             MoveStart();
@@ -131,15 +151,20 @@ public class Player : Entity
         {
             MoveEnd();
         }
+
+        Debug.Log($"Player.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
     }
 
     public override void MoveStart()
     {
+        Debug.Log($"Player.MoveStart (override Entities.MoveStart) (start)");
+
         roundData.currentTurnState = TurnState.State.PlayerMoveStart;
 
         // Do some visual shit/popup/conversation
-
         board.EnableBoard();
+
+        Debug.Log($"Player.MoveStart (override Entities.MoveStart) (end)");
     }
 
     public override void CheckAction()
@@ -154,7 +179,7 @@ public class Player : Entity
         // Do some visual shit/popup/conversation
     }
 
-    public override void Action()
+    public override void OnAction()
     {
         roundData.currentTurnState = TurnState.State.PlayerAction;
 
@@ -166,15 +191,24 @@ public class Player : Entity
 
     public override void BeforeMoveEnd()
     {
+        Debug.Log($"Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
+
         roundData.currentTurnState = TurnState.State.BeforePlayerMoveEnd;
 
         // Do some visual shit/popup/conversation
+        board.DisableBoard();
+
+        MoveEnd();
+
+        Debug.Log($"Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
     }
 
     public override void MoveEnd()
     {
+        Debug.Log($"Player.MoveEnd (override Entities.MoveEnd) (start)");
+
         roundData.currentTurnState = TurnState.State.PlayerMoveEnd;
-        //board.DisableBoard();
+        
 
         if (HasStatusEffect) 
         {
@@ -196,6 +230,8 @@ public class Player : Entity
         {
             roundData.currentMob.BeforeMoveStart();
         }
+
+        Debug.Log($"Player.MoveEnd (override Entities.MoveEnd) (end)");
     }
 
     // Get the player max hp
@@ -212,7 +248,7 @@ public class Player : Entity
             //Debug.Log(playerMaxHp);
         }
 
-        Debug.Log($"Player.GetPlayerMaxHp (end), return playerMaxHp(local var): {playerMaxHp}");
+        Debug.Log($"Player.GetPlayerMaxHp, return playerMaxHp(local var): {playerMaxHp} (end)");
         return playerMaxHp;
     }
 
@@ -267,7 +303,9 @@ public class Player : Entity
         tile.DestroyTile(tile);
 
         //// Next round preparation ////
-        board.EndTurn();
+        isActioned = true;
+        //roundData.TurnEnd();
+
         // Before drawing the tile to the board, rename the tile according to their current position
         //board.RenameTiles();
 
@@ -295,7 +333,8 @@ public class Player : Entity
         tile.DestroyTile(tile);
 
         //// Next round preparation ////
-        board.EndTurn();
+        isActioned = true;
+        //roundData.TurnEnd();
         // Before drawing the tile to the board, rename the tile according to their current position
         //board.RenameTiles();
 

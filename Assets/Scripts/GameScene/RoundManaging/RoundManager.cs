@@ -8,7 +8,6 @@ public class RoundManager : MonoBehaviour
 {
     public RoundData roundData;
     public Board board;
-    public Player player;
     public UIManage uiManage;
 
     private GameState.State _currentGameState = GameState.State.IsInitalizing;
@@ -31,7 +30,6 @@ public class RoundManager : MonoBehaviour
 
         roundData = gameObject.GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
-        player = gameObject.GetComponent<Player>();
         uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
 
         //should be contained in a reset function

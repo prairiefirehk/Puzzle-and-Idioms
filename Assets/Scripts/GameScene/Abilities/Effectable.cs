@@ -108,6 +108,8 @@ public class Effectable : MonoBehaviour
 
     public void CheckStatusEffects()
     {
+        Debug.Log($"{name} Effectable.CheckStatusEffects (start)");
+
         if (HasStatusEffect)
         {
             if (isBurn)
@@ -129,6 +131,8 @@ public class Effectable : MonoBehaviour
 
             // ETC
         }
+
+        Debug.Log($"{name} Effectable.CheckStatusEffects (end)");
     }
 }
 

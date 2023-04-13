@@ -56,23 +56,34 @@ public class EntityStat
 
     public virtual void AddModifier(StatModifier statModifier)
     {
+        Debug.Log($"EntityStat.AddModifier (start)");
+
         isDirty = true;
         _statModifiers.Add(statModifier);
         _statModifiers.Sort(CompareModifierOrder);
+
+        Debug.Log($"EntityStat.AddModifier (end)");
     }
 
     public virtual bool RemoveModifier(StatModifier statModifier)
     {
+        Debug.Log(message: $"EntityStat.RemoveModifier (start)");
+
+        bool isRemoved = false;
         if (_statModifiers.Remove(statModifier))
         {
             isDirty = true;
-            return true;
+            isRemoved = true;
         }
-        return false;
+
+        Debug.Log($"EntityStat.RemoveModifier, return isRemoved(local var): {isRemoved} (end)");
+        return isRemoved;
     }
 
     public virtual bool RemoveAllModifierFromSource(object source)
     {
+        Debug.Log(message: $"EntityStat.RemoveAllModifierFromSource (start)");
+
         bool didRemove = false;
 
         for (int i = _statModifiers.Count; i >= 0; i--)
@@ -84,27 +95,37 @@ public class EntityStat
                 _statModifiers.RemoveAt(i);
             }
         }
+
+        Debug.Log($"EntityStat.RemoveAllModifierFromSource, return didRemove(local var): {didRemove} (end)");
         return didRemove;
     }
 
     protected virtual int CompareModifierOrder(StatModifier statA, StatModifier statB)
     {
+        Debug.Log(message: $"EntityStat.CompareModifierOrder (start)");
+
+        int controlNum;
         if (statA.order < statB.order)
         {
-            return -1;
+            controlNum = -1;
         }
         else if (statA.order > statB.order)
         {
-            return 1;
+            controlNum =  1;
         }
         else // Which should be equal, right?
         {
-            return 0;
+            controlNum = 0;
         }
+
+        Debug.Log($"EntityStat.CompareModifierOrder, return controlNum(local var): {controlNum} (end)");
+        return controlNum;
     }
 
     protected virtual float CalculateFinalValue()
     {
+        Debug.Log(message: $"EntityStat.CalculateFinalValue (start)");
+
         float finalValue = baseValue;
         float sumPercentAdd = 0;
 
@@ -139,18 +160,27 @@ public class EntityStat
             }
             
         }
+
+        Debug.Log($"EntityStat.CalculateFinalValue, return finalValue with Math.Round(local var): {(float)System.Math.Round(finalValue, 0)} (end)");
         return (float)System.Math.Round(finalValue, 0);
     }
 
     public float GetStatValue()
     {
+        Debug.Log(message: $"EntityStat.GetStatValue (start)");
+
+        Debug.Log(message: $"EntityStat.GetStatValue, return value(local var): {value} (end)");
         return value;
     }
 
     
     public void SetStatValue(float inputValue)
     {
+        Debug.Log(message: $"EntityStat.SetStatValue (start)");
+
         this.value = inputValue;
+
+        Debug.Log(message: $"EntityStat.SetStatValue (end)");
     }
     
 }

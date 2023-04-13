@@ -9,7 +9,6 @@ using TMPro;
 public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHandler, IPointerUpHandler, IEndDragHandler, IDropHandler
 {
     #region Scripts
-    public Player player;
     public Board board;
     public RoundData roundData;
     #endregion
@@ -118,7 +117,6 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     {
         Debug.Log($"{name} Tile.Awake (start)");
 
-        player = GameObject.Find("Round Manager").GetComponent<Player>();
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
         currentvalueModifier = baseValueModifier;
@@ -344,7 +342,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
         isDrag = true;
         // ****************************************
-        player.SetDragTile(this);
+        roundData.player.SetDragTile(this);
 
         // Getting the tile count in the answer tile spawner
         transform.SetSiblingIndex(board.transform.GetChild(6).childCount);
@@ -362,7 +360,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         Debug.Log($"{name} Tile.UnSelected (start)");
         
         isSelect = false;
-        player.SetDragTile(null);
+        roundData.player.SetDragTile(null);
 
         Debug.Log("^4.1 input unselected the tile");
 
@@ -444,13 +442,13 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 
-        player.SetDragTile(null);
+        roundData.player.SetDragTile(null);
 
         // Only moved tile will count as turn move
         if (tilePrefab.isMoved == true)
         {
             //OnEndTurnEvent?.Invoke();
-            board.EndTurn();
+            //roundData.TurnEnd();
             Debug.Log("ismoved! end turn!");
         }
         
@@ -479,6 +477,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
             Debug.Log("^6.3A Changed position!");
 
             tilePrefab.isMoved = true;
+            roundData.player.isActioned = true;
             // Change tile location
             tilePrefab.gameObject.transform.position = board.transform.GetChild(5).gameObject.transform.GetChild(tileCellPosition).position;
             // Indicate tile cell has new tile
@@ -707,7 +706,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
         Debug.Log("^4 input release the tile");
         currentState = TileState.State.Released;
-        roundData.currentTurnState = TurnState.State.PlayerAction;
+        roundData.currentTurnState = TurnState.State.WaitingMobAction;
 
         tileStatusProcessed += 1;
         UnSelected();
@@ -728,7 +727,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     public virtual void OnDrop(PointerEventData eventData)
     {
         Debug.Log($"{name} Tile.OnDrop (start)");
-
+        /*
         Debug.Log("^5 input drop the tile");
         currentState = TileState.State.Processing;
         tileStatusProcessed += 1;
@@ -809,6 +808,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
                     // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                     dragTile.isMoved = true;
+                    player.isActioned = true;
 
                     //board.tileCell[dragTile.tileCellPosition] = -1;
                     board.UpdateTileCell();
@@ -848,6 +848,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
                             // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                             dragTile.isMoved = true;
+                            player.isActioned = true;;
 
                             //board.tileCell[dragTile.tileCellPosition] = -1;
                             board.UpdateTileCell();
@@ -887,6 +888,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
                         // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                         dragTile.isMoved = true;
+                        player.isActioned = true;
 
                         board.UpdateTileCell();
                         //board.DrawAnswer();
@@ -896,6 +898,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         }
 
         Debug.Log($"{name} Tile.OnDrop (end)");
+        */
     }
 
     // End drag, called only once, for reset. If just click won't be triggered //

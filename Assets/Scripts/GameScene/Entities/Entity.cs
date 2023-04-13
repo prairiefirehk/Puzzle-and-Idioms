@@ -199,16 +199,16 @@ public abstract class Entity: Effectable
 
     public virtual void Attack(Entity target, float value)
     {
-        Debug.Log("Entities.Attack (start)");
+        Debug.Log($"Entities.Attack (start)");
 
         target.currentHp.value -= (value - target.defencePoint.value);
 
-        Debug.Log("Entities.Attack (end)");
+        Debug.Log($"Entities.Attack (end)");
     }
     
     public virtual void TakeDamage(float damagePoint)
     {
-        Debug.Log("Entities.TakeDamage (start)");
+        Debug.Log($"Entities.TakeDamage (start)");
 
         float finalDamage = damagePoint;
         //currentHp.SetStatValue(newHp);
@@ -216,49 +216,55 @@ public abstract class Entity: Effectable
 
         currentHp.value -= finalDamage;
 
-        Debug.Log("Entities.TakeDamage (end)");
+        Debug.Log($"Entities.TakeDamage (end)");
     }
 
     public virtual void Heal(float hpHealPoint)
     {
-        Debug.Log("Entities.Heal (start)");
+        Debug.Log($"Entities.Heal (start)");
         //float newHp = currentHp.GetStatValue() + hpHealPoint;
         float newHp = currentHp.value + hpHealPoint;
 
         //currentHp.SetStatValue(newHp);
         currentHp.value += hpHealPoint;
 
-        Debug.Log("Entities.Heal (end)");
+        Debug.Log($"Entities.Heal (end)");
     }
 
     public virtual void BeforeMoveStart()
     {
-        
+        Debug.Log($"Entities.BeforeMoveStart (start)");
+        Debug.Log($"Entities.BeforeMoveStart (end)");
     }
 
     public virtual void MoveStart()
     {
-        
+        Debug.Log($"Entities.MoveStart (start)");
+        Debug.Log($"Entities.MoveStart (end)");
     }
 
     public virtual void CheckAction()
     {
-
+        Debug.Log($"Entities.CheckAction (start)");
+        Debug.Log($"Entities.CheckAction (end)");
     }
 
-    public virtual void Action()
+    public virtual void OnAction()
     {
-
+        Debug.Log($"Entities.OnAction (start)");
+        Debug.Log($"Entities.OnAction (end)");
     }
 
     public virtual void BeforeMoveEnd()
     {
-
+        Debug.Log($"Entities.BeforeMoveEnd (start)");
+        Debug.Log($"Entities.BeforeMoveEnd (end)");
     }
 
     public virtual void MoveEnd()
     {
-
+        Debug.Log($"Entities.MoveEnd (start)");
+        Debug.Log($"Entities.MoveEnd (end)");
     }
 
 

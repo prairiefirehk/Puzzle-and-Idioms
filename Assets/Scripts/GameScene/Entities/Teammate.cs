@@ -8,7 +8,6 @@ using TMPro;
 public class Teammate : Entity, IPointerDownHandler, IDropHandler
 {
     #region Scripts
-    public Player player;
     #endregion
 
     #region Game object references
@@ -50,7 +49,6 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
         Debug.Log(message: $"{teammateName} Teammate.Awake (start)");
 
         // Not ideal place
-        player = GameObject.Find("Round Manager").GetComponent<Player>();
         board = GameObject.Find("Board").GetComponent<Board>();
 
         Debug.Log(message: $"{teammateName} Teammate.Awake (end)");
@@ -61,7 +59,7 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
         Debug.Log($"{teammateName} Teammate.OnEnable (start)");
 
         // Subscribe to the game events and listen
-        Board.OnEndTurnEvent += OnNewTurn;
+        //Board.OnEndTurnEvent += OnNewTurn;
 
         Debug.Log($"{teammateName} Teammate.OnEnable (end)");
     }
@@ -91,7 +89,7 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
         Debug.Log($"{teammateName} Teammate.OnDisable (start)");
 
         // Unsubscribe to the game events
-        Board.OnEndTurnEvent -= OnNewTurn;
+        //Board.OnEndTurnEvent -= OnNewTurn;
 
         Debug.Log($"{teammateName} Teammate.OnDisable (end)");
     }
@@ -124,9 +122,10 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
         Debug.Log("input clicked the teammate!");
         if (currentTotalAttackPoint > 0)
         {
-            player.Attack(roundData.currentMob, currentTotalAttackPoint);
+            roundData.player.Attack(roundData.currentMob, currentTotalAttackPoint);
             currentTotalAttackPoint = 0;
-            board.EndTurn();
+            roundData.player.isActioned = true;
+            //roundData.TurnEnd();
         }
         
         Debug.Log($"{teammateName} Teammate.OnPointerDown (end)");
@@ -136,7 +135,11 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
     {
         Debug.Log($"{teammateName} Teammate.OnDrop (start)");
 
-        Tile dragTile = eventData.pointerDrag.GetComponent<Tile>();
+        //Tile dragTile = eventData.pointerDrag.GetComponent<Tile>();
+        Debug.Log($"who is null? roundData: {roundData == null}");
+        Debug.Log($"player: {roundData.player == null}");
+        Debug.Log($"tile: {roundData.player.tile == null}");
+        Tile dragTile = roundData.player.tile;
 
         if (dragTile.CompareTag("NormalTile"))
         {
@@ -152,7 +155,7 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
             Debug.Log("Who the fuck are you??");
         }
         
-        player.SetDragTile(dragTile);
+        //roundData.player.SetDragTile(dragTile);
 
         if (dragTile.CompareTag("NormalTile"))
         {
@@ -168,7 +171,7 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
             Debug.Log("^5.1C.3 Who the fuck are you receiving??");
         }
             
-        player.Answer();
+        roundData.player.Answer();
 
         Debug.Log($"{teammateName} Teammate.OnDrop (end)");
     }

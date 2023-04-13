@@ -136,8 +136,8 @@ public class RoundData : MonoBehaviour
     public bool requestNewWave { get { return _requestNewWave;} set { _requestNewWave = value; } }
 
     // Events
-    public static event Action OnNewWaveEvent;
-    public static event Action<GameState.State> OnAllMobDefectedEvent;
+    //public static event Action OnNewWaveEvent;
+    //public static event Action<GameState.State> OnAllMobDefectedEvent;
 
     void Awake()
     {
@@ -157,7 +157,7 @@ public class RoundData : MonoBehaviour
         // Will change into importing from data, just temp solution for now
         remainingWaves = wavesNumber;
 
-        BeforeTurnStart();
+        //BeforeTurnStart();
 
         Debug.Log($"RoundData.Awake (end)");
     }
@@ -167,8 +167,8 @@ public class RoundData : MonoBehaviour
         Debug.Log($"RoundData.OnEnable (start)");
 
         // Subscribe to the game events and listen
-        Mob.OnDefeatedEvent += OnNewWave;
-        Board.OnEndTurnEvent += OnNewTurn;
+        //Mob.OnDefeatedEvent += OnNewWave;
+        //Board.OnEndTurnEvent += OnNewTurn;
 
         Debug.Log($"RoundData.OnEnable (end)");
     }
@@ -177,7 +177,7 @@ public class RoundData : MonoBehaviour
     {
         Debug.Log($"RoundData.Start (start)");
 
-        //BeforeTurnStart();
+        BeforeTurnStart();
 
         Debug.Log($"RoundData.Start (end)");
     }
@@ -223,8 +223,8 @@ public class RoundData : MonoBehaviour
         Debug.Log($"RoundData.OnDisable (start)");
 
         // Unsubscribe to the game events
-        Mob.OnDefeatedEvent -= OnNewWave;
-        Board.OnEndTurnEvent -= OnNewTurn;
+        //Mob.OnDefeatedEvent -= OnNewWave;
+        //Board.OnEndTurnEvent -= OnNewTurn;
 
         Debug.Log($"RoundData.OnDisable (end)");
     }
@@ -341,6 +341,7 @@ public class RoundData : MonoBehaviour
     public Entity CompareDexPoint(Entity player, Entity mob)
     {
         Debug.Log($"RoundData.CompareDexPoint (start)");
+
         Entity entityMoveFirst;
         Debug.Log($" player dex = {player.dexterityPoint.value}, mob dex = {currentMob.dexterityPoint.value}");
         if (player.dexterityPoint.value > mob.dexterityPoint.value)
@@ -358,10 +359,13 @@ public class RoundData : MonoBehaviour
 
     public void BeforeTurnStart()
     {
+        Debug.Log($"RoundData.BeforeTurnStart (start)");
+
         // First time while enter the game loop, a.k.a init
         if (roundManager.currentGameState == GameState.State.IsInitalizing)
         {
             SpawnTeammates();
+            player.InitPlayer();
             DrawMobs();
             SpawnMobs();
         }
@@ -372,12 +376,24 @@ public class RoundData : MonoBehaviour
         }
 
         CompareDexPoint(player, currentMob).BeforeMoveStart();
+
+        Debug.Log($"RoundData.BeforeTurnStart (end)");
     }
 
     public void TurnEnd()
     {
+        Debug.Log($"RoundData.TurnEnd (start)");
+
         currentTurn += 1;
         currentTurnText.text = currentTurn.ToString();
+
+        board.DisplayTileCell(); // For debug use
+        board.RenameTiles();
+        board.CheckAnswerTile();
+        board.DisplayTileCell(); // Double check, just in case
+
+        currentMob.moveEnded = false;
+        player.moveEnded = false;
 
         if (currentMob.currentState == EntityState.State.Dead)
         {
@@ -388,11 +404,11 @@ public class RoundData : MonoBehaviour
             }
             else // Mob defeated
             {
+                Destroy(currentMob.gameObject);
+                currentMob.transform.SetParent(null);
+
                 // New Wave flag for new turn
                 requestNewWave = true;
-
-                // New turn
-                BeforeTurnStart();
             }
         }
         else if (player.currentState == EntityState.State.Dead) // Player defeated
@@ -400,14 +416,25 @@ public class RoundData : MonoBehaviour
             roundManager.currentGameState = GameState.State.PlayerLose;
             roundManager.GameOver(roundManager.currentGameState);
         }
+        else
+        {
+            // New turn
+            BeforeTurnStart();
+        }
+
+        Debug.Log($"RoundData.TurnEnd (end)");
     }
 
     public void Newwave()
     {
+        Debug.Log($"RoundData.NewWave (start)");
+
         remainingWaves -= 1;
         currentWave += 1;
         currentWaveText.text = currentWave.ToString() + "/" + wavesNumber;
         SpawnMobs();
+
+        Debug.Log($"RoundData.NewWave (end)");
     }
 
     public void OnNewWave()
@@ -423,7 +450,7 @@ public class RoundData : MonoBehaviour
         }
 
         // Trigger here to send msg to other object that new round
-        OnNewWaveEvent?.Invoke();
+        //OnNewWaveEvent?.Invoke();
 
         Debug.Log($"RoundData.OnNewWave (end)");
     }

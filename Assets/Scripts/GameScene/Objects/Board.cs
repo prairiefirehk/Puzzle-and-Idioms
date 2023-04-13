@@ -20,6 +20,7 @@ public class Board : MonoBehaviour
     #region Game object references
     public GameObject answerTilesSpawner;
     public GameObject answerTilesCells;
+    public Image boardFog;
     #endregion
 
     #region Board data? However they should import from player which import from player data, should delete****
@@ -51,7 +52,7 @@ public class Board : MonoBehaviour
     #endregion
 
     #region Events
-    public static event Action OnEndTurnEvent;
+    //public static event Action OnEndTurnEvent;
     #endregion
 
     #region Flow
@@ -116,14 +117,22 @@ public class Board : MonoBehaviour
     // Controlling the access of the board
     public void EnableBoard()
     {
+        Debug.Log($"Board.EnableBoard (start)");
 
+        boardFog.gameObject.SetActive(false);
+
+        Debug.Log($"Board.EnableBoard (end)");
     }
 
     public void DisableBoard()
     {
+        Debug.Log($"Board.DisableBoard (start)");
 
+        boardFog.gameObject.SetActive(true);
+
+        Debug.Log($"Board.DisableBoard (end)");
     }
-    
+
     public void SpawnTiles(int spawnNum)
     {
         Debug.Log($"Board.SpawnTiles (start)");
@@ -449,7 +458,7 @@ public class Board : MonoBehaviour
         DisplayTileCell(); // Double check, just in case
 
         // Trigger here to send msg to other object that new turn
-        OnEndTurnEvent?.Invoke();
+        //OnEndTurnEvent?.Invoke();
 
         Debug.Log($"{name} Tile.EndTurn (end)");
     }

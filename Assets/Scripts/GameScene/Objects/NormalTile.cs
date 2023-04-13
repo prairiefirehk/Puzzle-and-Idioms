@@ -33,7 +33,6 @@ public class NormalTile : Tile
 
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
-        player = GameObject.Find("Round Manager").GetComponent<Player>();
         canvasGroup = GetComponent<CanvasGroup>();
 
         tile = this.gameObject;
@@ -71,7 +70,7 @@ public class NormalTile : Tile
         baseValueModifier = valueModifierArr[0];
         //Debug.Log("I set the base score first: " + baseValueModifier);
 
-        currentvalueModifier = player.attackPoint.value * baseValueModifier;
+        currentvalueModifier = roundData.player.attackPoint.value * baseValueModifier;
 
         tileLevelText.gameObject.SetActive(true);
         tileEffectAIcon.gameObject.SetActive(false);
@@ -88,7 +87,7 @@ public class NormalTile : Tile
         Debug.Log($"{name} NormalTile.OnEnable (start)");
         
         // Subscribe to the game events and listen
-        Board.OnEndTurnEvent += OnNewTurn;
+        //Board.OnEndTurnEvent += OnNewTurn;
 
         Debug.Log($"{name} NormalTile.OnEnable (end)");
     }
@@ -109,7 +108,7 @@ public class NormalTile : Tile
         Debug.Log($"{name} NormalTile.OnDisable (start)");
         
         // Unubscribe to the game events and listen
-        Board.OnEndTurnEvent -= OnNewTurn;
+        //Board.OnEndTurnEvent -= OnNewTurn;
 
         Debug.Log($"{name} NormalTile.OnDisable (end)");
     }
@@ -132,7 +131,7 @@ public class NormalTile : Tile
         Tile dragTile = eventData.pointerDrag.GetComponent<Tile>();
 
         // ****************************************
-        player.SetDragTile(dragTile);
+        roundData.player.SetDragTile(dragTile);
         //player.tile = dragTile;
 
         // Detect drag tile-> slot
@@ -168,7 +167,7 @@ public class NormalTile : Tile
                         Debug.Log($"^5.3A.2 merge the correct answer {dragTile.name} (normal tile) ({dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}) -> wrong answer {dragTile.interactTile.name} (special tile)");
                     }
                     // Some punishment here
-                    player.TakeDamage((float)0.15 * player.maxHp.value);
+                    roundData.player.TakeDamage((float)0.15 * roundData.player.maxHp.value);
 
                     // Reset new round
                     //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -179,6 +178,7 @@ public class NormalTile : Tile
 
                     // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                     dragTile.isMoved = true;
+                    roundData.player.isActioned = true;
 
                     //board.tileCell[dragTile.tileCellPosition] = -1;
                     board.UpdateTileCell();
@@ -199,7 +199,7 @@ public class NormalTile : Tile
                         }
 
                         // Some punishment here
-                        player.TakeDamage((float)0.15 * player.maxHp.value);
+                        roundData.player.TakeDamage((float)0.15 * roundData.player.maxHp.value);
 
                         // Reset new round
                         //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -209,6 +209,7 @@ public class NormalTile : Tile
 
                         // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                         dragTile.isMoved = true;
+                        roundData.player.isActioned = true;
 
                         board.UpdateTileCell();
                         //board.DrawAnswer();
@@ -231,6 +232,7 @@ public class NormalTile : Tile
 
                         // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                         dragTile.isMoved = true;
+                        roundData.player.isActioned = true;
 
                         //board.tileCell[dragTile.tileCellPosition] = -1;
                         board.UpdateTileCell();

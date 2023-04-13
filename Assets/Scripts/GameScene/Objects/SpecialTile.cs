@@ -24,7 +24,6 @@ public class SpecialTile : Tile
 
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
-        player = GameObject.Find("Round Manager").GetComponent<Player>();
 
         //Debug.Log("I am running!");
         canvasGroup = GetComponent<CanvasGroup>();
@@ -51,10 +50,6 @@ public class SpecialTile : Tile
         //tileLevel = Convert.ToInt32(tileLevelText.text);
         //tileEffectATurn = Convert.ToInt32(tileEffectATurnText.text);
         //tileEffectBTurn = Convert.ToInt32(tileEffectBTurnText.text);
-
-        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
-        board = GameObject.Find("Board").GetComponent<Board>();
-        player = GameObject.Find("Round Manager").GetComponent<Player>();
 
         // Initialise the data of the tile
         //spawnRate = board.specialTileSpawnRate;
@@ -86,7 +81,7 @@ public class SpecialTile : Tile
         Debug.Log($"{name} SpecialTile.OnEnable (start)");
         
         // Subscribe to the game events and listen
-        Board.OnEndTurnEvent += OnNewTurn;
+        //Board.OnEndTurnEvent += OnNewTurn;
 
         Debug.Log($"{name} SpecialTile.OnEnable (end)");
     }
@@ -107,7 +102,7 @@ public class SpecialTile : Tile
         Debug.Log($"{name} SpecialTile.OnDisable (start)");
         
         // Unubscribe to the game events and listen
-        Board.OnEndTurnEvent -= OnNewTurn;
+        //Board.OnEndTurnEvent -= OnNewTurn;
 
         Debug.Log($"{name} SpecialTile.OnDisable (end)");
     }
@@ -133,7 +128,7 @@ public class SpecialTile : Tile
         Tile dragTile = eventData.pointerDrag.GetComponent<Tile>();
 
         // ****************************************
-        player.SetDragTile(dragTile);
+        roundData.player.SetDragTile(dragTile);
         //player.tile = dragTile;
 
         // Detect drag tile-> slot
@@ -171,7 +166,7 @@ public class SpecialTile : Tile
                         Debug.Log($"^5.3A.4 merge the correct answer {dragTile.name} (special tile) -> wrong answer {dragTile.interactTile.name} (special tile)");
                     }
                     // Some punishment here
-                    player.TakeDamage(player.maxHp.value * 0.15f);
+                    roundData.player.TakeDamage(roundData.player.maxHp.value * 0.15f);
 
                     // Reset new round
                     //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -182,6 +177,7 @@ public class SpecialTile : Tile
 
                     // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                     dragTile.isMoved = true;
+                    roundData.player.isActioned = true;
 
                     //board.tileCell[dragTile.tileCellPosition] = -1;
                     board.UpdateTileCell();
@@ -213,6 +209,7 @@ public class SpecialTile : Tile
 
                             // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                             dragTile.isMoved = true;
+                            roundData.player.isActioned = true;
 
                             //board.tileCell[dragTile.tileCellPosition] = -1;
                             board.UpdateTileCell();
@@ -234,7 +231,7 @@ public class SpecialTile : Tile
                             Debug.Log($"^5.3E.4 merge the wrong answer {dragTile.name} (special tile) -> correct answer correct answer {dragTile.interactTile.name} (special tile)");
                         }
                         // Some punishment here
-                        player.TakeDamage(player.maxHp.value * 0.15f);
+                        roundData.player.TakeDamage(roundData.player.maxHp.value * 0.15f);
 
                         // Reset new round
                         //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -244,6 +241,7 @@ public class SpecialTile : Tile
 
                         // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
                         dragTile.isMoved = true;
+                        roundData.player.isActioned = true;
 
                         board.UpdateTileCell();
                         //board.DrawAnswer();
