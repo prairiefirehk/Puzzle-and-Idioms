@@ -279,6 +279,7 @@
      <Compile Include="Assets\Scripts\GameScene\StateMachine\StateMachine.cs" />
      <Compile Include="Assets\Scripts\GameScene\StateMachine\State.cs" />
      <Compile Include="Assets\Scripts\GameScene\StateMachine\EntityState.cs" />
+     <Compile Include="Assets\Scripts\GameScene\Extensions\WaitExtension.cs" />
      <None Include="Assets\com.unity.uiextensions\Runtime\Resources\Shaders\UIAdditive.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />

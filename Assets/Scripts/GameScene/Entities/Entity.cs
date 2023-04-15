@@ -8,6 +8,7 @@ public abstract class Entity: Effectable
     #region Scripts
     public Board board;
     public RoundData roundData;
+    public Player player;
 
     #endregion
     #region Entity data
@@ -114,6 +115,7 @@ public abstract class Entity: Effectable
 
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
+        player = GameObject.Find("Round Manager").GetComponent<Player>();
 
         Debug.Log($"{name} Entities.Awake (end)");
     }
@@ -132,27 +134,7 @@ public abstract class Entity: Effectable
 
     void Update()
     {
-        if (currentState == EntityState.State.Alive)
-        {
-            //Debug.Log( $"{name}'s health: {currentHp}");
-            if (currentHp.value <= 0)
-            {
-                // For visual
-                currentHp.value = 0f;
 
-                Debug.Log($"{name} just dead!");
-                // Trigger here to send msg to event subscribers that mob is defeated
-                currentState = EntityState.State.Dead;
-                //OnDefeatedEvent?.Invoke();
-                //isDead = true;
-                //break;
-            }
-
-            if (currentHp.value > maxHp.value && (currentHp.value != maxHp.value))
-            {
-                currentHp.value = maxHp.value;
-            }
-        }
     }
     
     void OnDisable()
@@ -229,6 +211,18 @@ public abstract class Entity: Effectable
         currentHp.value += hpHealPoint;
 
         Debug.Log($"Entities.Heal (end)");
+    }
+
+    public virtual void CheckAlive()
+    {
+        Debug.Log($"Entity.CheckAlive (start)");
+
+        if (currentHp.value <= 0)
+        {
+            currentState = EntityState.State.Dead;
+        }
+        
+        Debug.Log($"Entity.CheckAlive (end)");
     }
 
     public virtual void BeforeMoveStart()

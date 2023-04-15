@@ -709,12 +709,14 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         roundData.currentTurnState = TurnState.State.WaitingMobAction;
 
         tileStatusProcessed += 1;
-        UnSelected();
+        //UnSelected();
 
         // Sometime player only just clicked the tile, by this will just end the whole dragging process.
         // To prevent this, just check the status processed(if the tile didn't go through OnBeginDrag, tileStatusProcessed will less than 3)
         if (tileStatusProcessed < 3)
         {
+            UnSelected();
+
             // Forcing tile to reset
             ResetTile(this);
             tileStatusProcessed = 0;
@@ -913,6 +915,17 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         EndDrag(this);
 
         Debug.Log($"{name} Tile.OnEndDrag (end)");
+    }
+
+    public void OnTurnEnd()
+    {
+        tileExistedTurns += 1;
+
+        tileEffectARemainingTurns -= 1;
+        tileEffectATurnsText.text = tileEffectARemainingTurns.ToString();
+        
+        tileEffectBRemainingTurns -= 1;
+        tileEffectBTurnsText.text = tileEffectBRemainingTurns.ToString();
     }
     #endregion
 }

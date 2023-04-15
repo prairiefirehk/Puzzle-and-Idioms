@@ -42,8 +42,8 @@ public class Player : Entity
         Debug.Log($"Player.Awake (start)");
 
         // Not ideal place
-        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
+        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
 
         // Temp solution before creating/transfering + importing player data
 
@@ -96,6 +96,29 @@ public class Player : Entity
             }
         }
         */
+
+        if (currentState == EntityState.State.Alive)
+        {
+            //Debug.Log( $"{name}'s health: {currentHp}");
+            if (currentHp.value <= 0)
+            {
+                // For visual
+                currentHp.value = 0f;
+
+                Debug.Log($"{name} just dead!");
+                // Trigger here to send msg to event subscribers that mob is defeated
+                currentState = EntityState.State.Dead;
+                //OnDefeatedEvent?.Invoke();
+                //isDead = true;
+                //break;
+            }
+
+            if (currentHp.value > maxHp.value && (currentHp.value != maxHp.value))
+            {
+                currentHp.value = maxHp.value;
+            }
+        }
+
         if (isActioned)
         {
             roundData.currentTurnState = TurnState.State.BeforePlayerMoveEnd;
@@ -137,19 +160,17 @@ public class Player : Entity
     {
         Debug.Log($"Player.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
 
-        Debug.Log($"^RoundData is null? {roundData == null}");
-
-        // How come null
-        roundData.currentTurnState = TurnState.State.BeforePlayerMoveStart;
+        roundData.currentTurnState = TurnState.State.BeforeMobMoveStart;
+        CheckAlive();
         CheckStatusEffects();
 
-        if (!isStun)
+        if ((!isStun) && (currentState == EntityState.State.Alive))
         {
-            MoveStart();
+            this.Wait(0f, MoveStart);
         }
         else
         {
-            MoveEnd();
+            this.Wait(0f,MoveEnd);
         }
 
         Debug.Log($"Player.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
@@ -198,7 +219,7 @@ public class Player : Entity
         // Do some visual shit/popup/conversation
         board.DisableBoard();
 
-        MoveEnd();
+        this.Wait(2f, MoveEnd);
 
         Debug.Log($"Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
     }
@@ -224,11 +245,11 @@ public class Player : Entity
         moveEnded = true;
         if (roundData.currentMob.moveEnded)
         {
-            roundData.TurnEnd();
+            this.Wait(0f, roundData.TurnEnd);
         }
         else
         {
-            roundData.currentMob.BeforeMoveStart();
+            this.Wait(0f, roundData.currentMob.BeforeMoveStart);
         }
 
         Debug.Log($"Player.MoveEnd (override Entities.MoveEnd) (end)");
@@ -284,8 +305,8 @@ public class Player : Entity
 
         Debug.Log("^5.5A teammate get the correct answer!");
 
-        Debug.Log(tile.currentvalueModifier);
-        Debug.Log(tile.interactTeammate.name);
+        //Debug.Log(tile.currentvalueModifier);
+        //Debug.Log(tile.interactTeammate.name);
 
         //Heal(maxHp.value * tile.interactTeammate.defencePoint);
         if (currentHp.value < maxHp.value)//(currentHp.GetStatValue() < maxHp.GetStatValue())

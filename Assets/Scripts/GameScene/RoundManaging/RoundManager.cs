@@ -58,7 +58,7 @@ public class RoundManager : MonoBehaviour
         Debug.Log($"RoundManager.Start (start)");
 
         roundData.InitializeData();
-        currentGameState = GameState.State.IsBattling;
+        //currentGameState = GameState.State.IsBattling;
 
         Debug.Log($"RoundManager.Start (end)");
     }

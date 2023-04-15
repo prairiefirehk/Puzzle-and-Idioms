@@ -53,8 +53,9 @@ public class Mob: Entity
         Debug.Log($"{mobName} Mob.Awake (start)");
 
         // Not ideal place
-        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
+        player = GameObject.Find("Round Manager").GetComponent<Player>();
         board = GameObject.Find("Board").GetComponent<Board>();
+        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
 
         isDead = false;
 
@@ -82,7 +83,29 @@ public class Mob: Entity
     
     void Update()
     {
+        //Debug.Log($" currentMob {mobName} is {currentState}");
 
+        if (currentState == EntityState.State.Alive)
+        {
+            //Debug.Log( $"{name}'s health: {currentHp}");
+            if (currentHp.value <= 0)
+            {
+                // For visual
+                currentHp.value = 0f;
+
+                Debug.Log($"{name} just dead!");
+                // Trigger here to send msg to event subscribers that mob is defeated
+                currentState = EntityState.State.Dead;
+                //OnDefeatedEvent?.Invoke();
+                //isDead = true;
+                //break;
+            }
+
+            if (currentHp.value > maxHp.value && (currentHp.value != maxHp.value))
+            {
+                currentHp.value = maxHp.value;
+            }
+        }
     }
 
     void OnDisable()
@@ -122,15 +145,16 @@ public class Mob: Entity
         Debug.Log($"Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
 
         roundData.currentTurnState = TurnState.State.BeforeMobMoveStart;
+        CheckAlive();
         CheckStatusEffects();
 
-        if (CheckAttackInterval() && (!isStun))
+        if (CheckAttackInterval() && (!isStun) && (currentState == EntityState.State.Alive))
         {
-            MoveStart();
+            this.Wait(0f, MoveStart);
         }
         else
         {
-            MoveEnd();
+            this.Wait(0f, MoveEnd);
         }
 
         Debug.Log($"Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
@@ -143,7 +167,7 @@ public class Mob: Entity
 
         // Do some visual shit/popup/conversation
 
-        OnAction();
+        this.Wait(0f, OnAction);
 
         Debug.Log($"Mob.MoveStart (override Entities.MoveStart) (end)");
     }
@@ -167,7 +191,7 @@ public class Mob: Entity
 
         // Add extra one for later gerneral minus one in MoveEnd()
         currentAttackInterval.value = maxAttackInterval.value + 1;
-        BeforeMoveEnd();
+        this.Wait(2f, BeforeMoveEnd);
 
         Debug.Log($"Mob.OnAction (override Entities.OnAction) (end)");
     }
@@ -180,7 +204,7 @@ public class Mob: Entity
 
         // Do some visual shit/popup/conversation
 
-        MoveEnd();
+        this.Wait(0f, MoveEnd);
 
         Debug.Log($"Mob.BeforeMoveEnd (override Entities.BeforeMoveEnd) (end)");
     }
@@ -208,11 +232,11 @@ public class Mob: Entity
         moveEnded = true;
         if (roundData.player.moveEnded)
         {
-            roundData.TurnEnd();
+            this.Wait(0f, roundData.TurnEnd);
         }
         else
         {
-            roundData.player.BeforeMoveStart();
+            this.Wait(0f, roundData.player.BeforeMoveStart);
         }
 
         Debug.Log($"Mob.MoveEnd (override Entities.MoveEnd) (end)");

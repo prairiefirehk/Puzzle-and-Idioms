@@ -66,9 +66,6 @@ public class RoundData : MonoBehaviour
     private int _currentAnswerTilePosition;
     public int currentAnswerTilePosition { get { return _currentAnswerTilePosition; } set { _currentAnswerTilePosition = value; } }
 
-    private int _remainingWaves;
-    public int remainingWaves { get { return _remainingWaves; } set { _remainingWaves = value; } }
-
     [SerializeField] private List<int> _waveMobs;
     public List<int> waveMobs { get { return _waveMobs; } set { _waveMobs = value; } }
     [SerializeField] private List<Teammate> _roundTeammates;
@@ -155,7 +152,7 @@ public class RoundData : MonoBehaviour
         //roundTeammates = new List<Teammate>();
 
         // Will change into importing from data, just temp solution for now
-        remainingWaves = wavesNumber;
+        //currentWave = 1;
 
         //BeforeTurnStart();
 
@@ -285,16 +282,16 @@ public class RoundData : MonoBehaviour
     {
         Debug.Log($"RoundData.CurrentMobDefeated (start)");
 
-        Debug.Log($"remainingWaves(before) = {remainingWaves}");
-        remainingWaves -= 1;
-        Debug.Log($"remainingWaves(after) = {remainingWaves}");
+        //Debug.Log($"remainingWaves(before) = {remainingWaves}");
+        //remainingWaves -= 1;
+        //Debug.Log($"remainingWaves(after) = {remainingWaves}");
         //roundMobs.Remove(roundMobs[remainingMobsNumber]);
 
         StoreGainedReward();
         // Incert delay here    
         currentMob.DestroyMob(currentMob);
         
-        if (remainingWaves == 0)
+        if (currentWave == wavesNumber)//remainingWaves == 0)
         {
             // Trigger here to send msg to event subscribers that player win
             //OnAllMobDefectedEvent?.Invoke(GameState.State.PlayerWin);
@@ -364,6 +361,7 @@ public class RoundData : MonoBehaviour
         // First time while enter the game loop, a.k.a init
         if (roundManager.currentGameState == GameState.State.IsInitalizing)
         {
+            roundManager.currentGameState = GameState.State.IsBattling;
             SpawnTeammates();
             player.InitPlayer();
             DrawMobs();
@@ -373,9 +371,10 @@ public class RoundData : MonoBehaviour
         if (requestNewWave)
         {
             Newwave();
+            requestNewWave = false;
         }
 
-        CompareDexPoint(player, currentMob).BeforeMoveStart();
+        this.Wait(0f, CompareDexPoint(player, currentMob).BeforeMoveStart);
 
         Debug.Log($"RoundData.BeforeTurnStart (end)");
     }
@@ -392,23 +391,37 @@ public class RoundData : MonoBehaviour
         board.CheckAnswerTile();
         board.DisplayTileCell(); // Double check, just in case
 
+        for (int i = 0; i < roundTeammates.Count; i++)
+        {
+            roundTeammates[i].currentActiveSkillCD.value -= 1;
+        }
+
         currentMob.moveEnded = false;
         player.moveEnded = false;
 
-        if (currentMob.currentState == EntityState.State.Dead)
+        for (int i = 0; i < board.answerTilesSpawner.transform.childCount; i++)
         {
-            if (remainingWaves == 0) // No more new wave of mobs
+            Tile tile = board.answerTilesSpawner.transform.GetChild(i).GetComponent<Tile>();
+            tile.OnTurnEnd();
+        }
+
+        if (currentMob.currentState == EntityState.State.Dead) // Mob defeated
+        {
+            Debug.Log($"currentWave is {currentWave}");
+            if (currentWave == wavesNumber) // No more new wave of mobs
             {
                 roundManager.currentGameState = GameState.State.PlayerWin;
                 roundManager.GameOver(roundManager.currentGameState);
             }
-            else // Mob defeated
+            else // Mob defeated, but still new turn
             {
                 Destroy(currentMob.gameObject);
                 currentMob.transform.SetParent(null);
 
                 // New Wave flag for new turn
                 requestNewWave = true;
+
+                this.Wait(0f, BeforeTurnStart);
             }
         }
         else if (player.currentState == EntityState.State.Dead) // Player defeated
@@ -419,7 +432,7 @@ public class RoundData : MonoBehaviour
         else
         {
             // New turn
-            BeforeTurnStart();
+            this.Wait(0f, BeforeTurnStart);
         }
 
         Debug.Log($"RoundData.TurnEnd (end)");
@@ -429,7 +442,10 @@ public class RoundData : MonoBehaviour
     {
         Debug.Log($"RoundData.NewWave (start)");
 
-        remainingWaves -= 1;
+        //remainingWaves -= 1;
+        StoreGainedReward();
+        //currentMob.DestroyMob(currentMob);
+
         currentWave += 1;
         currentWaveText.text = currentWave.ToString() + "/" + wavesNumber;
         SpawnMobs();
@@ -442,7 +458,7 @@ public class RoundData : MonoBehaviour
         Debug.Log($"RoundData.OnNewWave (start)");
 
         CurrentMobDefeated();
-        if (remainingWaves > 0)
+        if (currentWave < wavesNumber)
         {
             currentWave += 1;
             currentWaveText.text = currentWave.ToString() + "/" + wavesNumber;
