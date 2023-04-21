@@ -10,17 +10,17 @@ public class Bar : MonoBehaviour
     #region Game object reference
     public Bar bars;
     public Image bar;
-    public Vector2 barPosition;
     public Image valueBar;
-    public Vector2 valueBarPosition;
     public TMP_Text barValueText;
     #endregion
 
     #region Bar data
     public float barWidth;
     public float barHeight;
+    public Vector2 barPosition;
     public float valueBarWidth;
     public float valueBarHeight;
+    public Vector2 valueBarPosition;
 
     public float value;
     public float maxValue;
@@ -98,7 +98,7 @@ public class Bar : MonoBehaviour
 
         Debug.Log($"{name} Bar.InitializeBar (end)");
     }
-    public void ResizeBarValue(float newValue, int decimalplace)
+    public void ResizeBarValue(float newValue, float maxValue, int decimalplace)
     {
         //Debug.Log($"{name} Bar.ResizeBarValue (start)");
 

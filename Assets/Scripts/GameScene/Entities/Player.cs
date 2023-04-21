@@ -113,12 +113,13 @@ public class Player : Entity
                 //break;
             }
 
-            if (currentHp.value > maxHp.value && (currentHp.value != maxHp.value))
+            if (currentHp.value > currentMaxHp.value && (currentHp.value != currentMaxHp.value))
             {
-                currentHp.value = maxHp.value;
+                currentHp.value = currentMaxHp.value;
             }
         }
 
+        
         if (isActioned)
         {
             roundData.currentTurnState = TurnState.State.BeforePlayerMoveEnd;
@@ -148,9 +149,12 @@ public class Player : Entity
         Debug.Log($"Player.InitPlayer (start)");
 
         maxHp = new EntityStat(GetPlayerMaxHp());
-        currentHp = new EntityStat(maxHp.GetStatValue());
+        currentMaxHp = new EntityStat(maxHp.value);
+        currentHp = new EntityStat(currentMaxHp.value);
         defencePoint = new EntityStat(125f);
         dexterityPoint = new EntityStat(10f);
+        currentDefencePoint = new EntityStat(defencePoint.value);
+        currentDexterityPoint = new EntityStat(dexterityPoint.value);
 
         currentState = EntityState.State.Alive;
 
@@ -162,9 +166,9 @@ public class Player : Entity
 
         roundData.currentTurnState = TurnState.State.BeforeMobMoveStart;
         CheckAlive();
-        CheckStatusEffects();
+        //CheckStatusEffects();
 
-        if ((!isStun) && (currentState == EntityState.State.Alive))
+        if ((!isStun) && (currentState == EntityState.State.Alive) && (roundData.currentMob.currentState == EntityState.State.Alive))
         {
             this.Wait(0f, MoveStart);
         }
@@ -219,7 +223,7 @@ public class Player : Entity
         // Do some visual shit/popup/conversation
         board.DisableBoard();
 
-        this.Wait(2f, MoveEnd);
+        this.Wait(0.5f, MoveEnd);
 
         Debug.Log($"Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
     }
@@ -265,7 +269,7 @@ public class Player : Entity
         for (int i = 0; i < roundData.roundTeammates.Count; i++)
         {
             //playerMaxHp += roundData.roundTeammates[i].maxHp.GetStatValue();
-            playerMaxHp += roundData.roundTeammates[i].maxHp.value;
+            playerMaxHp += roundData.roundTeammates[i].currentMaxHp.value;
             //Debug.Log(playerMaxHp);
         }
 
@@ -283,87 +287,61 @@ public class Player : Entity
         Debug.Log($"Player.SetDragTile (end)");
     }
 
-    public void Answer()
+    public void Answer(Teammate teammate)
     {
         Debug.Log($"Player.Answer (start)");
 
         if (tile.isAnswer == true)
         {
-            AnswerCorrectly();
+            teammate.AnswerCorrectly(tile);
         }
         else
         {
-            AnswerWrongly();
+            teammate.AnswerWrongly(tile);
         }
 
         Debug.Log($"Player.Answer (end)");
     }
 
-    public void AnswerCorrectly()
+    public override void Attack(Entity target, float value)
     {
-        Debug.Log($"Player.AnswerCorrectly (start)");
+        Debug.Log($"Player.Attack (override Entities.Attack) (start)");
 
-        Debug.Log("^5.5A teammate get the correct answer!");
+        // Temp testing solution
+        StatusEffect burn = new StatusEffect(StatusEffectName.Burning, 21, 1, 200, 100,
+                                            target, "Player: Burn!", 
+                                            new List<string>{"currentMaxHp"}, new List<StatModifier>{new StatModifier(-200, StatModifierType.Flat, 1)});
 
-        //Debug.Log(tile.currentvalueModifier);
-        //Debug.Log(tile.interactTeammate.name);
+        StatusEffect freeze = new StatusEffect(StatusEffectName.Freezing, 21, 1, 100, 50,
+                                            target, "Player: Freeze!", 
+                                            new List<string>{"currentMaxAttackInterval"}, new List<float>{1});
 
-        //Heal(maxHp.value * tile.interactTeammate.defencePoint);
-        if (currentHp.value < maxHp.value)//(currentHp.GetStatValue() < maxHp.GetStatValue())
+        StatusEffect stun = new StatusEffect(StatusEffectName.Stuning, 5, 1, 100, 0,
+                                            target, "Player: Stun!", 
+                                            new List<string>{"currentMaxHp"}, new List<float>{1000});
+        
+        int randomAttackSkillNumber = UnityEngine.Random.Range(0, Enum.GetNames(typeof(StatusEffectName)).Length);
+        //Debug.Log($"randomAttackSkillNumber = {randomAttackSkillNumber}");
+        //Debug.Log($"Enum.GetNames(typeof(StatusEffectName)).Length = {Enum.GetNames(typeof(StatusEffectName)).Length}");
+        switch(randomAttackSkillNumber)
         {
-            Heal(maxHp.value * 0.15f);
-            Debug.Log($"$healed hp = {maxHp.value * 0.15f}");
+            case 0:
+                burn.OnInflict();
+                base.Attack(target, (value + burn.instantValue));
+                break;
+
+            case 1:
+                freeze.OnInflict();
+                base.Attack(target, (value + freeze.instantValue));
+                break;
+
+            case 2:
+                stun.OnInflict();
+                base.Attack(target, (value + stun.instantValue));
+                break;
         }
 
-        tile.interactTeammate.currentTotalAttackPoint += (tile.interactTeammate.attackPoint.value * (1 + tile.currentvalueModifier));
-        //isWaitingForReset = true;
-        tile.toBeDestroyed = true;
-        board.UpdateTileCell();
-
-        // Destroy the tile
-        tile.DestroyTile(tile);
-
-        //// Next round preparation ////
-        isActioned = true;
-        //roundData.TurnEnd();
-
-        // Before drawing the tile to the board, rename the tile according to their current position
-        //board.RenameTiles();
-
-        // Draw new answer tile and refill blank cell
-        //board.SpawnTiles(board.CheckBlankCell());
-        //board.DrawAnswer();
-
-        //tile.StopDrag();
-
-        Debug.Log($"Player.AnswerCorrectly (end)");
-    }
-
-    public void AnswerWrongly()
-    {
-        Debug.Log($"Player.AnswerWrongly (start)");
-
-        Debug.Log("^5.5B teammate get the wrong answer!");
-
-        // Some punishment here
-        TakeDamage(maxHp.value * 0.15f);
-        tile.toBeDestroyed = true;
-        board.UpdateTileCell();
-
-        // Destroy the tile
-        tile.DestroyTile(tile);
-
-        //// Next round preparation ////
-        isActioned = true;
-        //roundData.TurnEnd();
-        // Before drawing the tile to the board, rename the tile according to their current position
-        //board.RenameTiles();
-
-        // Draw new answer tile and refill blank cell
-        //board.SpawnTiles(board.CheckBlankCell());
-        //board.DrawAnswer();
-
-        Debug.Log($"Player.AnswerWrongly (end)");
+        Debug.Log($"Player.Attack (override Entities.Attack) (end)");
     }
     #endregion
 }

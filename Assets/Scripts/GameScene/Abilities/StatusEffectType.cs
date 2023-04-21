@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum StatusEffectType 
+public enum StatusEffectName 
 {
     Burning,
-    Slow,
-    Stun
+    Freezing,
+    Stuning
 }

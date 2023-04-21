@@ -63,8 +63,8 @@ public class TeammateFactory : MonoBehaviour, IFactory
         teammate.picName = ImportData.teammates.teammate[teammateID].picName;
         teammate.level = ImportData.teammates.teammate[teammateID].level;
         Debug.Log($"{teammate.name}'s level is: {teammate.level} ({ImportData.teammates.teammate[teammateID].level})");
-        teammate.maxHp = new EntityStat(ImportData.teammates.teammate[teammateID].maxHp);
-        Debug.Log($"{teammate.name}'s maxHp is: {teammate.maxHp.value} ({ImportData.teammates.teammate[teammateID].maxHp})");
+        teammate.currentMaxHp = new EntityStat(ImportData.teammates.teammate[teammateID].maxHp);
+        Debug.Log($"{teammate.name}'s maxHp is: {teammate.currentMaxHp.value} ({ImportData.teammates.teammate[teammateID].maxHp})");
         teammate.attackPoint = new EntityStat(ImportData.teammates.teammate[teammateID].attackPoint);
         teammate.defencePoint = new EntityStat(ImportData.teammates.teammate[teammateID].defencePoint);
         //teammate.evasionPoint = ImportData.teammates.teammate[teammateID].evasionPoint;

@@ -86,12 +86,15 @@ public class MobFactory : MonoBehaviour, IFactory
 
         // Initialize data
         //Debug.Log("mob current hp: " + mob.currentHp);
-        mob.currentHp = new EntityStat(mob.maxHp.value);
+        mob.currentMaxHp = new EntityStat(mob.maxHp.value);
+        mob.currentHp = new EntityStat(mob.currentMaxHp.value);
         //Debug.Log("mob current hp: " + mob.currentHp);
         mob.currentAttackPoint = new EntityStat(mob.attackPoint.value);
         mob.currentDefencePoint = new EntityStat(mob.defencePoint.value);
+        mob.currentDexterityPoint = new EntityStat(mob.dexterityPoint.value);
         // For testing only, need to be draw
-        mob.currentAttackInterval = new EntityStat(mob.maxAttackInterval.value);
+        mob.currentMaxAttackInterval = new EntityStat(mob.maxAttackInterval.value);
+        mob.currentAttackInterval = new EntityStat(mob.currentMaxAttackInterval.value);
 
         Debug.Log($"MobFactory.CreateMob, return mob(local var): {mob.name}(mob.name only) (start)");
         return mob;

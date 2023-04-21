@@ -101,7 +101,9 @@ public class Popup : MonoBehaviour
         Debug.Log($"{name} Popup.OnDestroy (start)");
         Debug.Log($"{name} Popup.OnDestroy (end)");
     }
+    #endregion
 
+    #region Popup functions
     public void DestroyPopup(Popup popupPrefab)
     {
         Debug.Log($"{name} Popup.DestroyPopup (start)");

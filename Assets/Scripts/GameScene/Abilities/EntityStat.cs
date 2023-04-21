@@ -161,8 +161,8 @@ public class EntityStat
             
         }
 
-        Debug.Log($"EntityStat.CalculateFinalValue, return finalValue with Math.Round(local var): {(float)System.Math.Round(finalValue, 0)} (end)");
-        return (float)System.Math.Round(finalValue, 0);
+        Debug.Log($"EntityStat.CalculateFinalValue, return finalValue with Math.Round(local var): {(float)Mathf.Round(finalValue)} (end)");
+        return (float)Mathf.Round(finalValue);
     }
 
     public float GetStatValue()

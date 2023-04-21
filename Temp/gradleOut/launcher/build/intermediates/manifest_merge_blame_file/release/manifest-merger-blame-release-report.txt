@@ -135,7 +135,7 @@
 75-->[:unityLibrary] C:\Game projects\Puzzle and Idioms\Temp\gradleOut\unityLibrary\build\intermediates\library_manifest\release\AndroidManifest.xml:65:9-67:68
 76            android:name="unity.build-id"
 76-->[:unityLibrary] C:\Game projects\Puzzle and Idioms\Temp\gradleOut\unityLibrary\build\intermediates\library_manifest\release\AndroidManifest.xml:66:13-42
-77            android:value="cd38af86-aff0-479a-9310-d86017470bee" />
+77            android:value="5d5953d2-398c-419c-9311-259af403e7a9" />
 77-->[:unityLibrary] C:\Game projects\Puzzle and Idioms\Temp\gradleOut\unityLibrary\build\intermediates\library_manifest\release\AndroidManifest.xml:67:13-65
 78    </application>
 79

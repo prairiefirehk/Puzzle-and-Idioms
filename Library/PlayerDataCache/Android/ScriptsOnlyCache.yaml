@@ -4,6 +4,7 @@ ScriptsOnlyBuild:
     - AdventureBtn
     - Bar
     - Board
+    - EffectBox
     - ImportData
     - MenuNavigation
     - MenuScene
@@ -169,6 +170,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 6468}
     - Class: 114
       Script: {instanceID: 6490}
+    - Class: 114
+      Script: {instanceID: 361026}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -358,7 +361,7 @@ ScriptsOnlyBuild:
     className: Text
   - hash:
       serializedVersion: 2
-      Hash: e87d1568e3df935684abdf61f729b4a9
+      Hash: 77a9ba008ff6ab5504a4727441fa4666
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: SpecialTile
@@ -466,7 +469,7 @@ ScriptsOnlyBuild:
     className: Toggle
   - hash:
       serializedVersion: 2
-      Hash: c9366c15e2dac2816a20b7822ada36a2
+      Hash: cd473480439f5451e28d4fe7064e6a85
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Tile
@@ -700,7 +703,7 @@ ScriptsOnlyBuild:
     className: CinemachinePixelPerfect
   - hash:
       serializedVersion: 2
-      Hash: 3e83e70e1ffb19bafb357fe449a6e3c6
+      Hash: 6fd44b0c546f8bdafd21e86959be20a5
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Effectable
@@ -880,7 +883,7 @@ ScriptsOnlyBuild:
     className: TMP_TextSelector_A
   - hash:
       serializedVersion: 2
-      Hash: a77cc2e59db122beb7734e88d766f65f
+      Hash: ba7d010f29f0a97ade279440d436f0fb
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Player
@@ -1000,7 +1003,7 @@ ScriptsOnlyBuild:
     className: UIVerticalScroller
   - hash:
       serializedVersion: 2
-      Hash: fd9732d2852704352a855097d0be5a73
+      Hash: 115fc9e8b2c4bbc1ad12dd3008f572d5
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Teammate
@@ -1624,7 +1627,7 @@ ScriptsOnlyBuild:
     className: SpriteSkinEntity
   - hash:
       serializedVersion: 2
-      Hash: 5987dc4ac4275ada2d0dbfddd33eea24
+      Hash: dafd61c6e5aee9b6dfc5c69a18d6c9ed
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: RoundData
@@ -1708,7 +1711,7 @@ ScriptsOnlyBuild:
     className: ResizePanel
   - hash:
       serializedVersion: 2
-      Hash: 03c6267df561015bf001fcca3d2db6c3
+      Hash: ebf426458bf1eca56dc1b77791d24518
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Mob
@@ -1804,7 +1807,7 @@ ScriptsOnlyBuild:
     className: RaycastMask
   - hash:
       serializedVersion: 2
-      Hash: 6dfc4051514a00ed6f199e161f2478f2
+      Hash: 5546fa1f3639a3bde283d3369b040f54
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: NormalTile
@@ -1906,7 +1909,7 @@ ScriptsOnlyBuild:
     className: ActivationPlayableAsset
   - hash:
       serializedVersion: 2
-      Hash: cce645c3e10073a2ec8f9e03dc503c53
+      Hash: 3937acf2d8dc1b854ec4feaeff17d190
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Bar
@@ -1964,6 +1967,12 @@ ScriptsOnlyBuild:
     assemblyName: Assembly-CSharp.dll
     namespaceName: UnityEngine.UI.Extensions
     className: ScrollSnap
+  - hash:
+      serializedVersion: 2
+      Hash: e6477b5595d4e4ca84eda5eb01b08ce7
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: EffectBox
   platform: 13
   scenePathNames:
   - Assets/Scenes/Logo scene.unity

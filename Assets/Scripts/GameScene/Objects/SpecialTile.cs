@@ -134,39 +134,37 @@ public class SpecialTile : Tile
         // Detect drag tile-> slot
         if (dragTile.inSlot == true)
         {
-            Debug.Log($"^5.1A.2 {name} (special tile) drop to teammate {dragTile.interactTeammate.name} (msg from tile)");
+            
         }
         else
         {
-
-            Debug.Log($"^5.2A.2 {name} (special tile) drop to {dragTile.interactTile.name}");
-
             // Detect drag tile -> other tile
             if (dragTile.inTile == true)
             {
-                if (dragTile.interactTile.CompareTag("NormalTile"))
+                if (CompareTag("NormalTile"))
                 {
-                    Debug.Log($"^5.2B.1 {name} received {dragTile.interactTile.name} (normal tile) {dragTile.interactTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
+                    Debug.Log($"^5.1B.3 {name} received {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
                 }
-                else if (dragTile.interactTile.CompareTag("SpecialTile"))
+                else if (CompareTag("SpecialTile"))
                 {
-                    Debug.Log($"^5.2B.2 {name} received {dragTile.interactTile.name} (special tile)");
+                    Debug.Log($"^5.1B.4 {name} received {dragTile.name} (special tile)");
                 }
 
                 // DragTile itself is answer
                 if (dragTile.isAnswer == true)
                 {
-                    // Which should not happen, spceial tile cannot be answer?
-                    if (dragTile.interactTile.CompareTag("NormalTile"))
+                    if (dragTile.CompareTag("NormalTile"))
                     {
-                        Debug.Log($"^5.3A.3 merge the correct answer {dragTile.name} (special tile) -> wrong answer {dragTile.interactTile.name} (normal tile) ({dragTile.interactTile.transform.GetChild(2).GetComponent<TMP_Text>().text})");
+                        Debug.Log($"^5.2A.3 merge the correct answer {dragTile.name} (normal tile) ({dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}) -> wrong answer {name} (special tile)");
                     }
-                    else if (dragTile.interactTile.CompareTag("SpecialTile"))
+                    // Which should not happen
+                    else if (dragTile.CompareTag("SpecialTile"))
                     {
-                        Debug.Log($"^5.3A.4 merge the correct answer {dragTile.name} (special tile) -> wrong answer {dragTile.interactTile.name} (special tile)");
+                        Debug.Log($"^5.2A.4 merge the correct answer {dragTile.name} (special tile) -> wrong answer {name} (special tile)");
                     }
+
                     // Some punishment here
-                    roundData.player.TakeDamage(roundData.player.maxHp.value * 0.15f);
+                    roundData.player.TakeDamage(roundData.player.currentMaxHp.value * 0.15f);
 
                     // Reset new round
                     //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -183,22 +181,50 @@ public class SpecialTile : Tile
                     board.UpdateTileCell();
                     //board.DrawAnswer();
                 }
-                else
+                else // Dragtile is not answer
                 {
-                    // Other tile is not answer
-                    if (dragTile.interactTile.isAnswer == false)
+                    // The tile is answer
+                    if (isAnswer == true)
                     {
-                        // Split them as new function as MergeTile ***************************************************
-                        // Check tileLevel
-                        if (dragTile.tileLevel == dragTile.interactTile.tileLevel)
+                        if (dragTile.CompareTag("NormalTile"))
                         {
-                            if (dragTile.interactTile.CompareTag("NormalTile"))
+                            Debug.Log($"^5.2B.3 merge the wrong answer {dragTile.name} (normal tile) ({dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}) -> correct answer {name} (special tile)");
+                        }
+                        else if (dragTile.CompareTag("SpecialTile"))
+                        {
+                            Debug.Log($"^5.2B.4 merge the wrong answer {dragTile.name} (special tile) -> correct answer {name} (special tile)");
+                        }
+                        // Some punishment here
+                        roundData.player.TakeDamage(roundData.player.currentMaxHp.value * 0.15f);
+
+                        // Reset new round
+                        //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
+                        dragTile.interactTile.toBeDestroyed = true;
+                        //Debug.Log("dragTile: " + dragTile.name);
+                        dragTile.toBeDestroyed = true;
+
+                        // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
+                        dragTile.isMoved = true;
+                        roundData.player.isActioned = true;
+
+                        board.UpdateTileCell();
+                        //board.DrawAnswer();
+                    }
+
+                    // There should be one new function as MergeTile ***************************************************
+                    // the tile is not answer
+                    else 
+                    {
+                        // Check tileLevel
+                        if (dragTile.tileLevel == tileLevel)
+                        {
+                            if (dragTile.CompareTag("NormalTile"))
                             {
-                                Debug.Log($"^5.3B.3 merging correctly {dragTile.name} (special tile) -> {dragTile.interactTile.name} (normal tile) {dragTile.interactTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
+                                Debug.Log($"^5.2C.3 merging correctly {dragTile.name} (normal tile) ({dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}) -> {name} (special tile)");
                             }
-                            else if (dragTile.interactTile.CompareTag("SpecialTile"))
+                            else if (dragTile.CompareTag("SpecialTile"))
                             {
-                                Debug.Log($"^5.3B.4 merging correctly {dragTile.name} (special tile) -> {dragTile.interactTile.name} (special tile)");
+                                Debug.Log($"^5.2C.4 merging correctly {dragTile.name} (special tile) -> {name} (special tile)");
                             }
 
                             // Upgrade the tile level that merge into
@@ -216,35 +242,8 @@ public class SpecialTile : Tile
                         }
                         else
                         {
-                            Debug.Log("^5.3D You merge the wrong tileLevel of answer tile!");
+                            Debug.Log("^5.3B You merge two different tile level tiles together!");
                         }
-                    }
-                    // Other tile is answer
-                    else
-                    {
-                        if (dragTile.interactTile.CompareTag("NormalTile"))
-                        {
-                            Debug.Log($"^5.3E.3 merge the wrong answer {dragTile.name} (special tile) -> correct answer correct answer {dragTile.interactTile.name} (normal tile) {dragTile.interactTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
-                        }
-                        else if (dragTile.interactTile.CompareTag("SpecialTile"))
-                        {
-                            Debug.Log($"^5.3E.4 merge the wrong answer {dragTile.name} (special tile) -> correct answer correct answer {dragTile.interactTile.name} (special tile)");
-                        }
-                        // Some punishment here
-                        roundData.player.TakeDamage(roundData.player.maxHp.value * 0.15f);
-
-                        // Reset new round
-                        //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
-                        dragTile.interactTile.toBeDestroyed = true;
-                        //Debug.Log("dragTile: " + dragTile.name);
-                        dragTile.toBeDestroyed = true;
-
-                        // Only setting tile has moved here but not checking afterwards, since they will getting destroyed
-                        dragTile.isMoved = true;
-                        roundData.player.isActioned = true;
-
-                        board.UpdateTileCell();
-                        //board.DrawAnswer();
                     }
                 }
             }

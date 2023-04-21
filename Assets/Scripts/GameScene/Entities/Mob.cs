@@ -25,6 +25,9 @@ public class Mob: Entity
     [SerializeField] private EntityStat _maxAttackInterval;
     public EntityStat maxAttackInterval { get { return _maxAttackInterval; } set { _maxAttackInterval = value; } }
 
+    [SerializeField] private EntityStat _currentMaxAttackInterval;
+    public EntityStat currentMaxAttackInterval { get { return _currentMaxAttackInterval; } set { _currentMaxAttackInterval = value; } }
+
     [SerializeField] private EntityStat _currentAttackInterval;
     public EntityStat currentAttackInterval { get { return _currentAttackInterval; } set { _currentAttackInterval = value; } }
 
@@ -101,9 +104,9 @@ public class Mob: Entity
                 //break;
             }
 
-            if (currentHp.value > maxHp.value && (currentHp.value != maxHp.value))
+            if (currentHp.value > currentMaxHp.value && (currentHp.value != currentMaxHp.value))
             {
-                currentHp.value = maxHp.value;
+                currentHp.value = currentMaxHp.value;
             }
         }
     }
@@ -131,8 +134,9 @@ public class Mob: Entity
         Debug.Log($"Mob.CheckAttackInterval (start)");
 
         bool canProceed = false;
-        if (currentAttackInterval.value == 0)
+        if (currentAttackInterval.value <= 0)
         {
+            currentAttackInterval.value = 0;
             canProceed = true;
         }
         
@@ -146,14 +150,19 @@ public class Mob: Entity
 
         roundData.currentTurnState = TurnState.State.BeforeMobMoveStart;
         CheckAlive();
-        CheckStatusEffects();
+        //CheckStatusEffects();
 
-        if (CheckAttackInterval() && (!isStun) && (currentState == EntityState.State.Alive))
+        if (CheckAttackInterval() && (!isStun) && (currentState == EntityState.State.Alive) && (roundData.player.currentState == EntityState.State.Alive))
         {
             this.Wait(0f, MoveStart);
         }
         else
         {
+            if (currentAttackInterval.value <= 0 || currentAttackInterval.value > currentMaxAttackInterval.value)
+            {
+                currentAttackInterval.value = currentMaxAttackInterval.value;
+            }
+
             this.Wait(0f, MoveEnd);
         }
 
@@ -190,8 +199,8 @@ public class Mob: Entity
         Attack(roundData.player, attackPoint.value);
 
         // Add extra one for later gerneral minus one in MoveEnd()
-        currentAttackInterval.value = maxAttackInterval.value + 1;
-        this.Wait(2f, BeforeMoveEnd);
+        currentAttackInterval.value = currentMaxAttackInterval.value + 1;
+        this.Wait(0.5f, BeforeMoveEnd);
 
         Debug.Log($"Mob.OnAction (override Entities.OnAction) (end)");
     }
@@ -220,14 +229,6 @@ public class Mob: Entity
 
         currentAttackInterval.value -= 1;
         roundData.mobCDText.text = currentAttackInterval.value.ToString();
-        if (HasStatusEffect) 
-        {
-            for (int i = 0; i < currentStatusEffects.Count; i++)
-            {
-                //currentStatusEffects[i].remainingTurn -= 1;
-
-            }
-        }
 
         moveEnded = true;
         if (roundData.player.moveEnded)
@@ -247,7 +248,39 @@ public class Mob: Entity
     {
         Debug.Log($"Mob.Attack (override Entities.Attack) (start)");
 
-        target.currentHp.value -= (value - target.defencePoint.value);
+        // Temp testing solution
+        StatusEffect burn = new StatusEffect(StatusEffectName.Burning, 21, 1, 500, 100,
+                                            target, "Mob: Burn!", 
+                                            new List<string>{"currentMaxHp"}, new List<StatModifier>{new StatModifier(-200, StatModifierType.Flat, 1)});
+
+        StatusEffect freeze = new StatusEffect(StatusEffectName.Freezing, 21, 1, 100, 50,
+                                            target, "Mob: Freeze!", 
+                                            new List<string>{"currentMaxHp"}, new List<float>{2000});
+
+        StatusEffect stun = new StatusEffect(StatusEffectName.Stuning, 2, 1, 100, 0,
+                                            target, "Mob: Stun!", 
+                                            new List<string>{"currentMaxHp"}, new List<float>{5000});
+        
+        int randomAttackSkillNumber = UnityEngine.Random.Range(0, Enum.GetNames(typeof(StatusEffectName)).Length);
+        //Debug.Log($"randomAttackSkillNumber = {randomAttackSkillNumber}");
+        //Debug.Log($"Enum.GetNames(typeof(StatusEffectName)).Length = {Enum.GetNames(typeof(StatusEffectName)).Length}");
+        switch(randomAttackSkillNumber)
+        {
+            case 0:
+                burn.OnInflict();
+                base.Attack(target, (value + burn.instantValue));
+                break;
+
+            case 1:
+                freeze.OnInflict();
+                base.Attack(target, (value + freeze.instantValue));
+                break;
+
+            case 2:
+                stun.OnInflict();
+                base.Attack(target, (value + stun.instantValue));
+                break;
+        }
 
         int randomTileNumber = UnityEngine.Random.Range(0, board.tilesInBoard.Count);
 

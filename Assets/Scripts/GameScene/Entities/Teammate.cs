@@ -127,7 +127,6 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
             player.Attack(roundData.currentMob, currentTotalAttackPoint);
             currentTotalAttackPoint = 0;
             player.isActioned = true;
-            //roundData.TurnEnd();
         }
         
         Debug.Log($"{teammateName} Teammate.OnPointerDown (end)");
@@ -143,48 +142,89 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
         //Debug.Log($"tile: {player.tile == null}");
         Tile dragTile = eventData.pointerDrag.GetComponent<Tile>();
 
-        if (dragTile.CompareTag("NormalTile"))
-        {
-            Debug.Log($"^5.1B.1 {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text} drop to teammate {name} (msg from teammate)");
-        }
-        // That should not happen
-        else if (dragTile.CompareTag("SpecialTile"))
-        {
-            Debug.Log($"^5.1B.2 {dragTile.name} (special tile) drop to teammate {name} (msg from teammate)");
-        }
-        else
-        {
-            Debug.Log("Who the fuck are you??");
-        }
-        
         //roundData.player.SetDragTile(dragTile);
 
         if (dragTile.CompareTag("NormalTile"))
         {
-            Debug.Log($"^5.1C.1 teammate {name} receive {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
+            Debug.Log($"^5.1A.1 teammate {name} receive {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
         }
-        // That should not happen
+        // Temp, that should not happen
         else if (dragTile.CompareTag("SpecialTile"))
         {
-            Debug.Log($"^5.1C.2 teammate {name} receive {dragTile.name} (special tile)");
+            Debug.Log($"^5.1A.2 teammate {name} receive {dragTile.name} (special tile)");
         }
         else
         {
-            Debug.Log("^5.1C.3 Who the fuck are you receiving??");
+            Debug.Log("^5.1A.3 Who the fuck are you receiving??");
         }
             
-        player.Answer();
+        player.Answer(this);
 
         Debug.Log($"{teammateName} Teammate.OnDrop (end)");
     }
 
-    public void OnNewTurn()
+    public void AnswerCorrectly(Tile tile)
     {
-        Debug.Log($"{teammateName} Teammate.OnNewTurn (start)");
+        Debug.Log($"Player.AnswerCorrectly (start)");
 
-        currentActiveSkillCD.value -= 1;
+        Debug.Log("^5.5A teammate get the correct answer!");
 
-        Debug.Log($"{teammateName} Teammate.OnNewTurn (end)");
+        //Heal(maxHp.value * tile.interactTeammate.defencePoint);
+        if (player.currentHp.value < player.currentMaxHp.value)//(currentHp.GetStatValue() < maxHp.GetStatValue())
+        {
+            player.Heal(player.currentMaxHp.value * 0.15f);
+            //Debug.Log($"$healed hp = {maxHp.value * 0.15f}");
+        }
+
+        currentTotalAttackPoint += (attackPoint.value * (1 + tile.currentvalueModifier));
+        //isWaitingForReset = true;
+        tile.toBeDestroyed = true;
+        board.UpdateTileCell();
+
+        // Destroy the tile
+        tile.DestroyTile(tile);
+
+        //// Next round preparation ////
+        player.isActioned = true;
+        //roundData.TurnEnd();
+
+        // Before drawing the tile to the board, rename the tile according to their current position
+        //board.RenameTiles();
+
+        // Draw new answer tile and refill blank cell
+        //board.SpawnTiles(board.CheckBlankCell());
+        //board.DrawAnswer();
+
+        //tile.StopDrag();
+
+        Debug.Log($"Player.AnswerCorrectly (end)");
+    }
+
+    public void AnswerWrongly(Tile tile)
+    {
+        Debug.Log($"Player.AnswerWrongly (start)");
+
+        Debug.Log("^5.5B teammate get the wrong answer!");
+
+        // Some punishment here
+        player.TakeDamage(player.currentMaxHp.value * 0.15f);
+        tile.toBeDestroyed = true;
+        board.UpdateTileCell();
+
+        // Destroy the tile
+        tile.DestroyTile(tile);
+
+        //// Next round preparation ////
+        player.isActioned = true;
+        //roundData.TurnEnd();
+        // Before drawing the tile to the board, rename the tile according to their current position
+        //board.RenameTiles();
+
+        // Draw new answer tile and refill blank cell
+        //board.SpawnTiles(board.CheckBlankCell());
+        //board.DrawAnswer();
+
+        Debug.Log($"Player.AnswerWrongly (end)");
     }
     #endregion
 }

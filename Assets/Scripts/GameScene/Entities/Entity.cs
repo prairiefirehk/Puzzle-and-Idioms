@@ -9,14 +9,15 @@ public abstract class Entity: Effectable
     public Board board;
     public RoundData roundData;
     public Player player;
-
     #endregion
+
     #region Entity data
     [SerializeField] private int _level;
     public int level { get { return _level; } set { _level = value; } }
-
     [SerializeField] private EntityStat _maxHp;
     public EntityStat maxHp { get { return _maxHp; } set { _maxHp = value; } }
+    [SerializeField] private EntityStat _currentMaxHp;
+    public EntityStat currentMaxHp { get { return _currentMaxHp; } set { _currentMaxHp = value; } }
 
     [SerializeField] private EntityStat _currentHp;
     public EntityStat currentHp { get { return _currentHp; } set { _currentHp = value; } }
@@ -33,15 +34,28 @@ public abstract class Entity: Effectable
     [SerializeField] private EntityStat _currentDefencePoint;
     public EntityStat currentDefencePoint { get { return _currentDefencePoint; } set { _currentDefencePoint = value; } }
 
+
+    // Not implement yet
     [SerializeField] private EntityStat _evasionPoint;
     public EntityStat evasionPoint { get { return _evasionPoint;} set { _evasionPoint = value; } }
+
+    [SerializeField] private EntityStat _currentEvasionPoint;
+    public EntityStat currentEvasionPoint { get { return _currentEvasionPoint; } set { _currentEvasionPoint = value; } }
 
     [SerializeField] private EntityStat _criticalPoint;
     public EntityStat criticalPoint { get { return _criticalPoint;} set { _criticalPoint = value; } }
 
+    [SerializeField] private EntityStat _currentCriticalPoint;
+    public EntityStat currentCriticalPoint { get { return _currentCriticalPoint; } set { _currentCriticalPoint = value; } }
+
     [SerializeField] private EntityStat _dexterityPoint;
     public EntityStat dexterityPoint { get { return _dexterityPoint;} set { _dexterityPoint = value; } }
 
+    [SerializeField] private EntityStat _currentDexterityPoint;
+    public EntityStat currentDexterityPoint { get { return _currentDexterityPoint; } set { _currentDexterityPoint = value; } }
+
+
+    // Still considering
     [SerializeField] private EntityStat _movementPoint;
     public EntityStat movementPoint { get { return _movementPoint;} set { _movementPoint = value; } }
 
@@ -151,39 +165,12 @@ public abstract class Entity: Effectable
     #endregion
 
     #region Entity functions
-    public void Burning(int effectTurns, int effectLevel, float effectPercentage)
-    {
-        // OnInflict
-        float damagePoint = effectPercentage * attackPoint.value * effectLevel;
-        int remainingTurns = effectTurns;
-
-        //StatusEffect burningEffect = new StatusEffect(EffectType.Burning, effectTurns, effectLevel, effectValue);
-        //StatModifier burningStatModifier = new StatModifier(-10, StatModifierType.Flat, this);
-        //target.attackPoint.AddModifier(burningStatModifier);
-
-        // OnTurnStart
-        //if (target.currentEffects[key: EffectType.Burning].effectTurns > 0)
-        //if (effectTurns)
-        //{
-        //    target.currentHp.value -= 10f;
-        //}
-
-        // OnTurnEnd
-
-        // OnRemoved
-        /*
-        if (target.currentEffects[EffectType.Burning].effectTurns == 0)
-        {
-            target.attackPoint.RemoveModifier(burningStatModifier);
-        }
-        */
-    }
-
     public virtual void Attack(Entity target, float value)
     {
         Debug.Log($"Entities.Attack (start)");
 
-        target.currentHp.value -= (value - target.defencePoint.value);
+        target.TakeDamage(value);
+        //this.Wait(3f, () => {Debug.Log($"Wait... (Attack)");});
 
         Debug.Log($"Entities.Attack (end)");
     }
@@ -192,11 +179,8 @@ public abstract class Entity: Effectable
     {
         Debug.Log($"Entities.TakeDamage (start)");
 
-        float finalDamage = damagePoint;
-        //currentHp.SetStatValue(newHp);
-
-
-        currentHp.value -= finalDamage;
+        currentHp.value -= damagePoint;
+        //this.Wait(3f, () => {Debug.Log($"Wait... (TakeDamage)");});
 
         Debug.Log($"Entities.TakeDamage (end)");
     }
@@ -204,11 +188,9 @@ public abstract class Entity: Effectable
     public virtual void Heal(float hpHealPoint)
     {
         Debug.Log($"Entities.Heal (start)");
-        //float newHp = currentHp.GetStatValue() + hpHealPoint;
-        float newHp = currentHp.value + hpHealPoint;
 
-        //currentHp.SetStatValue(newHp);
         currentHp.value += hpHealPoint;
+        //this.Wait(3f, () => {Debug.Log($"Wait... (Heal)");});
 
         Debug.Log($"Entities.Heal (end)");
     }

@@ -13,7 +13,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     public RoundData roundData;
     #endregion
 
-    #region GameObjects
+    #region Game object references
     // Blank tile without anythiung shown in the canvas, need to be initialize later
     public GameObject tile;
     public TMP_Text tileLevelText;
@@ -379,7 +379,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         tilePrefab.tileLevel++;
         tilePrefab.currentvalueModifier = tilePrefab.valueModifierArr[tilePrefab.tileLevel];
         tilePrefab.tileLevelText.text = tilePrefab.tileLevel.ToString();
-        Debug.Log("^5.3C tile tileLevel up");
+        Debug.Log("^5.3A tile tileLevel up");
 
         Debug.Log($"{name} Tile.TileUpgrade (end)");
     }
@@ -578,7 +578,6 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
                 Debug.Log($"^3.1A enter teammate {collision.name} ----------------------------");
                 inSlot = true;
                 interactTeammate = collision.gameObject.GetComponent<Teammate>();
-                
 
                 // For effect
                 interactSlotLocation = collision.transform.position;
@@ -590,21 +589,18 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
                 interactTile = collision.gameObject.GetComponent<Tile>();
                 interactTile.interactTile = this;
                 interactTileLocation = collision.transform.position;
-                interactTile.interactTileLocation = this.tileLocation;
-
-                // For detact each other?
-                //interactTile.interactTile = this;
+                interactTile.interactTileLocation = tileLocation;
             }
 
             if (collision.CompareTag("Cell"))
             {
                 tileCellPosition = collision.gameObject.transform.GetSiblingIndex();
 
-                if (this.CompareTag("NormalTile"))
+                if (CompareTag("NormalTile"))
                 {
-                    Debug.Log($"^3.1C enter cell---------------------------- {name} {this.transform.GetChild(2).GetComponent<TMP_Text>().text} from position {tileCellPositionAtStart} -> {tileCellPosition}");
+                    Debug.Log($"^3.1C enter cell---------------------------- {name} {transform.GetChild(2).GetComponent<TMP_Text>().text} from position {tileCellPositionAtStart} -> {tileCellPosition}");
                 }
-                else if (this.CompareTag("SpecialTile"))
+                else if (CompareTag("SpecialTile"))
                 {
                     Debug.Log($"^3.1C enter cell---------------------------- {name} from position {tileCellPositionAtStart} -> {tileCellPosition}");
                 }
@@ -618,7 +614,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     {
         Debug.Log($"{name} Tile.OnTriggerExit2D (start)");
 
-        if(isDrag && isSelect)
+        if (isDrag && isSelect)
         {
             if (collision.CompareTag("Teammate"))
             {
@@ -722,7 +718,45 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
             tileStatusProcessed = 0;
         }
 
-        Debug.Log($"{name} Tile.OnPointerUp (end)");
+        if (inSlot == true)
+        {
+            // Do nothing, teammate drop handler will deal with it
+            if (interactTeammate != null)
+            {
+                if (CompareTag("NormalTile"))
+                {
+                    Debug.Log($"^4.2A {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to teammate {interactTeammate.name}");
+                }
+                else if (CompareTag("SpecialTile"))
+                {
+                    Debug.Log($"^4.2B {name} (special tile) drop to teammate {interactTeammate.name}");
+                }
+            }
+            else
+            {
+                Debug.Log($"^I don't know man, interactTeammate is null");
+            }
+        }
+        else
+        {
+            if (interactTile != null)
+            {
+                if (CompareTag("NormalTile"))
+                {
+                    Debug.Log($"^4.2C {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to {interactTile.name}");
+                }
+                else if (CompareTag("SpecialTile"))
+                {
+                    Debug.Log($"^4.2D {name} (special tile) drop to {interactTile.name}");
+                }
+            }
+            else
+            {
+                Debug.Log($"^I don't know man, interactTile is null");
+            }
+
+            Debug.Log($"{name} Tile.OnPointerUp (end)");
+        }
     }
 
     // For tile merge, receive after onpointerup (AS A DROP RECEIVER) //
