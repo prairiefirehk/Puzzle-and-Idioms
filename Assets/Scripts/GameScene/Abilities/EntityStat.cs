@@ -56,18 +56,18 @@ public class EntityStat
 
     public virtual void AddModifier(StatModifier statModifier)
     {
-        Debug.Log($"EntityStat.AddModifier (start)");
+        Debug.Log($"{Time.time} EntityStat.AddModifier (start)");
 
         isDirty = true;
         _statModifiers.Add(statModifier);
         _statModifiers.Sort(CompareModifierOrder);
 
-        Debug.Log($"EntityStat.AddModifier (end)");
+        Debug.Log($"{Time.time} EntityStat.AddModifier (end)");
     }
 
     public virtual bool RemoveModifier(StatModifier statModifier)
     {
-        Debug.Log(message: $"EntityStat.RemoveModifier (start)");
+        Debug.Log(message: $"{Time.time} EntityStat.RemoveModifier (start)");
 
         bool isRemoved = false;
         if (_statModifiers.Remove(statModifier))
@@ -76,13 +76,13 @@ public class EntityStat
             isRemoved = true;
         }
 
-        Debug.Log($"EntityStat.RemoveModifier, return isRemoved(local var): {isRemoved} (end)");
+        Debug.Log($"{Time.time} EntityStat.RemoveModifier, return isRemoved(local var): {isRemoved} (end)");
         return isRemoved;
     }
 
     public virtual bool RemoveAllModifierFromSource(object source)
     {
-        Debug.Log(message: $"EntityStat.RemoveAllModifierFromSource (start)");
+        Debug.Log(message: $"{Time.time} EntityStat.RemoveAllModifierFromSource (start)");
 
         bool didRemove = false;
 
@@ -96,13 +96,13 @@ public class EntityStat
             }
         }
 
-        Debug.Log($"EntityStat.RemoveAllModifierFromSource, return didRemove(local var): {didRemove} (end)");
+        Debug.Log($"{Time.time} EntityStat.RemoveAllModifierFromSource, return didRemove(local var): {didRemove} (end)");
         return didRemove;
     }
 
     protected virtual int CompareModifierOrder(StatModifier statA, StatModifier statB)
     {
-        Debug.Log(message: $"EntityStat.CompareModifierOrder (start)");
+        Debug.Log(message: $"{Time.time} EntityStat.CompareModifierOrder (start)");
 
         int controlNum;
         if (statA.order < statB.order)
@@ -118,13 +118,13 @@ public class EntityStat
             controlNum = 0;
         }
 
-        Debug.Log($"EntityStat.CompareModifierOrder, return controlNum(local var): {controlNum} (end)");
+        Debug.Log($"{Time.time} EntityStat.CompareModifierOrder, return controlNum(local var): {controlNum} (end)");
         return controlNum;
     }
 
     protected virtual float CalculateFinalValue()
     {
-        Debug.Log(message: $"EntityStat.CalculateFinalValue (start)");
+        Debug.Log(message: $"{Time.time} EntityStat.CalculateFinalValue (start)");
 
         float finalValue = baseValue;
         float sumPercentAdd = 0;
@@ -161,26 +161,26 @@ public class EntityStat
             
         }
 
-        Debug.Log($"EntityStat.CalculateFinalValue, return finalValue with Math.Round(local var): {(float)Mathf.Round(finalValue)} (end)");
+        Debug.Log($"{Time.time} EntityStat.CalculateFinalValue, return finalValue with Math.Round(local var): {(float)Mathf.Round(finalValue)} (end)");
         return (float)Mathf.Round(finalValue);
     }
 
     public float GetStatValue()
     {
-        Debug.Log(message: $"EntityStat.GetStatValue (start)");
+        Debug.Log(message: $"{Time.time} EntityStat.GetStatValue (start)");
 
-        Debug.Log(message: $"EntityStat.GetStatValue, return value(local var): {value} (end)");
+        Debug.Log(message: $"{Time.time} EntityStat.GetStatValue, return value(local var): {value} (end)");
         return value;
     }
 
     
     public void SetStatValue(float inputValue)
     {
-        Debug.Log(message: $"EntityStat.SetStatValue (start)");
+        Debug.Log(message: $"{Time.time} EntityStat.SetStatValue (start)");
 
         this.value = inputValue;
 
-        Debug.Log(message: $"EntityStat.SetStatValue (end)");
+        Debug.Log(message: $"{Time.time} EntityStat.SetStatValue (end)");
     }
     
 }

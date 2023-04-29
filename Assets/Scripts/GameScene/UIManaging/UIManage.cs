@@ -28,29 +28,29 @@ public class UIManage : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log($"UIManage.Awake (start)");
+        Debug.Log($"{Time.time} UIManage.Awake (start)");
 
         // Not ideal place
         //gameData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         //popupFactory = gameObject.GetComponent<PopupFactory>();
 
-        Debug.Log($"UIManage.Awake (end)");
+        Debug.Log($"{Time.time} UIManage.Awake (end)");
     }
     
     void OnEnable()
     {
-        Debug.Log($"UIManage.OnEnable (start)");
-        Debug.Log($"UIManage.OnEnable (end)");
+        Debug.Log($"{Time.time} UIManage.OnEnable (start)");
+        Debug.Log($"{Time.time} UIManage.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"UIManage.Start (start)");
+        Debug.Log($"{Time.time} UIManage.Start (start)");
 
         gameData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         popupFactory = gameObject.GetComponent<PopupFactory>();
 
-        Debug.Log($"UIManage.Start (end)");
+        Debug.Log($"{Time.time} UIManage.Start (end)");
     }
     void Update()
     {
@@ -59,38 +59,38 @@ public class UIManage : MonoBehaviour
 
     void OnDisable()
     {
-        Debug.Log($"UIManage.OnDisable (start)");
-        Debug.Log($"UIManage.OnDisable (end)");
+        Debug.Log($"{Time.time} UIManage.OnDisable (start)");
+        Debug.Log($"{Time.time} UIManage.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"UIManage.OnDestroy (start)");
-        Debug.Log($"UIManage.OnDestroy (end)");
+        Debug.Log($"{Time.time} UIManage.OnDestroy (start)");
+        Debug.Log($"{Time.time} UIManage.OnDestroy (end)");
     }
 
     // Change to Enum if possible
     public void SpawnPopup(string size, int caseRefID)
     {
-        Debug.Log($"UIManage.SpawnPopup (start)");
+        Debug.Log($"{Time.time} UIManage.SpawnPopup (start)");
 
         currentPopup = popupFactory.CreatePopup(popupPrefabSmall, this.gameObject, caseRefID);
-        Debug.Log($"popup just spawned: {currentPopup.name}");
+        Debug.Log($"{Time.time} popup just spawned: {currentPopup.name}");
 
-        Debug.Log($"UIManage.SpawnPopup (end)");
+        Debug.Log($"{Time.time} UIManage.SpawnPopup (end)");
     }
     public void SpawnPopup(string size, int caseRefID, UnityAction buttonAction1)
     {
-        Debug.Log($"UIManage.SpawnPopup (start)");
+        Debug.Log($"{Time.time} UIManage.SpawnPopup (start)");
 
         currentPopup = popupFactory.CreatePopup(popupPrefabMedium, this.gameObject, caseRefID, buttonAction1);
-        Debug.Log($"popup just spawned: {currentPopup.name}");
+        Debug.Log($"{Time.time} popup just spawned: {currentPopup.name}");
 
-        Debug.Log($"UIManage.SpawnPopup (end)");
+        Debug.Log($"{Time.time} UIManage.SpawnPopup (end)");
     }
     public void SpawnPopup(string size, int caseRefID, UnityAction buttonAction1, UnityAction buttonAction2)
     {
-        Debug.Log($"UIManage.SpawnPopup (start)");
+        Debug.Log($"{Time.time} UIManage.SpawnPopup (start)");
 
         switch (size)
         {
@@ -102,8 +102,8 @@ public class UIManage : MonoBehaviour
                 currentPopup = popupFactory.CreatePopup(popupPrefabGameover, this.gameObject, caseRefID, buttonAction1, buttonAction2);
                 break;
         }
-        Debug.Log($"popup just spawned: {currentPopup.name}");
+        Debug.Log($"{Time.time} popup just spawned: {currentPopup.name}");
 
-        Debug.Log($"UIManage.SpawnPopup (end)");
+        Debug.Log($"{Time.time} UIManage.SpawnPopup (end)");
     }
 }

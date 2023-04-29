@@ -9,6 +9,7 @@ TagManager:
   - NormalTile
   - SpecialTile
   - Mob
+  - EffectBox
   layers:
   - Default
   - TransparentFX

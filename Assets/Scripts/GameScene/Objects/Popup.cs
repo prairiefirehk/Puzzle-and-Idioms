@@ -69,20 +69,20 @@ public class Popup : MonoBehaviour
     #region Flow
     void Awake()
     {
-        Debug.Log($"{name} Popup.Awake (start)");
-        Debug.Log($"{name} Popup.Awake (end)");
+        Debug.Log($"{Time.time} {name} Popup.Awake (start)");
+        Debug.Log($"{Time.time} {name} Popup.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"{name} Popup.OnEnable (start)");
-        Debug.Log($"{name} Popup.OnEnable (end)");
+        Debug.Log($"{Time.time} {name} Popup.OnEnable (start)");
+        Debug.Log($"{Time.time} {name} Popup.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"{name} Popup.Start (start)");
-        Debug.Log($"{name} Popup.Start (end)");
+        Debug.Log($"{Time.time} {name} Popup.Start (start)");
+        Debug.Log($"{Time.time} {name} Popup.Start (end)");
     }
 
     void Update()
@@ -92,28 +92,28 @@ public class Popup : MonoBehaviour
     
     void OnDisable()
     {
-        Debug.Log($"{name} Popup.OnDisable (start)");
-        Debug.Log($"{name} Popup.OnDisable (end)");
+        Debug.Log($"{Time.time} {name} Popup.OnDisable (start)");
+        Debug.Log($"{Time.time} {name} Popup.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"{name} Popup.OnDestroy (start)");
-        Debug.Log($"{name} Popup.OnDestroy (end)");
+        Debug.Log($"{Time.time} {name} Popup.OnDestroy (start)");
+        Debug.Log($"{Time.time} {name} Popup.OnDestroy (end)");
     }
     #endregion
 
     #region Popup functions
     public void DestroyPopup(Popup popupPrefab)
     {
-        Debug.Log($"{name} Popup.DestroyPopup (start)");
+        Debug.Log($"{Time.time} {name} Popup.DestroyPopup (start)");
 
-        Debug.Log($"Popup being destroyed: {popupPrefab.name}");
+        Debug.Log($"{Time.time} Popup being destroyed: {popupPrefab.name}");
 
         Destroy(popupPrefab.gameObject);
         popupPrefab.transform.SetParent(null);
 
-        Debug.Log($"{name} Popup.DestroyPopup (end)");
+        Debug.Log($"{Time.time} {name} Popup.DestroyPopup (end)");
     }
     #endregion
 }

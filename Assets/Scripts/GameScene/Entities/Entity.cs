@@ -74,76 +74,30 @@ public abstract class Entity: Effectable
     // *****************************************************************************************************************Replace with state!
     private bool _isDead = false;
     public bool isDead { get { return _isDead;} set { _isDead = value; } }
-
-    public object this[string propertyName]
-    {
-        get
-        {
-            var propertyInfo = this.GetType().GetProperty(propertyName);
-
-            if (propertyInfo != null)
-            {
-                return propertyInfo.GetValue(this);
-            }
-
-            var fieldInfo = this.GetType().GetField(propertyName);
-
-            if (fieldInfo != null)
-            {
-                return fieldInfo.GetValue(this);
-            }
-
-            Debug.LogError($"Property '{propertyName}' not found.");
-            throw new ArgumentException();
-        }
-        set
-        {
-            var propertyInfo = this.GetType().GetProperty(propertyName);
-
-            if (propertyInfo != null)
-            {
-                propertyInfo.SetValue(this, value);
-                return;
-            }
-
-            var fieldInfo = this.GetType().GetField(propertyName);
-
-            if (fieldInfo != null)
-            {
-                fieldInfo.SetValue(this, value);
-                return;
-            }
-
-            Debug.LogError($"Property '{propertyName}' not found.");
-            throw new ArgumentException();
-        }
-    }
-
     #endregion
-
 
     #region Flow
     void Awake()
     {
-        Debug.Log($"{name} Entities.Awake (start)");
+        Debug.Log($"{Time.time} {name} Entities.Awake (start)");
 
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
         player = GameObject.Find("Round Manager").GetComponent<Player>();
 
-        Debug.Log($"{name} Entities.Awake (end)");
+        Debug.Log($"{Time.time} {name} Entities.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"{name} Entities.OnEnable (start)");
-        Debug.Log($"{name} Entities.OnEnable (end)");
+        Debug.Log($"{Time.time} {name} Entities.OnEnable (start)");
+        Debug.Log($"{Time.time} {name} Entities.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"{name} Entities.Start (start)");
-        Debug.Log($"{name} Entities.Start (end)");
+        Debug.Log($"{Time.time} {name} Entities.Start (start)");
+        Debug.Log($"{Time.time} {name} Entities.Start (end)");
     }
 
     void Update()
@@ -153,100 +107,94 @@ public abstract class Entity: Effectable
     
     void OnDisable()
     {
-        Debug.Log($"{name} Entities.OnDisable (start)");
-        Debug.Log($"{name} Entities.OnDisable (end)");
+        Debug.Log($"{Time.time} {name} Entities.OnDisable (start)");
+        Debug.Log($"{Time.time} {name} Entities.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"{name} Entities.OnDestroy (start)");
-        Debug.Log($"{name} Entities.OnDestroy (end)");
+        Debug.Log($"{Time.time} {name} Entities.OnDestroy (start)");
+        Debug.Log($"{Time.time} {name} Entities.OnDestroy (end)");
     }
     #endregion
 
     #region Entity functions
     public virtual void Attack(Entity target, float value)
     {
-        Debug.Log($"Entities.Attack (start)");
+        Debug.Log($"{Time.time} Entities.Attack (start)");
 
         target.TakeDamage(value);
         //this.Wait(3f, () => {Debug.Log($"Wait... (Attack)");});
 
-        Debug.Log($"Entities.Attack (end)");
+        Debug.Log($"{Time.time} Entities.Attack (end)");
     }
     
     public virtual void TakeDamage(float damagePoint)
     {
-        Debug.Log($"Entities.TakeDamage (start)");
+        Debug.Log($"{Time.time} Entities.TakeDamage (start)");
 
         currentHp.value -= damagePoint;
         //this.Wait(3f, () => {Debug.Log($"Wait... (TakeDamage)");});
 
-        Debug.Log($"Entities.TakeDamage (end)");
+        Debug.Log($"{Time.time} Entities.TakeDamage (end)");
     }
 
     public virtual void Heal(float hpHealPoint)
     {
-        Debug.Log($"Entities.Heal (start)");
+        Debug.Log($"{Time.time} Entities.Heal (start)");
 
         currentHp.value += hpHealPoint;
         //this.Wait(3f, () => {Debug.Log($"Wait... (Heal)");});
 
-        Debug.Log($"Entities.Heal (end)");
+        Debug.Log($"{Time.time} Entities.Heal (end)");
     }
 
     public virtual void CheckAlive()
     {
-        Debug.Log($"Entity.CheckAlive (start)");
+        Debug.Log($"{Time.time} Entity.CheckAlive (start)");
 
         if (currentHp.value <= 0)
         {
             currentState = EntityState.State.Dead;
         }
         
-        Debug.Log($"Entity.CheckAlive (end)");
+        Debug.Log($"{Time.time} Entity.CheckAlive (end)");
     }
 
     public virtual void BeforeMoveStart()
     {
-        Debug.Log($"Entities.BeforeMoveStart (start)");
-        Debug.Log($"Entities.BeforeMoveStart (end)");
+        Debug.Log($"{Time.time} Entities.BeforeMoveStart (start)");
+        Debug.Log($"{Time.time} Entities.BeforeMoveStart (end)");
     }
 
     public virtual void MoveStart()
     {
-        Debug.Log($"Entities.MoveStart (start)");
-        Debug.Log($"Entities.MoveStart (end)");
+        Debug.Log($"{Time.time} Entities.MoveStart (start)");
+        Debug.Log($"{Time.time} Entities.MoveStart (end)");
     }
 
     public virtual void CheckAction()
     {
-        Debug.Log($"Entities.CheckAction (start)");
-        Debug.Log($"Entities.CheckAction (end)");
+        Debug.Log($"{Time.time} Entities.CheckAction (start)");
+        Debug.Log($"{Time.time} Entities.CheckAction (end)");
     }
 
     public virtual void OnAction()
     {
-        Debug.Log($"Entities.OnAction (start)");
-        Debug.Log($"Entities.OnAction (end)");
+        Debug.Log($"{Time.time} Entities.OnAction (start)");
+        Debug.Log($"{Time.time} Entities.OnAction (end)");
     }
 
     public virtual void BeforeMoveEnd()
     {
-        Debug.Log($"Entities.BeforeMoveEnd (start)");
-        Debug.Log($"Entities.BeforeMoveEnd (end)");
+        Debug.Log($"{Time.time} Entities.BeforeMoveEnd (start)");
+        Debug.Log($"{Time.time} Entities.BeforeMoveEnd (end)");
     }
 
     public virtual void MoveEnd()
     {
-        Debug.Log($"Entities.MoveEnd (start)");
-        Debug.Log($"Entities.MoveEnd (end)");
+        Debug.Log($"{Time.time} Entities.MoveEnd (start)");
+        Debug.Log($"{Time.time} Entities.MoveEnd (end)");
     }
-
-
-    #endregion
-
-    #region Effect functions
     #endregion
 }
-

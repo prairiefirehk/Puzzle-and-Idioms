@@ -5,6 +5,7 @@ ScriptsOnlyBuild:
     - Bar
     - Board
     - EffectBox
+    - EffectBoxFactory
     - ImportData
     - MenuNavigation
     - MenuScene
@@ -42,8 +43,6 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.SceneViewOpenTilePaletteHelper
     - UnityEditor.Tilemaps.TileDragAndDropManager
     - UnityEditor.Tilemaps.TilemapPrefabStageHelper
-    Unity.CollabProxy.Editor.dll:
-    - Unity.Cloud.Collaborate.UserInterface.WindowCache
     Unity.PlasticSCM.Editor.dll:
     - Unity.PlasticSCM.Editor.PlasticWindow
     Unity.Rider.Editor.dll:
@@ -107,71 +106,73 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1534}
     - Class: 114
-      Script: {instanceID: 1550}
+      Script: {instanceID: 1542}
     - Class: 114
-      Script: {instanceID: 1774}
+      Script: {instanceID: 1766}
     - Class: 114
-      Script: {instanceID: 1874}
+      Script: {instanceID: 1866}
     - Class: 114
-      Script: {instanceID: 2006}
+      Script: {instanceID: 1998}
     - Class: 114
-      Script: {instanceID: 2104}
+      Script: {instanceID: 2096}
     - Class: 114
-      Script: {instanceID: 2248}
+      Script: {instanceID: 2310}
     - Class: 114
-      Script: {instanceID: 2300}
+      Script: {instanceID: 2792}
     - Class: 114
-      Script: {instanceID: 2522}
+      Script: {instanceID: 2936}
     - Class: 114
-      Script: {instanceID: 2798}
+      Script: {instanceID: 3134}
     - Class: 114
-      Script: {instanceID: 2942}
+      Script: {instanceID: 3192}
     - Class: 114
-      Script: {instanceID: 3140}
+      Script: {instanceID: 3262}
     - Class: 114
-      Script: {instanceID: 3198}
+      Script: {instanceID: 3420}
     - Class: 114
-      Script: {instanceID: 3268}
+      Script: {instanceID: 3430}
     - Class: 114
-      Script: {instanceID: 3426}
+      Script: {instanceID: 3596}
     - Class: 114
-      Script: {instanceID: 3436}
-    - Class: 114
-      Script: {instanceID: 3600}
-    - Class: 114
-      Script: {instanceID: 3618}
-    - Class: 114
-      Script: {instanceID: 3716}
+      Script: {instanceID: 3714}
     - Class: 114
       Script: {instanceID: 3856}
     - Class: 114
       Script: {instanceID: 3924}
     - Class: 114
-      Script: {instanceID: 4044}
+      Script: {instanceID: 3956}
     - Class: 114
-      Script: {instanceID: 4246}
+      Script: {instanceID: 4048}
     - Class: 114
-      Script: {instanceID: 4732}
+      Script: {instanceID: 4256}
     - Class: 114
-      Script: {instanceID: 5044}
+      Script: {instanceID: 4740}
     - Class: 114
-      Script: {instanceID: 5232}
+      Script: {instanceID: 5242}
     - Class: 114
-      Script: {instanceID: 5274}
+      Script: {instanceID: 5592}
     - Class: 114
-      Script: {instanceID: 5582}
+      Script: {instanceID: 5718}
     - Class: 114
-      Script: {instanceID: 5708}
+      Script: {instanceID: 5892}
     - Class: 114
-      Script: {instanceID: 5880}
+      Script: {instanceID: 6132}
     - Class: 114
-      Script: {instanceID: 6120}
+      Script: {instanceID: 6482}
     - Class: 114
-      Script: {instanceID: 6468}
+      Script: {instanceID: 6504}
     - Class: 114
-      Script: {instanceID: 6490}
+      Script: {instanceID: 23034}
     - Class: 114
-      Script: {instanceID: 361026}
+      Script: {instanceID: 23036}
+    - Class: 114
+      Script: {instanceID: 23038}
+    - Class: 114
+      Script: {instanceID: 23040}
+    - Class: 114
+      Script: {instanceID: 23042}
+    - Class: 114
+      Script: {instanceID: 23044}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -218,51 +219,53 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1534}
     - Class: 114
-      Script: {instanceID: 1550}
+      Script: {instanceID: 1542}
     - Class: 114
-      Script: {instanceID: 1874}
+      Script: {instanceID: 1866}
     - Class: 114
-      Script: {instanceID: 2006}
+      Script: {instanceID: 1998}
     - Class: 114
-      Script: {instanceID: 2104}
+      Script: {instanceID: 2096}
     - Class: 114
-      Script: {instanceID: 2244}
+      Script: {instanceID: 2236}
     - Class: 114
-      Script: {instanceID: 2472}
+      Script: {instanceID: 2466}
     - Class: 114
-      Script: {instanceID: 2942}
+      Script: {instanceID: 2936}
     - Class: 114
-      Script: {instanceID: 3140}
+      Script: {instanceID: 3134}
     - Class: 114
-      Script: {instanceID: 3198}
+      Script: {instanceID: 3192}
     - Class: 114
-      Script: {instanceID: 3426}
+      Script: {instanceID: 3420}
     - Class: 114
-      Script: {instanceID: 3436}
+      Script: {instanceID: 3430}
     - Class: 114
-      Script: {instanceID: 3600}
+      Script: {instanceID: 3596}
     - Class: 114
-      Script: {instanceID: 3716}
+      Script: {instanceID: 3714}
     - Class: 114
       Script: {instanceID: 3856}
     - Class: 114
-      Script: {instanceID: 4246}
+      Script: {instanceID: 3956}
     - Class: 114
-      Script: {instanceID: 4732}
+      Script: {instanceID: 4256}
     - Class: 114
-      Script: {instanceID: 5288}
+      Script: {instanceID: 4740}
     - Class: 114
-      Script: {instanceID: 5476}
+      Script: {instanceID: 5298}
     - Class: 114
-      Script: {instanceID: 5708}
+      Script: {instanceID: 5486}
     - Class: 114
-      Script: {instanceID: 5880}
+      Script: {instanceID: 5718}
     - Class: 114
-      Script: {instanceID: 5920}
+      Script: {instanceID: 5892}
     - Class: 114
-      Script: {instanceID: 6120}
+      Script: {instanceID: 5932}
     - Class: 114
-      Script: {instanceID: 6490}
+      Script: {instanceID: 6132}
+    - Class: 114
+      Script: {instanceID: 6504}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -305,31 +308,31 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1534}
     - Class: 114
-      Script: {instanceID: 1874}
+      Script: {instanceID: 1866}
     - Class: 114
-      Script: {instanceID: 2104}
+      Script: {instanceID: 2096}
     - Class: 114
-      Script: {instanceID: 2942}
+      Script: {instanceID: 2936}
     - Class: 114
-      Script: {instanceID: 3140}
+      Script: {instanceID: 3134}
     - Class: 114
-      Script: {instanceID: 3426}
+      Script: {instanceID: 3420}
     - Class: 114
-      Script: {instanceID: 3716}
+      Script: {instanceID: 3714}
     - Class: 114
-      Script: {instanceID: 3722}
+      Script: {instanceID: 3720}
     - Class: 114
       Script: {instanceID: 3856}
     - Class: 114
-      Script: {instanceID: 5134}
+      Script: {instanceID: 5144}
     - Class: 114
-      Script: {instanceID: 5138}
+      Script: {instanceID: 5148}
     - Class: 114
-      Script: {instanceID: 5314}
+      Script: {instanceID: 5324}
     - Class: 114
-      Script: {instanceID: 5316}
+      Script: {instanceID: 5326}
     - Class: 114
-      Script: {instanceID: 5708}
+      Script: {instanceID: 5718}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -361,7 +364,7 @@ ScriptsOnlyBuild:
     className: Text
   - hash:
       serializedVersion: 2
-      Hash: 77a9ba008ff6ab5504a4727441fa4666
+      Hash: f962e7b0c2f9d05b4fe426bea7a34233
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: SpecialTile
@@ -469,7 +472,7 @@ ScriptsOnlyBuild:
     className: Toggle
   - hash:
       serializedVersion: 2
-      Hash: cd473480439f5451e28d4fe7064e6a85
+      Hash: 5d3b23cdfb444449cffeb8dab9963f26
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Tile
@@ -625,12 +628,6 @@ ScriptsOnlyBuild:
     className: StartBtn
   - hash:
       serializedVersion: 2
-      Hash: 7138e4911a1982ba2eba4f71b4aaf3db
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: SpecialTileFactory
-  - hash:
-      serializedVersion: 2
       Hash: f5e43bd4a5118c0002bcbb8339a34305
     assemblyName: Assembly-CSharp.dll
     namespaceName: UnityEngine.UI
@@ -671,12 +668,6 @@ ScriptsOnlyBuild:
     assemblyName: Assembly-CSharp.dll
     namespaceName: UnityEngine.UI.Extensions
     className: HoverTooltip
-  - hash:
-      serializedVersion: 2
-      Hash: 7138e4911a1982ba2eba4f71b4aaf3db
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: NormalTileFactory
   - hash:
       serializedVersion: 2
       Hash: 3ec335d7a1668746d68adc0b916be6bd
@@ -883,7 +874,7 @@ ScriptsOnlyBuild:
     className: TMP_TextSelector_A
   - hash:
       serializedVersion: 2
-      Hash: ba7d010f29f0a97ade279440d436f0fb
+      Hash: 9c0b54000365bd800c0c836cbb607a5e
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Player
@@ -1003,16 +994,10 @@ ScriptsOnlyBuild:
     className: UIVerticalScroller
   - hash:
       serializedVersion: 2
-      Hash: 115fc9e8b2c4bbc1ad12dd3008f572d5
+      Hash: c9bbb86421b4c4781e6197823f63368f
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Teammate
-  - hash:
-      serializedVersion: 2
-      Hash: 440299af16327398f74464d6952b98ac
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: MobFactory
   - hash:
       serializedVersion: 2
       Hash: c6f53ba986c1ed9da1c4f1bfec656901
@@ -1127,6 +1112,12 @@ ScriptsOnlyBuild:
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Board
+  - hash:
+      serializedVersion: 2
+      Hash: 8bd70c7b891fd74c0b3a6ef10bdb1274
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: EffectBox
   - hash:
       serializedVersion: 2
       Hash: 01d566f57af4edca516ee5e957c6e2fa
@@ -1447,12 +1438,6 @@ ScriptsOnlyBuild:
     className: ColorPickerTester
   - hash:
       serializedVersion: 2
-      Hash: 12f8b1f6176d070a713302addb5c3e4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: TeammateFactory
-  - hash:
-      serializedVersion: 2
       Hash: bd3f0ca738703903e759f77536ed74fd
     assemblyName: Assembly-CSharp.dll
     namespaceName: TMPro.Examples
@@ -1543,12 +1528,6 @@ ScriptsOnlyBuild:
     className: ImageWithIndependentRoundedCornersInspector
   - hash:
       serializedVersion: 2
-      Hash: f3142de28afe87a57dfbd27a27ccb481
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: PopupFactory
-  - hash:
-      serializedVersion: 2
       Hash: 3165968ba45c74472d279ba04455fccb
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
@@ -1627,7 +1606,7 @@ ScriptsOnlyBuild:
     className: SpriteSkinEntity
   - hash:
       serializedVersion: 2
-      Hash: dafd61c6e5aee9b6dfc5c69a18d6c9ed
+      Hash: 87010d45a838493fcf97963985353216
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: RoundData
@@ -1711,7 +1690,7 @@ ScriptsOnlyBuild:
     className: ResizePanel
   - hash:
       serializedVersion: 2
-      Hash: ebf426458bf1eca56dc1b77791d24518
+      Hash: fb858aa7f21527e9f0f5dd9ea24ddd87
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Mob
@@ -1807,7 +1786,7 @@ ScriptsOnlyBuild:
     className: RaycastMask
   - hash:
       serializedVersion: 2
-      Hash: 5546fa1f3639a3bde283d3369b040f54
+      Hash: 59eec61135cdbd7f5cdebcccec00e68b
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: NormalTile
@@ -1969,10 +1948,40 @@ ScriptsOnlyBuild:
     className: ScrollSnap
   - hash:
       serializedVersion: 2
-      Hash: e6477b5595d4e4ca84eda5eb01b08ce7
+      Hash: f3142de28afe87a57dfbd27a27ccb481
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: EffectBox
+    className: PopupFactory
+  - hash:
+      serializedVersion: 2
+      Hash: 12f8b1f6176d070a713302addb5c3e4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: TeammateFactory
+  - hash:
+      serializedVersion: 2
+      Hash: 440299af16327398f74464d6952b98ac
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MobFactory
+  - hash:
+      serializedVersion: 2
+      Hash: 7138e4911a1982ba2eba4f71b4aaf3db
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: SpecialTileFactory
+  - hash:
+      serializedVersion: 2
+      Hash: 7138e4911a1982ba2eba4f71b4aaf3db
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: NormalTileFactory
+  - hash:
+      serializedVersion: 2
+      Hash: fd9379eb04d5fa12a14d64061e9cca92
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: EffectBoxFactory
   platform: 13
   scenePathNames:
   - Assets/Scenes/Logo scene.unity

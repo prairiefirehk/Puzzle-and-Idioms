@@ -113,7 +113,7 @@ public class StatusEffect
             this.affectedStatsDirectChangeValue.Add(affectedStatsDirectChangeValue[i]);
         }
 
-        this.effectRemainingTurns = effectTurns + 1;
+        this.effectRemainingTurns = effectTurns;
     }
 
     // For creating status effect that affecting stats by both ways
@@ -163,13 +163,13 @@ public class StatusEffect
     // Called only once
     public virtual void OnInflict()
     {
-        Debug.Log($"StatusEffect.OnInflict (start)");
+        Debug.Log($"{Time.time} StatusEffect.OnInflict (start)");
 
         // Check if there is the same status effect from the target
         if (HasSameStatusEffect())
         {
-            // If there is the same status effect, just remove it
-            Debug.Log($"Found same status effect!");
+            // If there is the same status effect, just remove it**************************************B(5 turns, [1])A(1 turn, [0]) -> + A(5 turns) -> A(5 turns, [1]B(4 turns, [0]))
+            Debug.Log($"{Time.time} Found same status effect!");
             effectTarget.currentStatusEffects[GetOrderOfStatusEffect()].OnRemove();
         }
 
@@ -182,7 +182,7 @@ public class StatusEffect
 
         // Add the new status effect into the list
         effectTarget.currentStatusEffects.Add(this);
-        effectTarget.HasStatusEffect = true;
+        effectTarget.hasStatusEffect = true;
         
         // Apply new status effect flag to the target
         switch (effectName)
@@ -245,6 +245,10 @@ public class StatusEffect
             {
                 switch (affectedStatsByDirectChange[i])
                 {
+                    case "currentHp":
+                        effectTarget.currentHp.value = affectedStatsDirectChangeValue[i];
+                        break;
+
                     case "currentMaxHp":
                         effectTarget.currentMaxHp.value = affectedStatsDirectChangeValue[i];
                         break;
@@ -287,8 +291,7 @@ public class StatusEffect
         //effectTarget.TakeDamage(instantValue);
 
         // Load the effect box icon and CD text in the arena
-        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
-
+        /*
         if (effectTarget == roundData.player)
         {
             effectBox = roundData.playerEffectBoxes.transform.GetChild(GetOrderOfStatusEffect()).GetComponent<EffectBox>();
@@ -303,43 +306,44 @@ public class StatusEffect
         {
             Debug.Log($"Dude wtf is effectTarget?"); 
         }
+        */
+        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
+        effectBox = roundData.effectBoxFactory.CreateEffectBox(effectTarget, this, GetOrderOfStatusEffect());
 
-        Debug.Log($"StatusEffect.OnInflict (end)"); 
+        Debug.Log($"{Time.time} StatusEffect.OnInflict (end)"); 
     }
 
     // On every new turn
     public virtual void OnTurnStart()
     {
-        Debug.Log($"StatusEffect.OnTurnStart (start)"); 
+        Debug.Log($"{Time.time} StatusEffect.OnTurnStart (start)"); 
 
         effectRemainingTurns -= 1;
 
         // Apply the sustain damage to the target
         effectTarget.TakeDamage(sustainValue);
 
-        // Update the CD text in the effect box/arena
-        if (effectTarget.HasStatusEffect)
-        {
-            UpdateEffectBox();
-            effectBox.UpdateEffectBoxCDText();
-        }
-
-        Debug.Log($"StatusEffect.OnTurnStart (end)");
+        Debug.Log($"{Time.time} StatusEffect.OnTurnStart (end)");
     }
 
     // On every turn ending
     public virtual void OnTurnEnd()
     {
-        Debug.Log($"StatusEffect.OnTurnEnd (start)"); 
+        Debug.Log($"{Time.time} StatusEffect.OnTurnEnd (start)"); 
         
         // Update the CD text in the effect box/arena
-        if (effectTarget.HasStatusEffect)
+        if (effectTarget.hasStatusEffect)
         {
-            UpdateEffectBox();
-            effectBox.UpdateEffectBoxCDText();
+            //effectBox.UpdateEffectBox();
+        }
+
+        if (effectRemainingTurns <= 0)
+        {
+            OnRemove();
         }
         
-        Debug.Log($"StatusEffect.OnTurnEnd (end)"); 
+        
+        Debug.Log($"{Time.time} StatusEffect.OnTurnEnd (end)"); 
     }
 
     // On removing itself
@@ -348,10 +352,7 @@ public class StatusEffect
         Debug.Log($"StatusEffect.OnRemove (start)"); 
 
         // Remove icon and CD text in effect box/arena
-        effectBox.ResetEffectBoxItem();
-        //effectBox = null;
-
-        //
+        effectBox.DestroyEffectBox();
 
         // Remove the statModifier from the target
         if (type == "affectWithModifiers" || type == "affectByBoth")
@@ -394,6 +395,13 @@ public class StatusEffect
             {
                 switch (affectedStatsByDirectChange[i])
                 {
+                    case "currentHp":
+                        if (effectTarget.currentHp.value > effectTarget.maxHp.value)
+                        {
+                            effectTarget.currentHp.value = effectTarget.maxHp.value;
+                        }
+                        break;
+
                     case "currentMaxHp":
                         effectTarget.currentMaxHp.value = effectTarget.maxHp.value;
                         break;
@@ -451,39 +459,40 @@ public class StatusEffect
             // And more...
         }
 
+        //effectTarget.currentStatusEffects.Remove(this);
         effectTarget.currentStatusEffects.Remove(this);
         if (effectTarget.currentStatusEffects.Count == 0)
         {
-            effectTarget.HasStatusEffect = false;
+            effectTarget.hasStatusEffect = false;
         }
 
-        Debug.Log($"StatusEffect.OnRemove (end)"); 
+        Debug.Log($"{Time.time} StatusEffect.OnRemove (end)"); 
     }
 
     public bool HasSameStatusEffect()
     {
-        Debug.Log($"StatusEffect.HasSameStatusEffect (start)"); 
+        Debug.Log($"{Time.time} StatusEffect.HasSameStatusEffect (start)"); 
 
         bool hasSameEffect = false;
 
-        for (int i = (effectTarget.currentStatusEffects.Count - 1); i >= 0; i--)
+        foreach (StatusEffect statusEffect in effectTarget.currentStatusEffects)
         {
-            if (effectTarget.currentStatusEffects[i].effectName == this.effectName)
+            if (statusEffect.effectName == this.effectName)
             {
                 hasSameEffect = true;
             }
         }
-
-        Debug.Log($"StatusEffect.HasSameStatusEffect, return hasSameEffect(local val): {hasSameEffect} (end)"); 
+        
+        Debug.Log($"{Time.time} StatusEffect.HasSameStatusEffect, return hasSameEffect(local val): {hasSameEffect} (end)"); 
         return hasSameEffect;
     }
 
     public int GetOrderOfStatusEffect()
     {
-        Debug.Log($"StatusEffect.GetOrderOfStatusEffect (start)"); 
+        Debug.Log($"{Time.time} StatusEffect.GetOrderOfStatusEffect (start)"); 
 
         int orderOfStatusEffect = -1;
-        for (int i = (effectTarget.currentStatusEffects.Count - 1); i >= 0; i--)
+        for (int i = 0; i <= (effectTarget.currentStatusEffects.Count - 1); i++)
         {
             if (effectTarget.currentStatusEffects[i].effectName == this.effectName)
             {
@@ -491,39 +500,7 @@ public class StatusEffect
             }
         }
 
-        Debug.Log($"StatusEffect.GetOrderOfStatusEffect, return orderOfStatusEffect(local val): {orderOfStatusEffect} (end)"); 
+        Debug.Log($"{Time.time} StatusEffect.GetOrderOfStatusEffect, return orderOfStatusEffect(local val): {orderOfStatusEffect} (end)"); 
         return orderOfStatusEffect;
-    }
-
-    public void UpdateEffectBox()
-    {
-        Debug.Log($"StatusEffect.UpdateEffectBox (end)"); 
-
-        int orderOfStatusEffect = GetOrderOfStatusEffect();
-
-        if (effectBox.transform.GetSiblingIndex() != orderOfStatusEffect)
-        {
-            effectBox.ResetEffectBoxItem();
-        }
-
-        if (effectRemainingTurns <= 0)
-        {
-            OnRemove();
-        }
-        else 
-        {
-            if (effectTarget == roundData.player)
-            {
-                effectBox = roundData.playerEffectBoxes.transform.GetChild(GetOrderOfStatusEffect()).GetComponent<EffectBox>();
-            }
-            else if (effectTarget == roundData.currentMob)
-            {
-                effectBox = roundData.mobEffectBoxes.transform.GetChild(GetOrderOfStatusEffect()).GetComponent<EffectBox>();
-            }
-
-            effectBox.InitializeEffectBox(this);
-        }
-
-        Debug.Log($"StatusEffect.UpdateEffectBox (end)"); 
     }
 }

@@ -10,22 +10,22 @@ public class MenuNavigation : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log($"MenuNavigation.Awake (start)");
+        Debug.Log($"{Time.time} MenuNavigation.Awake (start)");
 
-        Debug.Log($"MenuNavigation.Awake (end)");
+        Debug.Log($"{Time.time} MenuNavigation.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"MenuNavigation.OnEnable (start)");
+        Debug.Log($"{Time.time} MenuNavigation.OnEnable (start)");
 
-        Debug.Log($"MenuNavigation.OnEnable (end)");
+        Debug.Log($"{Time.time} MenuNavigation.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"MenuNavigation.Start (start)");
-        Debug.Log($"MenuNavigation.Start (end)");
+        Debug.Log($"{Time.time} MenuNavigation.Start (start)");
+        Debug.Log($"{Time.time} MenuNavigation.Start (end)");
     }
     void Update()
     {
@@ -34,19 +34,19 @@ public class MenuNavigation : MonoBehaviour
 
     void OnDisable()
     {
-        Debug.Log($"MenuNavigation.OnDisable (start)");
-        Debug.Log($"MenuNavigation.OnDisable (end)");
+        Debug.Log($"{Time.time} MenuNavigation.OnDisable (start)");
+        Debug.Log($"{Time.time} MenuNavigation.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"MenuNavigation.OnDestroy (start)");
-        Debug.Log($"MenuNavigation.OnDestroy (end)");
+        Debug.Log($"{Time.time} MenuNavigation.OnDestroy (start)");
+        Debug.Log($"{Time.time} MenuNavigation.OnDestroy (end)");
     }
     
     public void navigationPanelChange(GameObject activePanel)
     {
-        Debug.Log($"MenuNavigation.navigationPanelChange (start)");
+        Debug.Log($"{Time.time} MenuNavigation.navigationPanelChange (start)");
 
         foreach (GameObject panel in panels)
         {
@@ -54,12 +54,12 @@ public class MenuNavigation : MonoBehaviour
         }
         activePanel.SetActive(true);
 
-        Debug.Log($"MenuNavigation.navigationPanelChange (end)");
+        Debug.Log($"{Time.time} MenuNavigation.navigationPanelChange (end)");
     }
 
     public void navigationBarItemChange(Button buttonOnActive)
     {
-        Debug.Log($"MenuNavigation.navigationBarItemChange (start)");
+        Debug.Log($"{Time.time} MenuNavigation.navigationBarItemChange (start)");
 
         foreach (Button button in buttons)
         {
@@ -73,6 +73,6 @@ public class MenuNavigation : MonoBehaviour
         buttonOnActive.transform.GetChild(2).gameObject.SetActive(true);
         buttonOnActive.transform.GetChild(3).gameObject.SetActive(false);
 
-        Debug.Log($"MenuNavigation.navigationBarItemChange (end)");
+        Debug.Log($"{Time.time} MenuNavigation.navigationBarItemChange (end)");
     }
 }

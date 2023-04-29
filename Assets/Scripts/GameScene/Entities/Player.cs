@@ -11,7 +11,7 @@ public class Player : Entity
     #endregion
 
     #region Teammates references
-    public List<Teammate> team;
+    [SerializeField] public Dictionary<TeammateType, Teammate> teammates = new Dictionary<TeammateType, Teammate>();
     public Teammate teammateLeader;
     public Teammate teammateTwo;
     public Teammate teammateThree;
@@ -33,13 +33,12 @@ public class Player : Entity
     #endregion
 
     #region Events
-    //public static event Action<GameState.State> OnDefeatedEvent;
     #endregion
 
     #region Flow
     void Awake()
     {
-        Debug.Log($"Player.Awake (start)");
+        Debug.Log($"{Time.time} Player.Awake (start)");
 
         // Not ideal place
         board = GameObject.Find("Board").GetComponent<Board>();
@@ -47,55 +46,31 @@ public class Player : Entity
 
         // Temp solution before creating/transfering + importing player data
 
-        Debug.Log($"Player.Awake (end)");
+        Debug.Log($"{Time.time} Player.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"Player.OnEnable (start)");
-        Debug.Log($"Player.OnEnable (end)");
+        Debug.Log($"{Time.time} Player.OnEnable (start)");
+        Debug.Log($"{Time.time} Player.OnEnable (end)");
     }
 
     void Start()
     {
-        Debug.Log($"Player.Start (start)");
+        Debug.Log($"{Time.time} Player.Start (start)");
 
         // Move here will cause error
         //roundData = gameObject.GetComponent<RoundData>();
         //board = GameObject.Find("Board").GetComponent<Board>();
 
-        Debug.Log($"Player.Start (end)");
+        Debug.Log($"{Time.time} Player.Start (end)");
     }
 
     void Update()
     {
-        //Debug.Log($"$player's currentHp = {currentHp.value}");
-        //Debug.Log($"$player's maxHp = {maxHp.value}");
-
-        /*
-        if (currentHp.value < 0)//(currentHp.GetStatValue() < 0)
-        {
-            //currentHp.SetStatValue(0f);
-            currentHp.value = 0f;
-        }
-
-        if (currentHp.value > maxHp.value && (currentHp.value != maxHp.value))//(currentHp.GetStatValue() > maxHp.GetStatValue() && (currentHp.GetStatValue() != maxHp.GetStatValue()))
-        {
-            //currentHp.SetStatValue(maxHp.GetStatValue());
-            currentHp.value = maxHp.value;
-        }
-        
-        if (!isDead)
-        {
-            if (currentHp.value <= 0)//(currentHp.GetStatValue() <= 0)
-            {
-                Debug.Log("player just dead!");
-                // Trigger here to send msg to event subscribers that player is defeated
-                OnDefeatedEvent?.Invoke(GameState.State.PlayerLose);
-                isDead = true;
-            }
-        }
-        */
+        Debug.Log($"{Time.time} $player's maxHp = {maxHp.value}");
+        Debug.Log($"{Time.time} $player's currentHp = {currentHp.value}");
+        Debug.Log($"{Time.time} $player's currentMaxHp = {currentMaxHp.value}");
 
         if (currentState == EntityState.State.Alive)
         {
@@ -105,7 +80,7 @@ public class Player : Entity
                 // For visual
                 currentHp.value = 0f;
 
-                Debug.Log($"{name} just dead!");
+                Debug.Log($"{Time.time} {name} just dead!");
                 // Trigger here to send msg to event subscribers that mob is defeated
                 currentState = EntityState.State.Dead;
                 //OnDefeatedEvent?.Invoke();
@@ -113,10 +88,12 @@ public class Player : Entity
                 //break;
             }
 
+            
             if (currentHp.value > currentMaxHp.value && (currentHp.value != currentMaxHp.value))
             {
                 currentHp.value = currentMaxHp.value;
             }
+            
         }
 
         
@@ -130,14 +107,14 @@ public class Player : Entity
 
     void OnDisable()
     {
-        Debug.Log($"Player.OnDisable (start)");
-        Debug.Log($"Player.OnDisable (end)");
+        Debug.Log($"{Time.time} Player.OnDisable (start)");
+        Debug.Log($"{Time.time} Player.OnDisable (end)");
     }
 
     void OnDestroy()
     {
-        Debug.Log($"Player.OnDestroy (start)");
-        Debug.Log($"Player.OnDestroy (end)");
+        Debug.Log($"{Time.time} Player.OnDestroy (start)");
+        Debug.Log($"{Time.time} Player.OnDestroy (end)");
     }
     #endregion
 
@@ -146,50 +123,69 @@ public class Player : Entity
     // Temp solution before creating/transfering + importing player data
     public void InitPlayer()
     {
-        Debug.Log($"Player.InitPlayer (start)");
+        Debug.Log($"{Time.time} Player.InitPlayer (start)");
+
+        // Temp solution, I know it's shit
+        teammateLeader = roundData.SpawnTeammates(0, 0);
+        teammates.Add(TeammateType.TeammateLeader, teammateLeader);
+
+        teammateTwo = roundData.SpawnTeammates(1, 1);
+        teammates.Add(TeammateType.TeammateTwo, teammateTwo);
+
+        teammateThree = roundData.SpawnTeammates(2, 2);
+        teammates.Add(TeammateType.TeammateThree, teammateThree);
+
+        teammateFour = teammateTwo = roundData.SpawnTeammates(3, 3);
+        teammates.Add(TeammateType.TeammateFour, teammateFour);
+
+        teammateFriend = roundData.SpawnTeammates(4, 4);
+        teammates.Add(TeammateType.TeammateFriend, teammateFriend);
 
         maxHp = new EntityStat(GetPlayerMaxHp());
         currentMaxHp = new EntityStat(maxHp.value);
         currentHp = new EntityStat(currentMaxHp.value);
+        attackPoint = new EntityStat(0f);
         defencePoint = new EntityStat(125f);
         dexterityPoint = new EntityStat(10f);
+
+        currentAttackPoint = new EntityStat(0f);
         currentDefencePoint = new EntityStat(defencePoint.value);
         currentDexterityPoint = new EntityStat(dexterityPoint.value);
 
         currentState = EntityState.State.Alive;
 
-        Debug.Log($"Player.InitPlayer (end)");
+        Debug.Log($"{Time.time} Player.InitPlayer (end)");
     }
     public override void BeforeMoveStart()
     {
-        Debug.Log($"Player.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
+        Debug.Log($"{Time.time} Player.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
 
-        roundData.currentTurnState = TurnState.State.BeforeMobMoveStart;
+        roundData.currentTurnState = TurnState.State.BeforePlayerMoveStart;
         CheckAlive();
         //CheckStatusEffects();
 
         if ((!isStun) && (currentState == EntityState.State.Alive) && (roundData.currentMob.currentState == EntityState.State.Alive))
         {
-            this.Wait(0f, MoveStart);
+            this.Wait(0.5f, MoveStart);
         }
         else
         {
-            this.Wait(0f,MoveEnd);
+            this.Wait(0.5f,MoveEnd);
         }
 
-        Debug.Log($"Player.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
+        Debug.Log($"{Time.time} Player.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
     }
 
     public override void MoveStart()
     {
-        Debug.Log($"Player.MoveStart (override Entities.MoveStart) (start)");
+        Debug.Log($"{Time.time} Player.MoveStart (override Entities.MoveStart) (start)");
 
         roundData.currentTurnState = TurnState.State.PlayerMoveStart;
 
         // Do some visual shit/popup/conversation
         board.EnableBoard();
 
-        Debug.Log($"Player.MoveStart (override Entities.MoveStart) (end)");
+        Debug.Log($"{Time.time} Player.MoveStart (override Entities.MoveStart) (end)");
     }
 
     public override void CheckAction()
@@ -216,26 +212,26 @@ public class Player : Entity
 
     public override void BeforeMoveEnd()
     {
-        Debug.Log($"Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
+        Debug.Log($"{Time.time} Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
 
         roundData.currentTurnState = TurnState.State.BeforePlayerMoveEnd;
 
         // Do some visual shit/popup/conversation
         board.DisableBoard();
 
-        this.Wait(0.5f, MoveEnd);
+        this.Wait(0.5f, MoveEnd); //0.5
 
-        Debug.Log($"Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
+        Debug.Log($"{Time.time} Player.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
     }
 
     public override void MoveEnd()
     {
-        Debug.Log($"Player.MoveEnd (override Entities.MoveEnd) (start)");
+        Debug.Log($"{Time.time} Player.MoveEnd (override Entities.MoveEnd) (start)");
 
         roundData.currentTurnState = TurnState.State.PlayerMoveEnd;
         
 
-        if (HasStatusEffect) 
+        if (hasStatusEffect) 
         {
             for (int i = 0; i < currentStatusEffects.Count; i++)
             {
@@ -249,47 +245,45 @@ public class Player : Entity
         moveEnded = true;
         if (roundData.currentMob.moveEnded)
         {
-            this.Wait(0f, roundData.TurnEnd);
+            this.Wait(0.5f, roundData.TurnEnd);
         }
         else
         {
-            this.Wait(0f, roundData.currentMob.BeforeMoveStart);
+            this.Wait(0.5f, roundData.currentMob.BeforeMoveStart);
         }
 
-        Debug.Log($"Player.MoveEnd (override Entities.MoveEnd) (end)");
+        Debug.Log($"{Time.time} Player.MoveEnd (override Entities.MoveEnd) (end)");
     }
 
     // Get the player max hp
     public float GetPlayerMaxHp()
     {
-        Debug.Log($"Player.GetPlayerMaxHp (start)");
+        Debug.Log($"{Time.time} Player.GetPlayerMaxHp (start)");
 
         float playerMaxHp = 0;
         //Debug.Log($"{roundData.roundTeammates == null}");
-        for (int i = 0; i < roundData.roundTeammates.Count; i++)
+        foreach (KeyValuePair<TeammateType, Teammate> teammate in teammates)
         {
-            //playerMaxHp += roundData.roundTeammates[i].maxHp.GetStatValue();
-            playerMaxHp += roundData.roundTeammates[i].currentMaxHp.value;
-            //Debug.Log(playerMaxHp);
+            playerMaxHp += teammate.Value.currentMaxHp.value;
         }
 
-        Debug.Log($"Player.GetPlayerMaxHp, return playerMaxHp(local var): {playerMaxHp} (end)");
+        Debug.Log($"{Time.time} Player.GetPlayerMaxHp, return playerMaxHp(local var): {playerMaxHp} (end)");
         return playerMaxHp;
     }
 
     // Get the tile which is dragging
     public void SetDragTile(Tile dragTile)
     {
-        Debug.Log($"Player.SetDragTile (start)");
+        Debug.Log($"{Time.time} Player.SetDragTile (start)");
 
         tile = dragTile;
 
-        Debug.Log($"Player.SetDragTile (end)");
+        Debug.Log($"{Time.time} Player.SetDragTile (end)");
     }
 
     public void Answer(Teammate teammate)
     {
-        Debug.Log($"Player.Answer (start)");
+        Debug.Log($"{Time.time} Player.Answer (start)");
 
         if (tile.isAnswer == true)
         {
@@ -300,12 +294,12 @@ public class Player : Entity
             teammate.AnswerWrongly(tile);
         }
 
-        Debug.Log($"Player.Answer (end)");
+        Debug.Log($"{Time.time} Player.Answer (end)");
     }
 
     public override void Attack(Entity target, float value)
     {
-        Debug.Log($"Player.Attack (override Entities.Attack) (start)");
+        Debug.Log($"{Time.time} Player.Attack (override Entities.Attack) (start)");
 
         // Temp testing solution
         StatusEffect burn = new StatusEffect(StatusEffectName.Burning, 21, 1, 200, 100,
@@ -341,7 +335,7 @@ public class Player : Entity
                 break;
         }
 
-        Debug.Log($"Player.Attack (override Entities.Attack) (end)");
+        Debug.Log($"{Time.time} Player.Attack (override Entities.Attack) (end)");
     }
     #endregion
 }

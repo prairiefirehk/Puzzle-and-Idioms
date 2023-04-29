@@ -31,21 +31,21 @@ public class Bar : MonoBehaviour
     #region Flow
     void Awake()
     {
-        Debug.Log($"{name} Bar.Awake (start)");
-        Debug.Log($"{name} Bar.Awake (end)");
+        Debug.Log($"{Time.time} {name} Bar.Awake (start)");
+        Debug.Log($"{Time.time} {name} Bar.Awake (end)");
     }
 
 
     void OnEnable()
     {
-        Debug.Log($"{name} Bar.OnEnable (start)");
-        Debug.Log($"{name} Bar.OnEnable (end)");
+        Debug.Log($"{Time.time} {name} Bar.OnEnable (start)");
+        Debug.Log($"{Time.time} {name} Bar.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"{name} Bar.Start (start)");
-        Debug.Log($"{name} Bar.Start (end)");
+        Debug.Log($"{Time.time} {name} Bar.Start (start)");
+        Debug.Log($"{Time.time} {name} Bar.Start (end)");
     }
     void Update()
     {
@@ -61,21 +61,21 @@ public class Bar : MonoBehaviour
 
     void OnDisable()
     {
-        Debug.Log($"{name} Bar.OnDisable (start)");
-        Debug.Log($"{name} Bar.OnDisable (end)");
+        Debug.Log($"{Time.time} {name} Bar.OnDisable (start)");
+        Debug.Log($"{Time.time} {name} Bar.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"{name} Bar.OnDestroy (start)");
-        Debug.Log($"{name} Bar.OnDestroy (end)");
+        Debug.Log($"{Time.time} {name} Bar.OnDestroy (start)");
+        Debug.Log($"{Time.time} {name} Bar.OnDestroy (end)");
     }
     #endregion
 
     #region Bar functions
     public void InitializeBar(Bar barParent, float barValue, float barMaxValue)
     {
-        Debug.Log($"{name} Bar.InitializeBar (start)");
+        Debug.Log($"{Time.time} {name} Bar.InitializeBar (start)");
 
         bars = barParent;
         bar = bars.transform.GetChild(0).GetComponent<Image>();
@@ -96,13 +96,13 @@ public class Bar : MonoBehaviour
         // Default 100%
         valueBarWidth = barWidth;
 
-        Debug.Log($"{name} Bar.InitializeBar (end)");
+        Debug.Log($"{Time.time} {name} Bar.InitializeBar (end)");
     }
     public void ResizeBarValue(float newValue, float maxValue, int decimalplace)
     {
-        //Debug.Log($"{name} Bar.ResizeBarValue (start)");
+        Debug.Log($"{Time.time} {name} Bar.ResizeBarValue (start)");
 
-        //Debug.Log($"{name} old value = {value} and newValue is {newValue}");
+        //Debug.Log($"{Time.time} {name} old value = {value} and newValue is {newValue}");
         lerpSpeed = 3f * Time.deltaTime;
         value = Mathf.Lerp(value, newValue, lerpSpeed);
 
@@ -114,7 +114,7 @@ public class Bar : MonoBehaviour
         // Processing bar text
         barValueText.text = value.ToString("F" + decimalplace) + "/" + maxValue;
 
-        //Debug.Log($"{name} Bar.ResizeBarValue (end)");
+        Debug.Log($"{Time.time} {name} Bar.ResizeBarValue (end)");
     }
     #endregion
 }

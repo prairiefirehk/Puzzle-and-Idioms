@@ -7,9 +7,11 @@ using TMPro;
 
 public class EffectBox : MonoBehaviour
 {
+    #region Scripts
+    public RoundData roundData;
+    #endregion
     #region Game object reference
-    public EffectBox effectBox;
-    public Image effectBoxBackground;
+    //public GameObject effectPrefab;
     public Image effectIcon;
     public TMP_Text effectCDText;
     #endregion
@@ -18,90 +20,74 @@ public class EffectBox : MonoBehaviour
     public string iconPicName;
     public int effectCD;
     public Vector2 effectBoxPosition;
+    public GameObject effectBoxCellsParent;
     public StatusEffect statusEffect;
-    public EffectBoxState.State currentState = EffectBoxState.State.Idle;
+    public EffectBoxState.State currentState = EffectBoxState.State.Initalizing;
 
     #endregion
 
     #region Flow
     void Awake()
     {
-        Debug.Log($"{name} EffectBox.Awake (start)");
+        Debug.Log($"{Time.time} {name} EffectBox.Awake (start)");
 
-        effectBox = this.gameObject.GetComponent<EffectBox>();
-        effectBoxBackground = effectBox.transform.GetChild(0).GetComponent<Image>();
-        effectIcon = effectBox.transform.GetChild(1).GetComponent<Image>();
-        effectCDText = effectBox.transform.GetChild(2).GetComponent<TMP_Text>();
+        // Not ideal place
+        roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
 
-        Debug.Log($"{name} EffectBox.Awake (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.Awake (end)");
     }
 
 
     void OnEnable()
     {
-        Debug.Log($"{name} EffectBox.OnEnable (start)");
-        Debug.Log($"{name} EffectBox.OnEnable (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.OnEnable (start)");
+        Debug.Log($"{Time.time} {name} EffectBox.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"{name} EffectBox.Start (start)");
-        Debug.Log($"{name} EffectBox.Start (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.Start (start)");
+        Debug.Log($"{Time.time} {name} EffectBox.Start (end)");
     }
     void Update()
     {
-
+        UpdateEffectBox();
     }
 
     void OnDisable()
     {
-        Debug.Log($"{name} EffectBox.OnDisable (start)");
-        Debug.Log($"{name} EffectBox.OnDisable (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.OnDisable (start)");
+        Debug.Log($"{Time.time} {name} EffectBox.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"{name} EffectBox.OnDestroy (start)");
-        Debug.Log($"{name} EffectBox.OnDestroy (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.OnDestroy (start)");
+        Debug.Log($"{Time.time} {name} EffectBox.OnDestroy (end)");
     }
     #endregion
 
     #region Effect box functions
-    public void InitializeEffectBox(StatusEffect statusEffect)
-    {
-        Debug.Log($"{name} EffectBox.InitializeEffectBox (start)");
 
-        iconPicName = GetEffectBoxIconName(statusEffect.effectName);
-        Sprite effectBoxIconOrgImage = Resources.Load<Sprite>($"Icons/{iconPicName}");
-        effectIcon.sprite = effectBoxIconOrgImage;
-        effectIcon.gameObject.SetActive(true);
+    public void UpdateEffectBox()
+    {
+        Debug.Log($"{Time.time} {name} EffectBox.UpdateEffectBoxCDText (start)");
 
         effectCD = statusEffect.effectRemainingTurns;
         effectCDText.text = effectCD.ToString();
-        effectCDText.gameObject.SetActive(true);
 
-        this.statusEffect = statusEffect;
-        currentState = EffectBoxState.State.Occupied;
-
-        Debug.Log($"{name} EffectBox.InitializeEffectBox (end)");
-    }
-
-    public void UpdateEffectBoxCDText()
-    {
-        Debug.Log($"{name} EffectBox.UpdateEffectBoxCDText (start)");
-
-        if (currentState == EffectBoxState.State.Occupied)
+        if (effectCD != 0)
         {
-            effectCD = statusEffect.effectRemainingTurns;
-            effectCDText.text = effectCD.ToString();
+            transform.position = effectBoxCellsParent.transform.GetChild(statusEffect.GetOrderOfStatusEffect()).position;
+            effectBoxPosition = transform.position;
         }
 
-        Debug.Log($"{name} EffectBox.UpdateEffectBoxCDText (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.UpdateEffectBoxCDText (end)");
     }
 
     public string GetEffectBoxIconName(StatusEffectName name)
     {
-        Debug.Log($"{name} EffectBox.GetEffectBoxIconName (start)");
+        Debug.Log($"{Time.time} {name} EffectBox.GetEffectBoxIconName (start)");
 
         switch(name)
         {
@@ -119,29 +105,21 @@ public class EffectBox : MonoBehaviour
                     
             default:
                 iconPicName = "Burn_effect_icon_red_60_hq";
-                Debug.Log("Hey dude can't load effect box icon's name!");
+                //Debug.Log($"{Time.time} Hey dude can't load effect box icon's name!");
                 break;
         }
-        Debug.Log($"{name} EffectBox.GetEffectBoxIconName, return picName(local var): {iconPicName} (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.GetEffectBoxIconName, return picName(local var): {iconPicName} (end)");
         return iconPicName;
     }
 
-    public void ResetEffectBoxItem()
+    public void DestroyEffectBox()
     {
-        Debug.Log($"{name} EffectBox.ResetEffectBoxItem (start)");
+        Debug.Log($"{Time.time} {name} EffectBox.ResetEffectBoxItem (start)");
 
-        statusEffect = null;
+        Destroy(gameObject);
+        gameObject.transform.SetParent(null);
 
-        iconPicName = "";
-        effectIcon.sprite = null;
-        effectIcon.gameObject.SetActive(value: false);
-
-        effectCD = -1;
-        effectCDText.gameObject.SetActive(false);
-
-        currentState = EffectBoxState.State.Idle;
-
-        Debug.Log($"{name} EffectBox.ResetEffectBoxItem (end)");
+        Debug.Log($"{Time.time} {name} EffectBox.ResetEffectBoxItem (end)");
     }
     #endregion
 }

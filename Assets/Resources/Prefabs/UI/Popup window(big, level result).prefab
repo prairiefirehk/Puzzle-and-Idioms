@@ -3679,7 +3679,7 @@ MonoBehaviour:
   toolGainedText: {fileID: 6185547228197139553}
   expIcon: {fileID: 5221195849472015373}
   expGainedTextBox: {fileID: 4075683055212324938}
-  expGainedText: {fileID: 6185547228197139553}
+  expGainedText: {fileID: 7256808601996655804}
   coinIcon: {fileID: 2737552146777386240}
   coinGainedTextBox: {fileID: 2418057091693879389}
   coinGainedText: {fileID: 6396975854464231362}

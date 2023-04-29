@@ -11,7 +11,7 @@ public class MenuScene : MonoBehaviour
     public Button homeButton;
     void Awake()
     {
-        Debug.Log($"MenuScene.Awake (start)");
+        Debug.Log($"{Time.time} MenuScene.Awake (start)");
 
         foreach (GameObject panel in panels)
         {
@@ -32,19 +32,19 @@ public class MenuScene : MonoBehaviour
         homeButton.transform.GetChild(2).gameObject.SetActive(true);
         homeButton.transform.GetChild(3).gameObject.SetActive(false);
 
-        Debug.Log($"MenuScene.Awake (end)");
+        Debug.Log($"{Time.time} MenuScene.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"MenuScene.OnEnable (start)");
-        Debug.Log($"MenuScene.OnEnable (end)");
+        Debug.Log($"{Time.time} MenuScene.OnEnable (start)");
+        Debug.Log($"{Time.time} MenuScene.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"MenuScene.Start (start)");
-        Debug.Log($"MenuScene.Start (end)");
+        Debug.Log($"{Time.time} MenuScene.Start (start)");
+        Debug.Log($"{Time.time} MenuScene.Start (end)");
     }
     void Update()
     {
@@ -53,14 +53,14 @@ public class MenuScene : MonoBehaviour
 
     void OnDisable()
     {
-        Debug.Log($"MenuScene.OnDisable (start)");
-        Debug.Log($"MenuScene.OnDisable (end)");
+        Debug.Log($"{Time.time} MenuScene.OnDisable (start)");
+        Debug.Log($"{Time.time} MenuScene.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"MenuScene.OnDestroy (start)");
-        Debug.Log($"MenuScene.OnDestroy (end)");
+        Debug.Log($"{Time.time} MenuScene.OnDestroy (start)");
+        Debug.Log($"{Time.time} MenuScene.OnDestroy (end)");
     }
 }
 

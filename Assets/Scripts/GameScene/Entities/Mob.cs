@@ -9,7 +9,6 @@ using UnityEngine.Events;
 public class Mob: Entity
 {
     #region Scripts
-    public MobData mobdata;
     #endregion
 
     #region Mob data
@@ -53,7 +52,7 @@ public class Mob: Entity
     #region Flow
     void Awake()
     {
-        Debug.Log($"{mobName} Mob.Awake (start)");
+        Debug.Log($"{Time.time} {mobName} Mob.Awake (start)");
 
         // Not ideal place
         player = GameObject.Find("Round Manager").GetComponent<Player>();
@@ -62,25 +61,25 @@ public class Mob: Entity
 
         isDead = false;
 
-        Debug.Log($"{mobName} Mob.Awake (end)");
+        Debug.Log($"{Time.time} {mobName} Mob.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"{mobName} Mob.OnEnable (start)");
+        Debug.Log($"{Time.time} {mobName} Mob.OnEnable (start)");
 
         // Subscribe to the game events and listen
         //Board.OnEndTurnEvent += OnNewTurn;
 
-        Debug.Log($"{mobName} Mob.OnEnable (end)");
+        Debug.Log($"{Time.time} {mobName} Mob.OnEnable (end)");
     }
 
     void Start()
     {
-        Debug.Log($"{mobName} Mob.Start (start)");
+        Debug.Log($"{Time.time} {mobName} Mob.Start (start)");
         
         // Move here didn't cause error
-        Debug.Log($"{mobName} Mob.Start (end)");
+        Debug.Log($"{Time.time} {mobName} Mob.Start (end)");
     }
     
     
@@ -113,25 +112,25 @@ public class Mob: Entity
 
     void OnDisable()
     {
-        Debug.Log($"{mobName} Mob.OnDisable (start)");
+        Debug.Log($"{Time.time} {mobName} Mob.OnDisable (start)");
 
         // Unsubscribe to the game events
         //Board.OnEndTurnEvent -= OnNewTurn;
 
-        Debug.Log($"{mobName} Mob.OnDisable (end)");
+        Debug.Log($"{Time.time} {mobName} Mob.OnDisable (end)");
     }
 
     void OnDestroy()
     {
-        Debug.Log($"{mobName} Mob.OnDestroy (start)");
-        Debug.Log($"{mobName} Mob.OnDestroy (end)");
+        Debug.Log($"{Time.time} {mobName} Mob.OnDestroy (start)");
+        Debug.Log($"{Time.time} {mobName} Mob.OnDestroy (end)");
     }
     #endregion
 
     #region Mob functions
     public bool CheckAttackInterval()
     {
-        Debug.Log($"Mob.CheckAttackInterval (start)");
+        Debug.Log($"{Time.time} Mob.CheckAttackInterval (start)");
 
         bool canProceed = false;
         if (currentAttackInterval.value <= 0)
@@ -140,13 +139,13 @@ public class Mob: Entity
             canProceed = true;
         }
         
-        Debug.Log($"Mob.CheckAttackInterval, return canProceed(local var): {canProceed} (end)");
+        Debug.Log($"{Time.time} Mob.CheckAttackInterval, return canProceed(local var): {canProceed} (end)");
         return canProceed;
     }
 
     public override void BeforeMoveStart()
     {
-        Debug.Log($"Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
+        Debug.Log($"{Time.time} Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
 
         roundData.currentTurnState = TurnState.State.BeforeMobMoveStart;
         CheckAlive();
@@ -154,7 +153,7 @@ public class Mob: Entity
 
         if (CheckAttackInterval() && (!isStun) && (currentState == EntityState.State.Alive) && (roundData.player.currentState == EntityState.State.Alive))
         {
-            this.Wait(0f, MoveStart);
+            this.Wait(0.5f, MoveStart);
         }
         else
         {
@@ -163,22 +162,22 @@ public class Mob: Entity
                 currentAttackInterval.value = currentMaxAttackInterval.value;
             }
 
-            this.Wait(0f, MoveEnd);
+            this.Wait(0.5f, MoveEnd);
         }
 
-        Debug.Log($"Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
+        Debug.Log($"{Time.time} Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
     }
 
     public override void MoveStart()
     {
-        Debug.Log($"Mob.MoveStart (override Entities.MoveStart) (start)");
+        Debug.Log($"{Time.time} Mob.MoveStart (override Entities.MoveStart) (start)");
         roundData.currentTurnState = TurnState.State.MobMoveStart;
 
         // Do some visual shit/popup/conversation
 
-        this.Wait(0f, OnAction);
+        this.Wait(0.5f, OnAction);
 
-        Debug.Log($"Mob.MoveStart (override Entities.MoveStart) (end)");
+        Debug.Log($"{Time.time} Mob.MoveStart (override Entities.MoveStart) (end)");
     }
 
     public override void CheckAction()
@@ -190,7 +189,7 @@ public class Mob: Entity
 
     public override void OnAction()
     {
-        Debug.Log($"Mob.OnAction (override Entities.OnAction) (start)");
+        Debug.Log($"{Time.time} Mob.OnAction (override Entities.OnAction) (start)");
 
         roundData.currentTurnState = TurnState.State.MobAction;
 
@@ -199,54 +198,51 @@ public class Mob: Entity
         Attack(roundData.player, attackPoint.value);
 
         // Add extra one for later gerneral minus one in MoveEnd()
-        currentAttackInterval.value = currentMaxAttackInterval.value + 1;
-        this.Wait(0.5f, BeforeMoveEnd);
+        currentAttackInterval.value = currentMaxAttackInterval.value;
 
-        Debug.Log($"Mob.OnAction (override Entities.OnAction) (end)");
+        this.Wait(0.5f, BeforeMoveEnd); //0.5
+
+        Debug.Log($"{Time.time} Mob.OnAction (override Entities.OnAction) (end)");
     }
 
     public override void BeforeMoveEnd()
     {
-        Debug.Log($"Mob.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
+        Debug.Log($"{Time.time} Mob.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
 
         roundData.currentTurnState = TurnState.State.BeforeMobMoveEnd;
 
         // Do some visual shit/popup/conversation
 
-        this.Wait(0f, MoveEnd);
+        this.Wait(0.5f, MoveEnd);
 
-        Debug.Log($"Mob.BeforeMoveEnd (override Entities.BeforeMoveEnd) (end)");
+        Debug.Log($"{Time.time} Mob.BeforeMoveEnd (override Entities.BeforeMoveEnd) (end)");
     }
 
     public override void MoveEnd()
     {
-        Debug.Log($"Mob.MoveEnd (override Entities.MoveEnd) (start)");
+        Debug.Log($"{Time.time} Mob.MoveEnd (override Entities.MoveEnd) (start)");
 
         roundData.currentTurnState = TurnState.State.MobMoveEnd;
 
         // Do some visual shit/popup/conversation
-
-
-        currentAttackInterval.value -= 1;
-        roundData.mobCDText.text = currentAttackInterval.value.ToString();
-
+        
         moveEnded = true;
         if (roundData.player.moveEnded)
         {
-            this.Wait(0f, roundData.TurnEnd);
+            this.Wait(0.5f, roundData.TurnEnd);
         }
         else
         {
-            this.Wait(0f, roundData.player.BeforeMoveStart);
+            this.Wait(0.5f, roundData.player.BeforeMoveStart);
         }
 
-        Debug.Log($"Mob.MoveEnd (override Entities.MoveEnd) (end)");
+        Debug.Log($"{Time.time} Mob.MoveEnd (override Entities.MoveEnd) (end)");
     }
 
     // Temp
     public override void Attack(Entity target, float value)
     {
-        Debug.Log($"Mob.Attack (override Entities.Attack) (start)");
+        Debug.Log($"{Time.time} Mob.Attack (override Entities.Attack) (start)");
 
         // Temp testing solution
         StatusEffect burn = new StatusEffect(StatusEffectName.Burning, 21, 1, 500, 100,
@@ -259,7 +255,7 @@ public class Mob: Entity
 
         StatusEffect stun = new StatusEffect(StatusEffectName.Stuning, 2, 1, 100, 0,
                                             target, "Mob: Stun!", 
-                                            new List<string>{"currentMaxHp"}, new List<float>{5000});
+                                            new List<string>{"currentHp", "currentMaxHp"}, new List<float>{10000, 10000});
         
         int randomAttackSkillNumber = UnityEngine.Random.Range(0, Enum.GetNames(typeof(StatusEffectName)).Length);
         //Debug.Log($"randomAttackSkillNumber = {randomAttackSkillNumber}");
@@ -312,38 +308,7 @@ public class Mob: Entity
         int randomTileEffectTurns = UnityEngine.Random.Range(0, 99);
         tile.GetTileEffect(tile, (Tile.TileEffect)randomTileEffect, randomTileEffectTurns);
 
-        Debug.Log($"Mob.Attack (override Entities.Attack) (end)");
-    }
-    public void MobDefeated()
-    {
-        Debug.Log($"{mobName} Mob.MobDefeated (start)");
-
-        Debug.Log($"{mobName} just dead!");
-        // Trigger here to send msg to event subscribers that mob is defeated
-        //OnDefeatedEvent?.Invoke();
-        //isDead = true;
-
-
-        Debug.Log($"{mobName} Mob.MobDefeated (end)");
-    }
-    
-    public void DestroyMob(Mob mob)
-    {
-        Debug.Log($"{mobName} Mob.DestroyMob (start)");
-
-        //Destroy(mob.gameObject);
-        //mob.transform.SetParent(null);
-
-        Debug.Log($"{mobName} Mob.DestroyMob (end)");
-    }
-
-    public void OnNewTurn()
-    {
-        Debug.Log($"{mobName} Mob.OnNewTurn (start)");
-
-        currentAttackInterval.value -= 1;
-
-        Debug.Log($"{mobName} Mob.OnNewTurn (end)");
+        Debug.Log($"{Time.time} Mob.Attack (override Entities.Attack) (end)");
     }
     #endregion
 }

@@ -6,8 +6,8 @@ public class EffectBoxState
 {
     public enum State
     {
-        Idle = 000,
-        Occupied = 100
-        
+        Initalizing = 000,
+        Occupied = 100,
+        ReadyForDestroy = 200
     }
 }

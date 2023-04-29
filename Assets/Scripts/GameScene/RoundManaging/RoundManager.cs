@@ -22,7 +22,7 @@ public class RoundManager : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log($"RoundManager.Awake (start)");
+        Debug.Log($"{Time.time} RoundManager.Awake (start)");
 
         //Debug.Log("I am running!");
         //disable multi touch
@@ -32,35 +32,22 @@ public class RoundManager : MonoBehaviour
         board = GameObject.Find("Board").GetComponent<Board>();
         uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
 
-        //should be contained in a reset function
-        //isWin = false;
-        //isGameOver = false;
-        //isDead = false;
-
-        Debug.Log($"RoundManager.Awake (end)");
+        Debug.Log($"{Time.time} RoundManager.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"RoundManager.OnEnable (start)");
-
-        // Subscribe to the game events and listen
-        //RoundData.OnAllMobDefectedEvent -= GameOver;
-        //RoundData.OnAllMobDefectedEvent += GameOver;
-        //Player.OnDefeatedEvent -= GameOver;
-        //Player.OnDefeatedEvent += GameOver;
-
-        Debug.Log($"RoundManager.OnEnable (end)");
+        Debug.Log($"{Time.time} RoundManager.OnEnable (start)");
+        Debug.Log($"{Time.time} RoundManager.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"RoundManager.Start (start)");
+        Debug.Log($"{Time.time} RoundManager.Start (start)");
 
         roundData.InitializeData();
-        //currentGameState = GameState.State.IsBattling;
 
-        Debug.Log($"RoundManager.Start (end)");
+        Debug.Log($"{Time.time} RoundManager.Start (end)");
     }
     void Update()
     {
@@ -69,42 +56,37 @@ public class RoundManager : MonoBehaviour
 
     void OnDisable()
     {
-        Debug.Log($"RoundManager.OnDisable (start)");
-
-        // Unsubscribe to the game events
-        //RoundData.OnAllMobDefectedEvent -= GameOver;
-        //Player.OnDefeatedEvent -= GameOver;
-
-        Debug.Log($"RoundManager.OnDisable (end)");
+        Debug.Log($"{Time.time} RoundManager.OnDisable (start)");
+        Debug.Log($"{Time.time} RoundManager.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"RoundManager.OnDestroy (start)");
-        Debug.Log($"RoundManager.OnDestroy (end)");
+        Debug.Log($"{Time.time} RoundManager.OnDestroy (start)");
+        Debug.Log($"{Time.time} RoundManager.OnDestroy (end)");
     }
 
     public void GameOver(GameState.State status)
     {
-        Debug.Log($"RoundManager.GameOver (start)");
+        Debug.Log($"{Time.time} RoundManager.GameOver (start)");
 
         switch (status)
         {
             case GameState.State.PlayerLose:
-                Debug.Log("GG, you lose");
+                //Debug.Log($"{Time.time} GG, you lose");
                 //Player.OnDefeatedEvent -= GameOver;
                 uiManage.SpawnPopup("gameover", 4, () => SettingBtn.StopAdventure(), () => uiManage.currentPopup.DestroyPopup(uiManage.currentPopup));
                 
                 break;
 
             case GameState.State.PlayerWin:
-                Debug.Log("GG, you win");
+                //Debug.Log($"{Time.time} GG, you win");
                 //RoundData.OnAllMobDefectedEvent -= GameOver;
                 uiManage.SpawnPopup("gameover", 5, () => SettingBtn.StopAdventure(), () => uiManage.currentPopup.DestroyPopup(uiManage.currentPopup));
 
                 break;
         }
 
-        Debug.Log($"RoundManager.GameOver (end)");
+        Debug.Log($"{Time.time} RoundManager.GameOver (end)");
     }
 }

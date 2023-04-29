@@ -68,15 +68,18 @@ public class RoundData : MonoBehaviour
 
     [SerializeField] private List<int> _waveMobs;
     public List<int> waveMobs { get { return _waveMobs; } set { _waveMobs = value; } }
-    [SerializeField] private List<Teammate> _roundTeammates;
-    public List<Teammate> roundTeammates { get { return _roundTeammates; } set { _roundTeammates = value; } }
-    private int _roundTeammateNumber = 5;
-    public int roundTeammateNumber { get { return _roundTeammateNumber; } set { _roundTeammateNumber = value; } }
+    //[SerializeField] private List<Teammate> _roundTeammates;
+    //public List<Teammate> roundTeammates { get { return _roundTeammates; } set { _roundTeammates = value; } }
+    //private int _roundTeammateNumber = 5;
+    //public int roundTeammateNumber { get { return _roundTeammateNumber; } set { _roundTeammateNumber = value; } }
     private int _wavesNumber = 3;
     public int wavesNumber { get { return _wavesNumber; } set { _wavesNumber = value; } }
 
     private int _roundIdiomSize = 4;
     public int roundIdiomSize { get { return _roundIdiomSize; } set { _roundIdiomSize = value; } }
+
+    private int _powerScore = 0;
+    public int powerScore { get { return _powerScore; } set { _powerScore = value; } }
 
     // Parent of question tile
     public GameObject questionTiles;
@@ -103,16 +106,23 @@ public class RoundData : MonoBehaviour
 
     // Load other elements
     public TMP_Text mobCDText;
-    public TMP_Text boardScoreText;
+    public TMP_Text powerScoreText;
 
     // Temp
     public TMP_Text currentIdiomIDText;
+    public TMP_Text currentTurnStateText;
+    public TMP_Text currentMobIDText;
+    public TMP_Text currentTurnText;
 
     // Factory
-    private MobFactory mobFactory;
-    private TeammateFactory teammateFactory;
+    #region Factories
+    public MobFactory mobFactory;
+    public TeammateFactory teammateFactory;
+    public EffectBoxFactory effectBoxFactory;
+    #endregion
 
     // Get components from mob info area
+    public TMP_Text currentWaveText;
     public TMP_Text mobLevelText;
     public TMP_Text mobNameText;
 
@@ -126,10 +136,6 @@ public class RoundData : MonoBehaviour
     public Bar mobHealthBars;
     public Bar healthBars;
 
-    // Get components(hidden until gameover) from the UI
-    public TMP_Text currentWaveText;
-    public TMP_Text currentTurnText;
-
     // Booleans
     private bool _requestNewWave = false;
     public bool requestNewWave { get { return _requestNewWave;} set { _requestNewWave = value; } }
@@ -140,105 +146,83 @@ public class RoundData : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log($"RoundData.Awake (start)");
+        Debug.Log($"{Time.time} RoundData.Awake (start)");
 
-        Debug.Log("answers counts in board: " + tilesWord.Count);
-        Debug.Log("answerIdiomsID counts in board: " + tilesWordIdiomsID.Count);
+        Debug.Log($"{Time.time} answers counts in board: {tilesWord.Count}");
+        Debug.Log($"{Time.time} answerIdiomsID counts in board: {tilesWordIdiomsID.Count}");
 
         board = GameObject.Find("Board").GetComponent<Board>();
         player = gameObject.GetComponent<Player>();
-        mobFactory = gameObject.GetComponent<MobFactory>();
         roundManager = gameObject.GetComponent<RoundManager>();
+        mobFactory = gameObject.GetComponent<MobFactory>();
         teammateFactory = gameObject.GetComponent<TeammateFactory>();
-        //roundMobs = new List<int>();
-        //roundTeammates = new List<Teammate>();
+        effectBoxFactory = gameObject.GetComponent<EffectBoxFactory>();
 
-        // Will change into importing from data, just temp solution for now
-        //currentWave = 1;
-
-        //BeforeTurnStart();
-
-        Debug.Log($"RoundData.Awake (end)");
+        Debug.Log($"{Time.time} RoundData.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"RoundData.OnEnable (start)");
-
-        // Subscribe to the game events and listen
-        //Mob.OnDefeatedEvent += OnNewWave;
-        //Board.OnEndTurnEvent += OnNewTurn;
-
-        Debug.Log($"RoundData.OnEnable (end)");
+        Debug.Log($"{Time.time} RoundData.OnEnable (start)");
+        Debug.Log($"{Time.time} RoundData.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"RoundData.Start (start)");
+        Debug.Log($"{Time.time} RoundData.Start (start)");
 
         BeforeTurnStart();
 
-        Debug.Log($"RoundData.Start (end)");
+        Debug.Log($"{Time.time} RoundData.Start (end)");
     }
 
     void Update()
     {
-        
+        //Debug.Log($"{Time.time} RoundData.Update (start)");
+
         StartTimer();
         healthBars.ResizeBarValue(player.currentHp.value, player.currentMaxHp.value, 0);
         //Debug.Log($"player's HP = {player.currentHp.value}");
         mobHealthBars.ResizeBarValue(currentMob.currentHp.value, currentMob.currentMaxHp.value, 0);
         //Debug.Log($"mob's HP = {currentMob.currentHp.value}");
 
-        boardScoreText.text = board.tileLevelSpawnScore.ToString();
+        currentTurnStateText.text = currentTurnState.ToString();
+        currentMobIDText.text = currentMob.id.ToString();
         currentTurnText.text = currentTurn.ToString();
 
         mobCDText.text = currentMob.currentAttackInterval.value.ToString();
-        /*
-        currentMob.currentAttackInterval -= Time.deltaTime;
-        if (currentMob.currentAttackInterval <= 0)
+        
+        if (powerScore < 0)
         {
-            currentMob.Attack(player, currentMob.attackPoint);
-            healthBox.ResizeValue(player.currentHp, 0);
-            currentMob.currentAttackInterval = currentMob.maxAttackInterval + 1;
+            powerScore = 0;
         }
+        powerScoreText.text = powerScore.ToString();
 
-        mobHealthBox.ResizeValue(currentMob.currentHp, 0);
-        healthBox.ResizeValue(player.currentHp, 0);
-        timeleftBox.ResizeValue(currentMob.currentAttackInterval, 2);
-
-        mobHealthBars.Resize(currentMob.currentHp);
-        healthBars.Resize(player.currentHp);
-        timeleftBars.Resize(currentMob.currentAttackInterval);
-
-        mobHealthBox.UpdateValue(0);
-        healthBox.UpdateValue(0);
-        timeleftBox.UpdateValue(2);
-        */
+        //Debug.Log($"{Time.time} RoundData.Update (end)");
     }
     
     void OnDisable()
     {
-        Debug.Log($"RoundData.OnDisable (start)");
+        Debug.Log($"{Time.time} RoundData.OnDisable (start)");
 
         // Unsubscribe to the game events
         //Mob.OnDefeatedEvent -= OnNewWave;
         //Board.OnEndTurnEvent -= OnNewTurn;
 
-        Debug.Log($"RoundData.OnDisable (end)");
+        Debug.Log($"{Time.time} RoundData.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"RoundData.OnDestroy (start)");
-        Debug.Log($"RoundData.OnDestroy (end)");
+        Debug.Log($"{Time.time} RoundData.OnDestroy (start)");
+        Debug.Log($"{Time.time} RoundData.OnDestroy (end)");
     }
 
     // Should handle all display round data shit
     
     public void SpawnMobs()
     {
-        Debug.Log($"RoundData.SpawnMobs (start)");
+        Debug.Log($"{Time.time} RoundData.SpawnMobs (start)");
 
         currentMob = mobFactory.CreateMob(waveMobs[currentWave - 1]);
         mobHealthBars.InitializeBar(mobHealthBars, currentMob.currentHp.value, currentMob.currentMaxHp.value);
@@ -247,15 +231,15 @@ public class RoundData : MonoBehaviour
         currenMobPic = currentMob.mobPicture;
         mobCDText.text = currentMob.currentAttackInterval.value.ToString();
 
-        Debug.Log($"{currentMob.name} just spawn!");
+        Debug.Log($"{Time.time} {currentMob.name} just spawn!");
 
-        Debug.Log($"RoundData.SpawnMobs (end)");
+        Debug.Log($"{Time.time} RoundData.SpawnMobs (end)");
     }
 
     // Should change to drawing mob from specific mob list data, but now just draw mob first than spawn accordingly
     public void DrawMobs()
     {
-        Debug.Log($"RoundData.DrawMobs (start)");
+        Debug.Log($"{Time.time} RoundData.DrawMobs (start)");
 
         for (int i = 0; i < wavesNumber; i++)
         {
@@ -263,64 +247,67 @@ public class RoundData : MonoBehaviour
             waveMobs.Add(randomMobID);
         }
 
-        Debug.Log($"RoundData.DrawMobs (end)");
+        Debug.Log($"{Time.time} RoundData.DrawMobs (end)");
     }
 
-    public void SpawnTeammates()
+    public Teammate SpawnTeammates(int teammateID, int teammateOrder)
     {
-        Debug.Log($"RoundData.SpawnTeammates (start)");
+        Debug.Log($"{Time.time} RoundData.SpawnTeammates (start)");
 
+        Teammate teammate = teammateFactory.CreateTeammate(teammateID, teammateOrder);
+        /*
         for(int i = 0; i < roundTeammateNumber; i++)
         {
             // Temp
             Teammate teammate = teammateFactory.CreateTeammate(i, i);
             roundTeammates.Add(teammate);
         }
+        */
 
-        Debug.Log($"RoundData.SpawnTeammates (end)");
+        Debug.Log($"{Time.time} RoundData.SpawnTeammates (end)");
+        return teammate;
     }
 
     public void InitializeData()
     {
-        Debug.Log($"RoundData.InitializeData (start)");
+        Debug.Log($"{Time.time} RoundData.InitializeData (start)");
 
         // Set the original data, however mob data had been initialized?
         //currentMob.currentHp = currentMob.maxHp;
         player.currentHp.SetStatValue(player.currentMaxHp.GetStatValue());
-        //currentMob.currentAttackInterval = currentMob.maxAttackInterval;
         currentWaveText.text = currentWave.ToString() + "/" + wavesNumber;
         //mobHealthBars.InitializeBar(mobHealthBars, currentMob.currentHp, currentMob.maxHp);
         healthBars.InitializeBar(healthBars, player.currentHp.value, player.currentMaxHp.value);
 
-        Debug.Log($"RoundData.InitializeData (end)");
+        Debug.Log($"{Time.time} RoundData.InitializeData (end)");
     }
 
     public void StartTimer()
     {
-        //Debug.Log($"RoundData.StartTimer (start)");
+        //Debug.Log($"{Time.time} RoundData.StartTimer (start)");
 
         timeUsed = timeUsed + Time.deltaTime;
 
-        //Debug.Log($"RoundData.StartTimer (end)");
+        //Debug.Log($"{Time.time} RoundData.StartTimer (end)");
     }
     
     public void StoreGainedReward()
     {
-        Debug.Log($"RoundData.StoreGainedReward (start)");
+        Debug.Log($"{Time.time} RoundData.StoreGainedReward (start)");
 
         expGained += currentMob.expReward;
         coinGained += currentMob.coinReward;
         jadeGained += currentMob.jadeReward;
 
-        Debug.Log($"RoundData.StoreGainedReward (end)");
+        Debug.Log($"{Time.time} RoundData.StoreGainedReward (end)");
     }
 
     public Entity CompareDexPoint(Entity player, Entity mob)
     {
-        Debug.Log($"RoundData.CompareDexPoint (start)");
+        Debug.Log($"{Time.time} RoundData.CompareDexPoint (start)");
 
         Entity entityMoveFirst;
-        Debug.Log($" player dex = {player.dexterityPoint.value}, mob dex = {currentMob.dexterityPoint.value}");
+        Debug.Log($"{Time.time} player dex = {player.dexterityPoint.value}, mob dex = {currentMob.dexterityPoint.value}");
         if (player.dexterityPoint.value > mob.dexterityPoint.value)
         {
             entityMoveFirst = player;
@@ -330,22 +317,23 @@ public class RoundData : MonoBehaviour
             entityMoveFirst = mob;
         }
 
-        Debug.Log($"RoundData.CompareDexPoint, return entityMoveFirst(local var): {entityMoveFirst} (end)");
+        Debug.Log($"{Time.time} RoundData.CompareDexPoint, return entityMoveFirst(local var): {entityMoveFirst} (end)");
         return entityMoveFirst;
     }
 
     public void BeforeTurnStart()
     {
-        Debug.Log($"RoundData.BeforeTurnStart (start)");
+        Debug.Log($"{Time.time} RoundData.BeforeTurnStart (start)");
 
-        currentTurn += 1;
-        currentTurnText.text = currentTurn.ToString();
+        currentTurnState = TurnState.State.BeforeTurnStart;
 
         // First time while enter the game loop, a.k.a init
         if (roundManager.currentGameState == GameState.State.IsInitalizing)
         {
             roundManager.currentGameState = GameState.State.IsBattling;
-            SpawnTeammates();
+            board.SpawnTiles(board.CheckBlankCell());
+            board.DrawAnswer();
+            //SpawnTeammates();
             player.InitPlayer();
             DrawMobs();
             SpawnMobs();
@@ -356,6 +344,9 @@ public class RoundData : MonoBehaviour
             NewWave();
             requestNewWave = false;
         }
+
+        currentTurn += 1;
+        currentTurnText.text = currentTurn.ToString();
 
         // Check status effects and do the damage/other shit to the status effect owner
         player.CheckStatusEffects();
@@ -376,14 +367,16 @@ public class RoundData : MonoBehaviour
             }
         }
 
-        this.Wait(0f, CompareDexPoint(player, currentMob).BeforeMoveStart);
+        this.Wait(0.5f, CompareDexPoint(player, currentMob).BeforeMoveStart);
 
-        Debug.Log($"RoundData.BeforeTurnStart (end)");
+        Debug.Log($"{Time.time} RoundData.BeforeTurnStart (end)");
     }
 
     public void TurnEnd()
     {
-        Debug.Log($"RoundData.TurnEnd (start)");
+        Debug.Log($"{Time.time} RoundData.TurnEnd (start)");
+
+        currentTurnState = TurnState.State.TurnEnd;
 
         // Reset shit
         player.moveEnded = false;
@@ -393,6 +386,7 @@ public class RoundData : MonoBehaviour
         {
             for (int i = (player.currentStatusEffects.Count - 1); i >= 0; i--)
             {
+                Debug.Log($"{Time.time} player's status effect no.{i}: {player.currentStatusEffects[i].effectName}");
                 player.currentStatusEffects[i].OnTurnEnd();
             }
         }
@@ -401,19 +395,21 @@ public class RoundData : MonoBehaviour
         {
             for (int i = (currentMob.currentStatusEffects.Count - 1); i >= 0; i--)
             {
+                Debug.Log($"{Time.time} mob's status effect no.{i}: {currentMob.currentStatusEffects[i].effectName}");
                 currentMob.currentStatusEffects[i].OnTurnEnd();
             }
         }
 
+        Debug.Log($"{Time.time} ^6.6A End turn");
         board.DisplayTileCell(); // For debug use
         board.RenameTiles();
         board.CheckAnswerTile();
         board.DisplayTileCell(); // Double check, just in case
 
         // Teammate do their turn end shit
-        for (int i = 0; i < roundTeammates.Count; i++)
+        foreach (KeyValuePair<TeammateType, Teammate> teammate in player.teammates)
         {
-            roundTeammates[i].currentActiveSkillCD.value -= 1;
+            teammate.Value.currentActiveSkillCD.value -= 1;
         }
 
         // Tile do their turn end shit
@@ -444,7 +440,7 @@ public class RoundData : MonoBehaviour
                 // New Wave flag for new turn
                 requestNewWave = true;
 
-                this.Wait(0f, BeforeTurnStart);
+                this.Wait(0.5f, BeforeTurnStart);
             }
         }
 
@@ -458,28 +454,31 @@ public class RoundData : MonoBehaviour
         // New turn
         else
         {
-            this.Wait(0f, BeforeTurnStart);
+            currentMob.currentAttackInterval.value -= 1;
+            mobCDText.text = currentMob.currentAttackInterval.value.ToString();
+            
+            this.Wait(0.5f, BeforeTurnStart);
         }
 
-        Debug.Log($"RoundData.TurnEnd (end)");
+        Debug.Log($"{Time.time} RoundData.TurnEnd (end)");
     }
 
     public void NewWave()
     {
-        Debug.Log($"RoundData.NewWave (start)");
+        Debug.Log($"{Time.time} RoundData.NewWave (start)");
 
         StoreGainedReward();
 
         // Reset all status effect from preveus mob
-        for (int i = 0; i < mobEffectBoxes.transform.childCount; i++)
+        for (int i = mobEffectBoxes.transform.childCount - 1; i >= 0; i--)
         {
-            mobEffectBoxes.transform.GetChild(i).GetComponent<EffectBox>().ResetEffectBoxItem();
+            mobEffectBoxes.transform.GetChild(i).GetComponent<EffectBox>().DestroyEffectBox();
         }
 
         currentWave += 1;
         currentWaveText.text = currentWave.ToString() + "/" + wavesNumber;
         SpawnMobs();
 
-        Debug.Log($"RoundData.NewWave (end)");
+        Debug.Log($"{Time.time} RoundData.NewWave (end)");
     }
 }

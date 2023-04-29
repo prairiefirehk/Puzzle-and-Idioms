@@ -29,7 +29,7 @@ public class NormalTile : Tile
     #region Flow
     void Awake()
     {
-        Debug.Log($"{name} NormalTile.Awake (start)");
+        Debug.Log($"{Time.time} {name} NormalTile.Awake (start)");
 
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
@@ -79,23 +79,23 @@ public class NormalTile : Tile
         tileEffectBTurnsText.gameObject.SetActive(false);
         // Set false for answer cheat here
 
-        Debug.Log($"{name} NormalTile.Awake (end)");
+        Debug.Log($"{Time.time} {name} NormalTile.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"{name} NormalTile.OnEnable (start)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnEnable (start)");
         
         // Subscribe to the game events and listen
         //Board.OnEndTurnEvent += OnNewTurn;
 
-        Debug.Log($"{name} NormalTile.OnEnable (end)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"{name} NormalTile.Start (start)");
-        Debug.Log($"{name} NormalTile.Start (end)");
+        Debug.Log($"{Time.time} {name} NormalTile.Start (start)");
+        Debug.Log($"{Time.time} {name} NormalTile.Start (end)");
     }
 
     void Update()
@@ -105,18 +105,14 @@ public class NormalTile : Tile
     
     void OnDisable()
     {
-        Debug.Log($"{name} NormalTile.OnDisable (start)");
-        
-        // Unubscribe to the game events and listen
-        //Board.OnEndTurnEvent -= OnNewTurn;
-
-        Debug.Log($"{name} NormalTile.OnDisable (end)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnDisable (start)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"{name} NormalTile.OnDestroy (start)");
-        Debug.Log($"{name} NormalTile.OnDestroy (end)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnDestroy (start)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnDestroy (end)");
     }
     #endregion
 
@@ -125,9 +121,9 @@ public class NormalTile : Tile
     // For tile merge, receive after onpointerup (AS A DROP RECEIVER) //
     public override void OnDrop(PointerEventData eventData)
     {
-        Debug.Log($"{name} NormalTile.OnDrop (override Entities.OnDrop) (start)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnDrop (override Entities.OnDrop) (start)");
 
-        Debug.Log("^5 input drop the tile");
+        Debug.Log($"{Time.time} ^5 input drop the tile");
 
         Tile dragTile = eventData.pointerDrag.GetComponent<Tile>();
         currentState = TileState.State.Processing;
@@ -149,11 +145,11 @@ public class NormalTile : Tile
             {
                 if (CompareTag("NormalTile"))
                 {
-                    Debug.Log($"^5.1B.1 {name} received {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
+                    Debug.Log($"{Time.time} ^5.1B.1 {name} received {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
                 }
                 else if (CompareTag("SpecialTile"))
                 {
-                    Debug.Log($"^5.1B.2 {name} received {name} (special tile)");
+                    Debug.Log($"{Time.time} ^5.1B.2 {name} received {name} (special tile)");
                 }
 
                 // DragTile itself is answer
@@ -161,16 +157,17 @@ public class NormalTile : Tile
                 {
                     if (dragTile.CompareTag("NormalTile"))
                     {
-                        Debug.Log($"^5.2A.1 merge the correct answer {dragTile.name} (normal tile) ({dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}) -> wrong answer {name} (normal tile) ({transform.GetChild(2).GetComponent<TMP_Text>().text})");
+                        Debug.Log($"{Time.time} ^5.2A.1 merge the correct answer {dragTile.name} (normal tile) ({dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}) -> wrong answer {name} (normal tile) ({transform.GetChild(2).GetComponent<TMP_Text>().text})");
                     }
                     // Which should not happen
                     else if (dragTile.CompareTag("SpecialTile"))
                     {
-                        Debug.Log($"^5.2A.2 merge the correct answer {dragTile.name} (special tile) -> wrong answer {name} (normal tile) ({transform.GetChild(2).GetComponent<TMP_Text>().text})");
+                        Debug.Log($"{Time.time} ^5.2A.2 merge the correct answer {dragTile.name} (special tile) -> wrong answer {name} (normal tile) ({transform.GetChild(2).GetComponent<TMP_Text>().text})");
                     }
 
                     // Some punishment here
                     roundData.player.TakeDamage((float)0.15 * roundData.player.currentMaxHp.value);
+                    roundData.powerScore -= GetOutPutPower() * 2;
 
                     // Reset new round
                     //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -194,15 +191,16 @@ public class NormalTile : Tile
                     {
                         if (CompareTag("NormalTile"))
                         {
-                            Debug.Log($"^5.2B.1 merge the wrong answer {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text} -> correct answer {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
+                            Debug.Log($"{Time.time} ^5.2B.1 merge the wrong answer {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text} -> correct answer {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
                         }
                         else if (CompareTag("SpecialTile"))
                         {
-                            Debug.Log($"^5.2B.2 merge the wrong answer {dragTile.name} (special tile) {name} -> correct answer {name} (normal tile)");
+                            Debug.Log($"{Time.time} ^5.2B.2 merge the wrong answer {dragTile.name} (special tile) {name} -> correct answer {name} (normal tile)");
                         }
 
                         // Some punishment here
                         roundData.player.TakeDamage((float)0.15 * roundData.player.currentMaxHp.value);
+                        roundData.powerScore -= GetOutPutPower() * 2;
 
                         // Reset new round
                         //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -224,11 +222,11 @@ public class NormalTile : Tile
                     {
                         if (dragTile.CompareTag("NormalTile"))
                         {
-                            Debug.Log($"^5.2C.1 merging correctly {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text} -> {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
+                            Debug.Log($"{Time.time} ^5.2C.1 merging correctly {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text} -> {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
                         }
                         else if (dragTile.CompareTag("SpecialTile"))
                         {
-                            Debug.Log($"^5.2C.2 merging correctly {dragTile.name} (special tile) -> {name} (normal tile)");
+                            Debug.Log($"{Time.time} ^5.2C.2 merging correctly {dragTile.name} (special tile) -> {name} (normal tile)");
                         }
 
                         //Debug.Log("dragTile: " + dragTile.name);
@@ -239,6 +237,9 @@ public class NormalTile : Tile
                         dragTile.isMoved = true;
                         roundData.player.isActioned = true;
 
+                        // Contribute the score to board
+                        roundData.powerScore += GetOutPutPower();
+
                         //board.tileCell[dragTile.tileCellPosition] = -1;
                         board.UpdateTileCell();
                     }
@@ -246,12 +247,12 @@ public class NormalTile : Tile
             }
         }
 
-        Debug.Log($"{name} NormalTile.OnDrop (override Entities.OnDrop) (end)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnDrop (override Entities.OnDrop) (end)");
     }
 
     public void OnNewTurn()
     {
-        Debug.Log($"{name} NormalTile.OnNewTurn (start)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnNewTurn (start)");
 
         tileExistedTurns += 1;
 
@@ -261,7 +262,7 @@ public class NormalTile : Tile
         tileEffectBRemainingTurns -= 1;
         tileEffectBTurnsText.text = tileEffectBRemainingTurns.ToString();
 
-        Debug.Log($"{name} NormalTile.OnNewTurn (end)");
+        Debug.Log($"{Time.time} {name} NormalTile.OnNewTurn (end)");
     }
     #endregion
 }

@@ -86,7 +86,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     // For managing score tile bonus based on bonus, testing only
     public float[] valueModifierArr = { 0, 0.05f, 0.1125f, 0.2531f, 0.5695f, 1.2814f, 2.8833f, 6.4873f, 14.5965f, 32.8420f, 73.8946f, 166.2628f, 374.0914f, 841.7056f, 1893.8376f, 4261.1346f, 9587.5530f};
     // Board score related
-    public int outputScore;
+    public int outputPower;
     public int[] tileLevelScoreArr = { 0, 2000, 5000, 9000, 14000, 20000, 27000, 34000, 43000, 53000};
     #endregion
 
@@ -115,29 +115,29 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     #region Flow
     void Awake() 
     {
-        Debug.Log($"{name} Tile.Awake (start)");
+        Debug.Log($"{Time.time} {name} Tile.Awake (start)");
 
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         board = GameObject.Find("Board").GetComponent<Board>();
         currentvalueModifier = baseValueModifier;
 
-        Debug.Log($"{name} Tile.Awake (end)");
+        Debug.Log($"{Time.time} {name} Tile.Awake (end)");
     }
 
     void OnEnable()
     {
-        Debug.Log($"{name} Tile.OnEnable (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnEnable (start)");
 
         // Subscribe to the game events and listen
         //Board.OnNewTurnEvent += OnNewTurn;
 
-        Debug.Log($"{name} Tile.OnEnable (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnEnable (end)");
     }
     
     void Start()
     {
-        Debug.Log($"{name} Tile.Start (start)");
-        Debug.Log($"{name} Tile.Start (end)");
+        Debug.Log($"{Time.time} {name} Tile.Start (start)");
+        Debug.Log($"{Time.time} {name} Tile.Start (end)");
     }
 
     void Update()
@@ -147,18 +147,18 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     
     void OnDisable()
     {
-        Debug.Log($"{name} Tile.OnDisable (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnDisable (start)");
 
         // Unubscribe to the game events and listen
         //Board.OnNewTurnEvent -= OnNewTurn;
 
-        Debug.Log($"{name} Tile.OnDisable (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnDisable (end)");
     }
 
     void OnDestroy() 
     {
-        Debug.Log($"{name} Tile.OnDestroy (start)");
-        Debug.Log($"{name} Tile.OnDestroy (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnDestroy (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnDestroy (end)");
     }
     #endregion
 
@@ -190,7 +190,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     // Temp
     public string GetTileIconName(int tileFunctionNumber)
     {
-        Debug.Log($"{name} Tile.GetTileIconName (start)");
+        Debug.Log($"{Time.time} {name} Tile.GetTileIconName (start)");
 
         string picName = "";
         switch(tileFunctionNumber)
@@ -256,13 +256,20 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
                 Debug.Log("Hey dude can't load special tile's name!");
                 break;
         }
-        Debug.Log($"{name} Tile.GetTileIconName, return picName(local var): {picName} (end)");
+        Debug.Log($"{Time.time} {name} Tile.GetTileIconName, return picName(local var): {picName} (end)");
         return picName;
     }
 
+    public int GetOutPutPower()
+    {
+        Debug.Log($"{Time.time} {name} Tile.GetOutPutPower (start)");
+
+        Debug.Log($"{Time.time} {name} Tile.GetOutPutPower, return outputPower * (tileLevel + 1): {outputPower * (tileLevel + 1)} (end)");
+        return (outputPower * (tileLevel + 1));
+    }
     public void GetTileEffect(Tile tile, TileEffect tileEffectOne, int tileEffectOneTurns)
     {
-        Debug.Log($"{name} Tile.GetTileEffect (start)");
+        Debug.Log($"{Time.time} {name} Tile.GetTileEffect (start)");
 
 
         tile.tileEffectA = tileEffectOne;
@@ -279,12 +286,12 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
         tile.tileEffectATurnsText.text = tile.tileEffectARemainingTurns.ToString();
 
-        Debug.Log($"{name} Tile.GetTileEffect (end)");
+        Debug.Log($"{Time.time} {name} Tile.GetTileEffect (end)");
     }
 
     public void GetTileEffect(Tile tile, TileEffect tileEffectOne, int tileEffectOneTurns, TileEffect tileEffectTwo, int tileEffectTwoTurns)
     {
-        Debug.Log($"{name} Tile.GetTileEffect (start)");
+        Debug.Log($"{Time.time} {name} Tile.GetTileEffect (start)");
 
         tile.tileEffectA = tileEffectOne;
         tile.tileEffectATurns = tileEffectOneTurns;
@@ -314,31 +321,31 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
         tile.tileEffectBTurnsText.text = tile.tileEffectBRemainingTurns.ToString();
 
-        Debug.Log($"{name} Tile.GetTileEffect (end)");
+        Debug.Log($"{Time.time} {name} Tile.GetTileEffect (end)");
     }
 
     public void SetTileLocation()
     {
-        Debug.Log($"{name} Tile.SetTileLocation (start)");
+        Debug.Log($"{Time.time} {name} Tile.SetTileLocation (start)");
 
         tile.transform.position = tileLocation;
 
-        Debug.Log($"{name} Tile.SetTileLocation (end)");
+        Debug.Log($"{Time.time} {name} Tile.SetTileLocation (end)");
     }
 
     public void BeingSelected()
     {
-        Debug.Log($"{name} Tile.BeingSelected (start)");
+        Debug.Log($"{Time.time} {name} Tile.BeingSelected (start)");
 
         isSelect = true;
-        Debug.Log("^1.1 input selected the tile");
+        Debug.Log($"{Time.time} ^1.1 input selected the tile");
 
-        Debug.Log($"{name} Tile.BeingSelected (end)");
+        Debug.Log($"{Time.time} {name} Tile.BeingSelected (end)");
     }
 
     public void StartDrag()
     {
-        Debug.Log($"{name} Tile.StartDrag (start)");
+        Debug.Log($"{Time.time} {name} Tile.StartDrag (start)");
 
         isDrag = true;
         // ****************************************
@@ -350,28 +357,28 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         tile.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
         canvasGroup.alpha = 0.75f;
         canvasGroup.blocksRaycasts = false;
-        Debug.Log("^2.1 start drag the tile");
+        Debug.Log($"{Time.time} ^2.1 start drag the tile");
 
-        Debug.Log($"{name} Tile.StartDrag (end)");
+        Debug.Log($"{Time.time} {name} Tile.StartDrag (end)");
     }
 
     public void UnSelected()
     {
-        Debug.Log($"{name} Tile.UnSelected (start)");
+        Debug.Log($"{Time.time} {name} Tile.UnSelected (start)");
         
         isSelect = false;
         roundData.player.SetDragTile(null);
 
-        Debug.Log("^4.1 input unselected the tile");
+        Debug.Log($"{Time.time} ^4.1 input unselected the tile");
 
-        Debug.Log($"{name} Tile.UnSelected (end)");
+        Debug.Log($"{Time.time} {name} Tile.UnSelected (end)");
     }
 
     public void TileUpgrade(Tile tilePrefab)
     {
-        Debug.Log($"{name} Tile.TileUpgrade (start)");
+        Debug.Log($"{Time.time} {name} Tile.TileUpgrade (start)");
 
-        Debug.Log($"{tilePrefab.name}'s level upgraded");
+        Debug.Log($"{Time.time} {tilePrefab.name}'s level upgraded");
         if (tilePrefab.tileLevelText.isActiveAndEnabled == false)
         {
             tilePrefab.tileLevelText.gameObject.SetActive(true);
@@ -379,16 +386,16 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         tilePrefab.tileLevel++;
         tilePrefab.currentvalueModifier = tilePrefab.valueModifierArr[tilePrefab.tileLevel];
         tilePrefab.tileLevelText.text = tilePrefab.tileLevel.ToString();
-        Debug.Log("^5.3A tile tileLevel up");
+        Debug.Log($"{Time.time} ^5.3A tile tileLevel up");
 
-        Debug.Log($"{name} Tile.TileUpgrade (end)");
+        Debug.Log($"{Time.time} {name} Tile.TileUpgrade (end)");
     }
 
     public void ResetTile(Tile tilePrefab)
     {
-        Debug.Log($"{name} Tile.ResetTile (start)");
+        Debug.Log($"{Time.time} {name} Tile.ResetTile (start)");
 
-        Debug.Log("^6.7 ResetTile start");
+        Debug.Log($"{Time.time} ^6.7 ResetTile start");
 
         // Reset stat
         if (tilePrefab.interactTile != null || tilePrefab.interactTeammate != null)
@@ -418,16 +425,16 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         tilePrefab.isMoved = false;
         tileStatusProcessed = 0;
 
-        Debug.Log("^6.8 ResetTile end");
+        Debug.Log($"{Time.time} ^6.8 ResetTile end");
 
-        Debug.Log($"{name} Tile.ResetTile (end)");
+        Debug.Log($"{Time.time} {name} Tile.ResetTile (end)");
     }
 
     public void EndDrag(Tile tilePrefab)
     {
-        Debug.Log($"{name} Tile.EndDrag (start)");
+        Debug.Log($"{Time.time} {name} Tile.EndDrag (start)");
 
-        Debug.Log("^6.1 EndDrag start");
+        Debug.Log($"{Time.time} ^6.1 EndDrag start");
         isDrag = false;
         // Before apply move tile function, only return to it's own position
         transform.SetSiblingIndex(tileCellPosition);
@@ -449,23 +456,23 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         {
             //OnEndTurnEvent?.Invoke();
             //roundData.TurnEnd();
-            Debug.Log("ismoved! end turn!");
+            Debug.Log($"{Time.time} ismoved! end turn!");
         }
         
         //board.EndTurn();
         //OnEndTurnEvent?.Invoke();
         // Final reset
         ResetTile(this);
-        Debug.Log("^6.9 EndDragDrag end");
+        Debug.Log($"{Time.time} ^6.9 EndDragDrag end");
 
-        Debug.Log($"{name} Tile.EndDrag (end)");
+        Debug.Log($"{Time.time} {name} Tile.EndDrag (end)");
     }
 
     public void UpdatePosition(Tile tilePrefab)
     {
-        Debug.Log($"{name} Tile.UpdatePosition (start)");
+        Debug.Log($"{Time.time} {name} Tile.UpdatePosition (start)");
 
-        Debug.Log("^6.2 Update position");
+        Debug.Log($"{Time.time} ^6.2 Update position");
         // For displaying map for tile cell
         board.DisplayTileCell();
         //Debug.Log("board.answerCell before: \n" + tileCellMap);
@@ -474,7 +481,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         // If tile position had been drop to another tile cell, which the tile cell is blank cell
         if (board.tileCell[tilePrefab.tileCellPosition] == 0)
         {
-            Debug.Log("^6.3A Changed position!");
+            Debug.Log($"{Time.time} ^6.3A Changed position!");
 
             tilePrefab.isMoved = true;
             roundData.player.isActioned = true;
@@ -497,7 +504,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         // If that tile cell is occupied, return its starting position
         else 
         {
-            Debug.Log("^6.3B Didn't change position!");
+            Debug.Log($"{Time.time} ^6.3B Didn't change position!");
 
             // Don't set it
             //tilePrefab.isMoved = false;
@@ -508,20 +515,17 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         board.DisplayTileCell();
         //Debug.Log("board.answerCell after: \n" + tileCellMap);
 
-        Debug.Log($"{name} Tile.UpdatePosition (end)");
+        Debug.Log($"{Time.time} {name} Tile.UpdatePosition (end)");
     }
 
     public void DestroyTile(Tile tilePrefab)
     {
-        Debug.Log($"{name} Tile.DestroyTile (start)");
+        Debug.Log($"{Time.time} {name} Tile.DestroyTile (start)");
 
-        Debug.Log("^6.5 Destroy tile ");
-        Debug.Log($"Tile being destroyed ({tilePrefab.tileCellPositionAtStart}) is : {tilePrefab.name}");
+        Debug.Log($"{Time.time} ^6.5 Destroy tile ");
+        Debug.Log($"{Time.time} Tile being destroyed ({tilePrefab.tileCellPositionAtStart}) is : {tilePrefab.name}");
         // Mark the cell is blank now
         board.tileCell[tilePrefab.tileCellPositionAtStart] = 0;
-
-        // Contribute the score to board
-        board.tileLevelSpawnScore += outputScore;
         
         //Debug.Log("Tile destroyed: " + tilePrefab.gameObject.transform.GetSiblingIndex().ToString());
         // Remove item in answerTile list
@@ -564,18 +568,18 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         Destroy(tilePrefab.gameObject);
         tilePrefab.transform.SetParent(null);
 
-        Debug.Log($"{name} Tile.DestroyTile (end)");
+        Debug.Log($"{Time.time} {name} Tile.DestroyTile (end)");
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log($"{name} Tile.OnTriggerEnter2D (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnTriggerEnter2D (start)");
 
         if (isDrag && isSelect)
         {
             if (collision.CompareTag("Teammate"))
             {
-                Debug.Log($"^3.1A enter teammate {collision.name} ----------------------------");
+                Debug.Log($"{Time.time} ^3.1A enter teammate {collision.name} ----------------------------");
                 inSlot = true;
                 interactTeammate = collision.gameObject.GetComponent<Teammate>();
 
@@ -584,7 +588,7 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
             }
             else if (collision.CompareTag("NormalTile") || collision.CompareTag("SpecialTile"))
             {
-                Debug.Log($"^3.1B enter tile {collision.name} ----------------------------");
+                Debug.Log($"{Time.time} ^3.1B enter tile {collision.name} ----------------------------");
                 inTile = true;
                 interactTile = collision.gameObject.GetComponent<Tile>();
                 interactTile.interactTile = this;
@@ -598,34 +602,34 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
                 if (CompareTag("NormalTile"))
                 {
-                    Debug.Log($"^3.1C enter cell---------------------------- {name} {transform.GetChild(2).GetComponent<TMP_Text>().text} from position {tileCellPositionAtStart} -> {tileCellPosition}");
+                    Debug.Log($"{Time.time} ^3.1C enter cell---------------------------- {name} {transform.GetChild(2).GetComponent<TMP_Text>().text} from position {tileCellPositionAtStart} -> {tileCellPosition}");
                 }
                 else if (CompareTag("SpecialTile"))
                 {
-                    Debug.Log($"^3.1C enter cell---------------------------- {name} from position {tileCellPositionAtStart} -> {tileCellPosition}");
+                    Debug.Log($"{Time.time} ^3.1C enter cell---------------------------- {name} from position {tileCellPositionAtStart} -> {tileCellPosition}");
                 }
             }
         }
 
-        Debug.Log($"{name} Tile.OnTriggerEnter2D (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnTriggerEnter2D (end)");
     }
 
     public void OnTriggerExit2D(Collider2D collision)
     {
-        Debug.Log($"{name} Tile.OnTriggerExit2D (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnTriggerExit2D (start)");
 
         if (isDrag && isSelect)
         {
             if (collision.CompareTag("Teammate"))
             {
-                Debug.Log($"^3.2A exit teammate {collision.name} *****************************");
+                Debug.Log($"{Time.time} ^3.2A exit teammate {collision.name} *****************************");
                 inSlot = false;
                 //interactSlot.position = new Vector2(0, 0);
                 interactTeammate = null;
             }
             else if (collision.CompareTag("NormalTile") || collision.CompareTag("SpecialTile"))
             {
-                Debug.Log($"^3.2B exit tile {collision.name} *****************************");
+                Debug.Log($"{Time.time} ^3.2B exit tile {collision.name} *****************************");
                 inTile = false;
                 //interactTile.interactTile.position = new Vector2(0, 0);
                 interactTile.interactTile = null;
@@ -638,18 +642,18 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
             {
                 if (this.CompareTag("NormalTile"))
                 {
-                    Debug.Log($"^3.2C exit cell***************************** {name} {this.transform.GetChild(2).GetComponent<TMP_Text>().text} from position {tileCellPositionAtStart} -> {tileCellPosition}");
+                    Debug.Log($"{Time.time} ^3.2C exit cell***************************** {name} {this.transform.GetChild(2).GetComponent<TMP_Text>().text} from position {tileCellPositionAtStart} -> {tileCellPosition}");
                 }
                 else if (this.CompareTag("SpecialTile"))
                 {
-                    Debug.Log($"^3.2C exit cell***************************** {name} from position {tileCellPositionAtStart} -> {tileCellPosition}");
+                    Debug.Log($"{Time.time} ^3.2C exit cell***************************** {name} from position {tileCellPositionAtStart} -> {tileCellPosition}");
                 }
 
                 tileCellPosition = tileCellPositionAtStart;
             }
         }
 
-        Debug.Log($"{name} Tile.OnTriggerExit2D (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnTriggerExit2D (end)");
     }
     #endregion
 
@@ -657,50 +661,50 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     // Click //
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log($"{name} Tile.OnPointerDown (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnPointerDown (start)");
 
-        Debug.Log("^1 input click the tile");
+        Debug.Log($"{Time.time} ^1 input click the tile");
         currentState = TileState.State.Clicked;
         tileStatusProcessed += 1;
         BeingSelected();
 
-        Debug.Log($"{name} Tile.OnPointerDown (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnPointerDown (end)");
     }
 
     // Start drag, called only once, if just click won't be triggered //
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log($"{name} Tile.OnBeginDrag (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnBeginDrag (start)");
 
-        Debug.Log("^2 begin drag the tile");
+        Debug.Log($"{Time.time} ^2 begin drag the tile");
         currentState = TileState.State.StartDrag;
         roundData.currentTurnState = TurnState.State.PlayerAction;
 
         tileStatusProcessed += 1;
         StartDrag();
 
-        Debug.Log($"{name} Tile.OnBeginDrag (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnBeginDrag (end)");
     }
 
     // Dragging //
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log($"{name} Tile.OnDrag (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnDrag (start)");
 
         //Debug.Log("^3 dragging the tile");
         //isDrag = true;
         currentState = TileState.State.Dragging;
         transform.position = Input.mousePosition;
 
-        Debug.Log($"{name} Tile.OnDrag (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnDrag (end)");
     }
 
     // Drop, then dropper handler will receive after this //
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log($"{name} Tile.OnPointerUp (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnPointerUp (start)");
 
-        Debug.Log("^4 input release the tile");
+        Debug.Log($"{Time.time} ^4 input release the tile");
         currentState = TileState.State.Released;
         roundData.currentTurnState = TurnState.State.WaitingMobAction;
 
@@ -725,16 +729,16 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
             {
                 if (CompareTag("NormalTile"))
                 {
-                    Debug.Log($"^4.2A {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to teammate {interactTeammate.name}");
+                    Debug.Log($"{Time.time} ^4.2A {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to teammate {interactTeammate.name}");
                 }
                 else if (CompareTag("SpecialTile"))
                 {
-                    Debug.Log($"^4.2B {name} (special tile) drop to teammate {interactTeammate.name}");
+                    Debug.Log($"{Time.time} ^4.2B {name} (special tile) drop to teammate {interactTeammate.name}");
                 }
             }
             else
             {
-                Debug.Log($"^I don't know man, interactTeammate is null");
+                Debug.Log($"{Time.time} ^I don't know man, interactTeammate is null");
             }
         }
         else
@@ -743,26 +747,26 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
             {
                 if (CompareTag("NormalTile"))
                 {
-                    Debug.Log($"^4.2C {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to {interactTile.name}");
+                    Debug.Log($"{Time.time} ^4.2C {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to {interactTile.name}");
                 }
                 else if (CompareTag("SpecialTile"))
                 {
-                    Debug.Log($"^4.2D {name} (special tile) drop to {interactTile.name}");
+                    Debug.Log($"{Time.time} ^4.2D {name} (special tile) drop to {interactTile.name}");
                 }
             }
             else
             {
-                Debug.Log($"^I don't know man, interactTile is null");
+                Debug.Log($"{Time.time} ^I don't know man, interactTile is null");
             }
 
-            Debug.Log($"{name} Tile.OnPointerUp (end)");
+            Debug.Log($"{Time.time} {name} Tile.OnPointerUp (end)");
         }
     }
 
     // For tile merge, receive after onpointerup (AS A DROP RECEIVER) //
     public virtual void OnDrop(PointerEventData eventData)
     {
-        Debug.Log($"{name} Tile.OnDrop (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnDrop (start)");
         /*
         Debug.Log("^5 input drop the tile");
         currentState = TileState.State.Processing;
@@ -932,27 +936,29 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
                 }
             }
         }
-
-        Debug.Log($"{name} Tile.OnDrop (end)");
         */
+        Debug.Log($"{Time.time} {name} Tile.OnDrop (end)");
+        
     }
 
     // End drag, called only once, for reset. If just click won't be triggered //
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log($"{name} Tile.OnEndDrag (start)");
+        Debug.Log($"{Time.time} {name} Tile.OnEndDrag (start)");
 
-        Debug.Log("^6 end drag the tile");
+        Debug.Log($"{Time.time} ^6 end drag the tile");
         currentState = TileState.State.EndDrag;
         tileStatusProcessed += 1;
 
         EndDrag(this);
 
-        Debug.Log($"{name} Tile.OnEndDrag (end)");
+        Debug.Log($"{Time.time} {name} Tile.OnEndDrag (end)");
     }
 
     public void OnTurnEnd()
     {
+        Debug.Log($"{Time.time} {name} Tile.OnTurnEnd (start)");
+
         tileExistedTurns += 1;
 
         tileEffectARemainingTurns -= 1;
@@ -960,6 +966,8 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         
         tileEffectBRemainingTurns -= 1;
         tileEffectBTurnsText.text = tileEffectBRemainingTurns.ToString();
+
+        Debug.Log($"{Time.time} {name} Tile.OnTurnEnd (end)");
     }
     #endregion
 }

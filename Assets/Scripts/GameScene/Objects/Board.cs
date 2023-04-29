@@ -31,8 +31,6 @@ public class Board : MonoBehaviour
     public int specialTileSpawnRate { get { return _specialTileSpawnRate; } set { _specialTileSpawnRate = value; } }
     private int _specialTileLimit = 5;
     public int specialTileLimit { get { return _specialTileLimit; } set { _specialTileLimit = value; } }
-    private int _tileLevelSpawnScore = 0;
-    public int tileLevelSpawnScore { get { return _tileLevelSpawnScore; } set { _tileLevelSpawnScore = value; } }
     #endregion
 
     #region Factories
@@ -58,7 +56,7 @@ public class Board : MonoBehaviour
     #region Flow
     void Awake()
     {
-        Debug.Log($"Board.Awake (start)");
+        Debug.Log($"{Time.time} Board.Awake (start)");
         
         // Not ideal place
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
@@ -68,25 +66,26 @@ public class Board : MonoBehaviour
         normalTileFactory = gameObject.GetComponent<NormalTileFactory>();
         specialTileFactory = gameObject.GetComponent<SpecialTileFactory>();
 
-        Debug.Log($"Board.Awake (end)");
+        Debug.Log($"{Time.time} Board.Awake (end)");
     }
     void OnEnable()
     {
-        Debug.Log($"Board.OnEnable (start)");
+        Debug.Log($"{Time.time} Board.OnEnable (start)");
 
         // Subscribe to the game events and listen
         //Tile.OnEndTurnEvent += EndTurn;
 
-        Debug.Log($"Board.OnEnable (end)");
+        Debug.Log($"{Time.time} Board.OnEnable (end)");
     }
     void Start()
     {
-        Debug.Log($"Board.Start (start)");
+        Debug.Log($"{Time.time} Board.Start (start)");
 
-        SpawnTiles(CheckBlankCell());
-        DrawAnswer();
+        //SpawnTiles(CheckBlankCell());
+        //DrawAnswer();
+        //roundData.BeforeTurnStart();
 
-        Debug.Log($"Board.Start (end)");
+        Debug.Log($"{Time.time} Board.Start (end)");
     }
     void Update()
     {
@@ -95,19 +94,19 @@ public class Board : MonoBehaviour
 
     void OnDisable()
     {
-        Debug.Log($"Board.OnDisable (start)");
+        Debug.Log($"{Time.time} Board.OnDisable (start)");
 
         // Unsubscribe to the game events
         //Tile.OnEndTurnEvent -= EndTurn;
 
-        Debug.Log($"Board.OnDisable (end)");
+        Debug.Log($"{Time.time} Board.OnDisable (end)");
     }
 
     void OnDestroy()
     {
-        Debug.Log($"Board.OnDestroy (start)");
+        Debug.Log($"{Time.time} Board.OnDestroy (start)");
 
-        Debug.Log($"Board.OnDestroy (end)");
+        Debug.Log($"{Time.time} Board.OnDestroy (end)");
     }
     #endregion
 
@@ -117,25 +116,25 @@ public class Board : MonoBehaviour
     // Controlling the access of the board
     public void EnableBoard()
     {
-        Debug.Log($"Board.EnableBoard (start)");
+        Debug.Log($"{Time.time} Board.EnableBoard (start)");
 
         boardFog.gameObject.SetActive(false);
 
-        Debug.Log($"Board.EnableBoard (end)");
+        Debug.Log($"{Time.time} Board.EnableBoard (end)");
     }
 
     public void DisableBoard()
     {
-        Debug.Log($"Board.DisableBoard (start)");
+        Debug.Log($"{Time.time} Board.DisableBoard (start)");
 
         boardFog.gameObject.SetActive(true);
 
-        Debug.Log($"Board.DisableBoard (end)");
+        Debug.Log($"{Time.time} Board.DisableBoard (end)");
     }
 
     public void SpawnTiles(int spawnNum)
     {
-        Debug.Log($"Board.SpawnTiles (start)");
+        Debug.Log($"{Time.time} Board.SpawnTiles (start)");
 
         // Order factories to manufacture tiles, loop as to fill all blank cell in board
         while (spawnNum > 0)
@@ -178,7 +177,7 @@ public class Board : MonoBehaviour
                         // Check any duplicated idiom tile in board 
                         if ((roundData.tilesWordIdiomsID.Contains(randomIdiomID) == true) || (roundData.tilesWord.Contains(randomWord) == true))
                         {
-                            Debug.Log("Duplicated word! Draw another ID");
+                            Debug.Log($"{Time.time} Duplicated word! Draw another ID");
                             //int duplicatedRandom = random;
                             //string duplicatedRandomWord = randomWord;
                             do
@@ -217,7 +216,7 @@ public class Board : MonoBehaviour
                         // Spawning special tile
                         Tile newTile = specialTileFactory.CreateTile(randomTilePosition, answerTilesSpawner,answerTilesCells.transform.GetChild(randomTilePosition).gameObject.transform.position, MaxSpawnTileLevel(), randomTileEffect);
                         newTile.name = "Tile " + randomTilePosition.ToString();
-                        Debug.Log($"Successfully spawned a special tile: {newTile.name} in position {randomTilePosition}");
+                        Debug.Log($"{Time.time} Successfully spawned a special tile: {newTile.name} in position {randomTilePosition}");
 
                         tileCell[randomTilePosition] = 2;
                         tilesInBoard.Add(newTile);
@@ -240,30 +239,30 @@ public class Board : MonoBehaviour
             }
         }
 
-        Debug.Log($"Board.SpawnTiles (end)");
+        Debug.Log($"{Time.time} Board.SpawnTiles (end)");
     }
     public int MaxSpawnTileLevel()
     {
-        Debug.Log($"Board.MaxSpawnTileLevel (start)");
+        Debug.Log($"{Time.time} Board.MaxSpawnTileLevel (start)");
 
         int maxTileLevel = 0;
         int[] tileLevelScoreArr = { 0, 500, 1500, 3000, 5000, 7500, 10500, 14000, 18000, 22500};
 
         for(int i = 0; i < tileLevelScoreArr.Length; i++)
         {
-            if (tileLevelSpawnScore <= tileLevelScoreArr[i])
+            if (roundData.powerScore <= tileLevelScoreArr[i])
             {
                 maxTileLevel = i;
                 break;
             }
         };
 
-        Debug.Log($"Board.MaxSpawnTileLevel, return maxTileLevel(local var): {maxTileLevel} (end)");
+        Debug.Log($"{Time.time} Board.MaxSpawnTileLevel, return maxTileLevel(local var): {maxTileLevel} (end)");
         return maxTileLevel;
     }
     public void DisplayTileCell()
     {
-        Debug.Log($"Board.DisplayTileCell (start)");
+        Debug.Log($"{Time.time} Board.DisplayTileCell (start)");
 
         string tileCellMap = "";
         for (int i = 0; i < tileCell.Length; i++)
@@ -283,13 +282,13 @@ public class Board : MonoBehaviour
                 tileCellMap = tileCellMap + "\n";
             }
         }
-        Debug.Log("board.answerCell now: \n" + tileCellMap);
+        Debug.Log($"{Time.time} board.answerCell now: \n" + tileCellMap);
 
-        Debug.Log($"Board.DisplayTileCell (end)");
+        Debug.Log($"{Time.time} Board.DisplayTileCell (end)");
     }
     public int CheckBlankCell()
     {
-        Debug.Log($"Board.CheckBlankCell (start)");
+        Debug.Log($"{Time.time} Board.CheckBlankCell (start)");
 
         int blankCellsCount = 0;
         for (int i = 0; i < tileCell.Length; i++)
@@ -300,15 +299,15 @@ public class Board : MonoBehaviour
             }
         }
 
-        Debug.Log($"Board.CheckBlankCell, return blankCellsCount(local var): {blankCellsCount} (end)");
+        Debug.Log($"{Time.time} Board.CheckBlankCell, return blankCellsCount(local var): {blankCellsCount} (end)");
         return blankCellsCount;
     }
 
     public void CheckAndDestroyTiles()
     {
-        Debug.Log($"Board.CheckAndDestroyTiles (start)");
+        Debug.Log($"{Time.time} Board.CheckAndDestroyTiles (start)");
 
-        Debug.Log("^6.4 Check and destroy tiles(from board)");
+        Debug.Log($"{Time.time} ^6.4 Check and destroy tiles(from board)");
         List<int> tilesToBeDestroyed = new List<int>();
         string destroyTilesString = "";
 
@@ -328,12 +327,12 @@ public class Board : MonoBehaviour
             tile.DestroyTile(tile);
         }
 
-        Debug.Log($"Board.CheckAndDestroyTiles (end)");
+        Debug.Log($"{Time.time} Board.CheckAndDestroyTiles (end)");
     }
 
     public int CheckTileTypeCount(string tiletype)
     {
-        Debug.Log($"Board.CheckTileTypeCount (start)");
+        Debug.Log($"{Time.time} Board.CheckTileTypeCount (start)");
 
         int tileTypeCount = 0;
         for (int i = 0; i < tilesInBoard.Count; i++)
@@ -344,13 +343,13 @@ public class Board : MonoBehaviour
             }
         }
 
-        Debug.Log($"Board.CheckTileTypeCount, return tileTypeCount(local var): {tileTypeCount} (end)");
+        Debug.Log($"{Time.time} Board.CheckTileTypeCount, return tileTypeCount(local var): {tileTypeCount} (end)");
         return tileTypeCount;
     }
 
     public void DrawAnswer()
     {
-        Debug.Log($"Board.DrawAnswer (start)");
+        Debug.Log($"{Time.time} Board.DrawAnswer (start)");
 
         bool isReDrawable = false;
         int answerWordPosition = -1;
@@ -395,21 +394,21 @@ public class Board : MonoBehaviour
             string answerTileName = "Answer tiles spawner/Tile " + answerListForDrawing[answerWordPosition];
             //Debug.Log(answerTileName);
             answerTile = GameObject.Find(answerTileName).GetComponent<Tile>();
-            Debug.Log($"Answer tile is: Tile {answerListForDrawing[answerWordPosition]}");
+            //Debug.Log($"{Time.time} Answer tile is: Tile {answerListForDrawing[answerWordPosition]}");
 
             answerTile.isAnswer = true;
-            Debug.Log($"Is {answerTile.GetComponent<NormalTile>().tileText.text} answer? -> {answerTile.isAnswer}");
+            //Debug.Log($"{Time.time} Is {answerTile.GetComponent<NormalTile>().tileText.text} answer? -> {answerTile.isAnswer}");
 
             // Register idiom data to roundData, **assume all answer tile are normal tile**
             roundData.currentIdiom = answerTile.GetComponent<NormalTile>().tileIdiom;
-            Debug.Log($"roundData.currentIdiom = {roundData.currentIdiom}");
+            //Debug.Log($"{Time.time} roundData.currentIdiom = {roundData.currentIdiom}");
             roundData.currentIdiomID = answerTile.GetComponent<NormalTile>().tileIdiomID;
-            Debug.Log($"roundData.currentIdiomID = {roundData.currentIdiomID}");
+            //Debug.Log($"{Time.time} roundData.currentIdiomID = {roundData.currentIdiomID}");
             
             roundData.currentAnswerWord = answerTile.GetComponent<NormalTile>().tileText.text;
-            Debug.Log($"roundData.roundMissingWord = {roundData.currentAnswerWord}");
+            //Debug.Log($"{Time.time} roundData.roundMissingWord = {roundData.currentAnswerWord}");
             roundData.currentAnswerWordOrder = answerTile.GetComponent<NormalTile>().tileWordOrder;
-            Debug.Log($"roundData.roundMissingWordOrder = {roundData.currentAnswerWordOrder}");
+            //Debug.Log($"{Time.time} roundData.roundMissingWordOrder = {roundData.currentAnswerWordOrder}");
 
             answerTile.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color32(160, 60, 60, 255);
 
@@ -426,14 +425,14 @@ public class Board : MonoBehaviour
         roundData.currentIdiomIDText.text = roundData.currentIdiomID.ToString();
         roundData.missingWordTile.transform.position = roundData.questionTiles.transform.GetChild(roundData.currentAnswerWordOrder).transform.position;
 
-        Debug.Log($"Board.DrawAnswer (end)");
+        Debug.Log($"{Time.time} Board.DrawAnswer (end)");
     }
 
     public void UpdateTileCell()
     {
-        Debug.Log($"Board.UpdateTileCell (start)");
+        Debug.Log($"{Time.time} Board.UpdateTileCell (start)");
 
-        Debug.Log("^5.4 Update tileCell(from board)");
+        Debug.Log($"{Time.time} ^5.4 Update tileCell(from board)");
         for (int i = 0; i < answerTilesSpawner.transform.childCount; i++)
         {
             Tile tile = answerTilesSpawner.transform.GetChild(i).GetComponent<Tile>();
@@ -443,31 +442,14 @@ public class Board : MonoBehaviour
             }
         }
 
-        Debug.Log($"Board.UpdateTileCell (end)");
-    }
-
-    public void EndTurn()
-    {
-        Debug.Log($"{name} Tile.EndTurn (start)");
-
-        Debug.Log("^6.6A Board end turn");
-        
-        DisplayTileCell(); // For debug use
-        RenameTiles();
-        CheckAnswerTile();
-        DisplayTileCell(); // Double check, just in case
-
-        // Trigger here to send msg to other object that new turn
-        //OnEndTurnEvent?.Invoke();
-
-        Debug.Log($"{name} Tile.EndTurn (end)");
+        Debug.Log($"{Time.time} Board.UpdateTileCell (end)");
     }
 
     public int CheckAnswerTile()
     {
-        Debug.Log($"Board.CheckAnswerTile (start)");
+        Debug.Log($"{Time.time} Board.CheckAnswerTile (start)");
 
-        Debug.Log("^6.6B Check any answer in board");
+        Debug.Log($"{Time.time} ^6.6B Check any answer in board");
         int answerTilesCount = 0;
         for (int i = 0; i < answerTilesSpawner.transform.childCount; i++)
         {
@@ -485,15 +467,15 @@ public class Board : MonoBehaviour
             DrawAnswer();
         }
 
-        Debug.Log($"Board.CheckAnswerTile, return answerTilesCount(local var): {answerTilesCount} (end)");
+        Debug.Log($"{Time.time} Board.CheckAnswerTile, return answerTilesCount(local var): {answerTilesCount} (end)");
         return answerTilesCount;
     }
     
     public void RenameTiles()
     {
-        Debug.Log($"Board.RenameTiles (start)");
+        Debug.Log($"{Time.time} Board.RenameTiles (start)");
 
-        Debug.Log("^6.6C Rename tiles(from board)");
+        Debug.Log($"{Time.time} ^6.6C Rename tiles(from board)");
         //List<Tile> newTilesInBoard = new List<Tile>();
         // Change tile name according to it's position
         for (int i = 0; i < answerTilesSpawner.transform.childCount; i++)
@@ -502,7 +484,7 @@ public class Board : MonoBehaviour
             tile.name = "Tile " + tile.tileCellPositionAtStart;
         }
         
-        Debug.Log($"Board.RenameTiles (end)");
+        Debug.Log($"{Time.time} Board.RenameTiles (end)");
     }
     #endregion
 }
