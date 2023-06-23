@@ -6,21 +6,31 @@ using UnityEngine.UI;
 [System.Serializable]
 public class MobData
 {
-    public int id;
+    // Basic info
+    public int mobID;
     public string mobName;
-    public string picName;
-    public int level;
-    public int maxHp;
-    public int attackPoint;
-    public int defencePoint;
-    public int evasionPoint;
-    public int criticalPoint;
+    public string mobPicName;
     public string type;
     public string faction;
+
+    // Basic stats
+    public int level;
+    public int baseHealthPoint;
+    public int baseAttackPoint;
+    public int baseDefencePoint;
+    public int baseDexterityPoint;
+    public int basePerceptionPoint;
+    public int baseConstitutionPoint;
     public int maxAttackInterval;
-    public int currentAttackInterval;
+
+    // Ability related
+    public int activeAbilityID;
+    public int activeAbilityLevel;
+    public int passiveAbilityID;
+    public int passiveAbilityLevel;
+
+    // Rewards
     public int expReward;
     public int coinReward;
     public int jadeReward;
-    public Image mobPicture;
 }

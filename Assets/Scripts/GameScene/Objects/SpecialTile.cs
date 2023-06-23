@@ -9,12 +9,11 @@ using TMPro;
 public class SpecialTile : Tile
 {
     #region Game object references
-    public Image tileIcon;
+    public Image tileSpecialIcon;
     #endregion
 
     #region Tile data
-    public TileEffect tileEffect;
-    public string tileIconName;
+    public TileEffect tileMainEffect;
     #endregion
 
     #region Flow
@@ -30,18 +29,14 @@ public class SpecialTile : Tile
         //mainCamera = Camera.main;
 
         tile = this.gameObject;
-        tileIcon = tile.transform.GetChild(2).GetComponent<Image>();
+        tileSpecialIcon = tile.transform.GetChild(2).GetComponent<Image>();
+        
         tileLevelText = tile.transform.GetChild(3).GetComponent<TMP_Text>();
-        tileEffectAIcon = tile.transform.GetChild(4).transform.GetChild(0).GetComponent<Image>();
-        tileEffectBIcon = tile.transform.GetChild(4).transform.GetChild(1).GetComponent<Image>();
-        tileEffectATurnsText = tile.transform.GetChild(5).GetComponent<TMP_Text>();
-        tileEffectBTurnsText = tile.transform.GetChild(6).GetComponent<TMP_Text>();
+        tileEffectIcon = tile.transform.GetChild(4).transform.GetChild(0).GetComponent<Image>();
+        tileEffectTurnsText = tile.transform.GetChild(4).transform.GetChild(1).GetComponent<TMP_Text>();
 
         tileLevelText.gameObject.SetActive(true);
-        tileEffectAIcon.gameObject.SetActive(false);
-        tileEffectBIcon.gameObject.SetActive(false);
-        tileEffectATurnsText.gameObject.SetActive(false);
-        tileEffectBTurnsText.gameObject.SetActive(false);
+        tileEffectParent.gameObject.SetActive(false);
 
         tileRect = this.GetComponent<RectTransform>();
         tileLocation = this.transform.position;
@@ -111,6 +106,16 @@ public class SpecialTile : Tile
     #endregion
 
     #region Tile functions
+    public TileEffect GetTileMainEffect(Entity selfEntity, int tileEffectID)
+    {
+        Debug.Log($"{Time.time} {name} SpecialTile.GetTileEffect (start)");
+
+        tileMainEffect = ImportData.tileEffectDictionary[tileEffectID];
+        tileMainEffect.OnInit(this, selfEntity, tileSpecialIcon);
+        
+        Debug.Log($"{Time.time} {name} SpecialTile.GetTileEffect, return tileMainEffect(local var): {tileMainEffect.tileEffectName} (end)");
+        return tileMainEffect;
+    }
     // For tile merge, receive after onpointerup (AS A DROP RECEIVER) //
     public override void OnDrop(PointerEventData eventData)
     {
@@ -160,8 +165,8 @@ public class SpecialTile : Tile
                     }
 
                     // Some punishment here
-                    roundData.player.TakeDamage(roundData.player.currentMaxHp.value * 0.15f);
-                    roundData.powerScore -= GetOutPutPower() * 2;
+                    roundData.player.TakeDamage(roundData.player.currentMaxHealthValue * 0.15f);
+                    roundData.currentPowerScore -= GetOutPutPower() * 2;
 
                     // Reset new round
                     //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -193,8 +198,8 @@ public class SpecialTile : Tile
                             Debug.Log($"{Time.time} ^5.2B.4 merge the wrong answer {dragTile.name} (special tile) -> correct answer {name} (special tile)");
                         }
                         // Some punishment here
-                        roundData.player.TakeDamage(roundData.player.currentMaxHp.value * 0.15f);
-                        roundData.powerScore -= GetOutPutPower() * 2;
+                        roundData.player.TakeDamage(roundData.player.currentMaxHealthValue * 0.15f);
+                        roundData.currentPowerScore -= GetOutPutPower() * 2;
 
                         // Reset new round
                         //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -237,7 +242,7 @@ public class SpecialTile : Tile
                             roundData.player.isActioned = true;
 
                             // Contribute the score to board
-                            roundData.powerScore += GetOutPutPower();
+                            roundData.currentPowerScore += GetOutPutPower();
 
                             //board.tileCell[dragTile.tileCellPosition] = -1;
                             board.UpdateTileCell();
@@ -253,20 +258,21 @@ public class SpecialTile : Tile
 
         Debug.Log($"{Time.time} {name} SpecialTile.OnDrop (override Entities.OnDrop) (end)");
     }
-
-    public void OnNewTurn()
+    public override void OnBeforeTurnStart()
     {
-        Debug.Log($"{Time.time} {name} SpecialTile.OnNewTurn (start)");
+        base.OnBeforeTurnStart();
+        tileMainEffect.OnBeforeTurnStart(this);
+    }
 
-        tileExistedTurns += 1;
-
-        tileEffectARemainingTurns -= 1;
-        tileEffectATurnsText.text = tileEffectARemainingTurns.ToString();
+    public override void OnTurnEnd()
+    {
+        base.OnTurnEnd();
         
-        tileEffectBRemainingTurns -= 1;
-        tileEffectBTurnsText.text = tileEffectBRemainingTurns.ToString();
-
-        Debug.Log($"{Time.time} {name} SpecialTile.OnNewTurn (end)");
+        if (currentTileEffect != null)
+        {
+            currentTileEffect.tileEffectRemainingTurns -= 1;
+            tileEffectTurnsText.text = currentTileEffect.tileEffectRemainingTurns.ToString();
+        }
     }
     #endregion
 }

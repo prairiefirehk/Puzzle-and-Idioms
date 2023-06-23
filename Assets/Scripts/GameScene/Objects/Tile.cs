@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHandler, IPointerUpHandler, IEndDragHandler, IDropHandler
+public class Tile : Affectable, IPointerDownHandler, IBeginDragHandler, IDragHandler, IPointerUpHandler, IEndDragHandler, IDropHandler
 {
     #region Scripts
     public Board board;
@@ -17,10 +17,9 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     // Blank tile without anythiung shown in the canvas, need to be initialize later
     public GameObject tile;
     public TMP_Text tileLevelText;
-    public TMP_Text tileEffectATurnsText;
-    public TMP_Text tileEffectBTurnsText;
-    public Image tileEffectAIcon;
-    public Image tileEffectBIcon;
+    public GameObject tileEffectParent;
+    public Image tileEffectIcon;
+    public TMP_Text tileEffectTurnsText;
 
     // Controlling the tile transparent
     public CanvasGroup canvasGroup;
@@ -45,24 +44,10 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     public string tileElementType;
     // (r, b, g, a), 0-255
     public Color32 tileColor;
-    // Effect A
-    public TileEffect tileEffectA;
-    // Effect A icon name
-    public string tileEffectAIconName;
-    // Effective turns for effect A
-    public int tileEffectATurns;
-    // Remaining turns for effect A
-    public int tileEffectARemainingTurns;
-    public bool hasTileEffectA;
-    // Effect B
-    public TileEffect tileEffectB;
-    // Effect B icon name
-    public string tileEffectBIconName;
-    // Effective turns for effect B
-    public int tileEffectBTurns;
-    // Remaining turns for effect B
-    public int tileEffectBRemainingTurns;
-    public bool hasTileEffectB;
+
+    // Tile effects
+    public TileEffect currentTileEffect;
+
 
     public TileState.State currentState = TileState.State.IsInitalizing;
     public int tileStatusProcessed = 0;
@@ -93,13 +78,13 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     #region Tile booleans
     // For detecting answer
     public bool isAnswer;
-
     // Checking if the tile moved
     public bool isMoved;
     // For those methods of the tile, change to state and will be deleted
     public bool isSelect;
     public bool isDrag;
     public bool toBeDestroyed;
+    public bool isControllable;
     #endregion
 
     #region Tile interaction
@@ -161,105 +146,12 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         Debug.Log($"{Time.time} {name} Tile.OnDestroy (end)");
     }
     #endregion
-
-    #region Enum of tile effect
-    public enum TileEffect
-    {
-        healPlayer,
-        damagePlayer,
-        tileLevelIncrease,
-        tileLevelDecrease,
-        multipleAttackPoint,
-        divideAttackPoint,
-        tileSpawnScoreIncrease,
-        tileSpawnScoreDecrease,
-        coinGainedIncrease,
-        coinGainedDecrease,
-        expGainedIncrease,
-        expGainedDecrease,
-        jadeGainedIncrease,
-        jadeGainedDecrease
-    }
-    #endregion
     
     #region Tile events
     //public static event Action OnEndTurnEvent;
     #endregion
 
     #region Tile functions
-    // Temp
-    public string GetTileIconName(int tileFunctionNumber)
-    {
-        Debug.Log($"{Time.time} {name} Tile.GetTileIconName (start)");
-
-        string picName = "";
-        switch(tileFunctionNumber)
-        {
-            case 1:
-                picName = "Health_increase_icon_red_50_hq";
-                break;
-
-            case 2:
-                picName = "Health_decrease_icon_red_50_hq";
-                break;
-                    
-            case 3:
-                picName = "TileLevel_increase_icon_yellow_50_hq";
-                break;
-                    
-            case 4:
-                picName = "TileLevel_decrease_icon_yellow_50_hq";
-                break;
-                    
-            case 5:
-                picName = "Multiple_attackPoint_icon_black_50_hq";
-                break;
-                    
-            case 6:
-                picName = "Divide_attackPoint_icon_black_50_hq";
-                break;
-                    
-            case 7:
-                picName = "TileSpawnScore_increase_icon_green_50_hq";
-                break;
-                    
-            case 8:
-                picName = "TileSpawnScore_decrease_icon_green_50_hq";
-                break;
-                    
-            case 9:
-                picName = "CoinGained_increase_icon_yellow_50_hq";
-                break;
-                    
-            case 10:
-                picName = "CoinGained_decrease_icon_yellow_50_hq";
-                break;
-                    
-            case 11:
-                picName = "ExpGained_increase_icon_purple_50_hq";
-                break;
-                    
-            case 12:
-                picName = "ExpGained_decrease_icon_purple_50_hq";
-                break;
-                    
-            case 13:
-                picName = "JadeGained_increase_icon_green_50_hq";
-                break;
-                    
-            case 14:
-                picName = "JadeGained_decrease_icon_green_50_hq";
-                break;
-                    
-            default:
-                picName = "Health_increase_icon_red_50_hq";
-                Debug.Log("Hey dude can't load special tile's name!");
-                break;
-        }
-        Debug.Log($"{Time.time} {name} Tile.GetTileIconName, return picName(local var): {picName} (end)");
-        return picName;
-    }
-
     public int GetOutPutPower()
     {
         Debug.Log($"{Time.time} {name} Tile.GetOutPutPower (start)");
@@ -267,63 +159,16 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         Debug.Log($"{Time.time} {name} Tile.GetOutPutPower, return outputPower * (tileLevel + 1): {outputPower * (tileLevel + 1)} (end)");
         return (outputPower * (tileLevel + 1));
     }
-    public void GetTileEffect(Tile tile, TileEffect tileEffectOne, int tileEffectOneTurns)
+    public TileEffect GetTileEffect(Entity selfEntity, int tileEffectID, int tileEffectTurns)
     {
         Debug.Log($"{Time.time} {name} Tile.GetTileEffect (start)");
 
-
-        tile.tileEffectA = tileEffectOne;
-        tile.tileEffectATurns = tileEffectOneTurns;
-        tile.tileEffectARemainingTurns = tile.tileEffectATurns;
-        tile.tileEffectAIconName = tile.GetTileIconName((int)tileEffectOne);
-        Sprite tileEffectAOrgImage = Resources.Load<Sprite>($"Prefabs/Tiles/{tile.tileEffectAIconName}");
-        tile.tileEffectAIcon.sprite = tileEffectAOrgImage;
-
-
-        // Make sure the effect icon/text object is active
-        tile.tileEffectAIcon.gameObject.SetActive(true);
-        tile.tileEffectATurnsText.gameObject.SetActive(true);
-
-        tile.tileEffectATurnsText.text = tile.tileEffectARemainingTurns.ToString();
-
-        Debug.Log($"{Time.time} {name} Tile.GetTileEffect (end)");
+        currentTileEffect = ImportData.tileEffectDictionary[tileEffectID];
+        currentTileEffect.OnInit(this, selfEntity, tileEffectTurns);
+        
+        Debug.Log($"{Time.time} {name} Tile.GetTileEffect, return currentTileEffect: {currentTileEffect.tileEffectName} (end)");
+        return currentTileEffect;
     }
-
-    public void GetTileEffect(Tile tile, TileEffect tileEffectOne, int tileEffectOneTurns, TileEffect tileEffectTwo, int tileEffectTwoTurns)
-    {
-        Debug.Log($"{Time.time} {name} Tile.GetTileEffect (start)");
-
-        tile.tileEffectA = tileEffectOne;
-        tile.tileEffectATurns = tileEffectOneTurns;
-        tile.tileEffectARemainingTurns = tile.tileEffectATurns;
-        tile.tileEffectATurnsText.text = tileEffectARemainingTurns.ToString();
-        tile.tileEffectAIconName = tile.GetTileIconName((int)tileEffectOne);
-        Sprite tileEffectAOrgImage = Resources.Load<Sprite>($"Prefabs/Tiles/{tile.tileEffectAIconName}");
-        tile.tileEffectAIcon.sprite = tileEffectAOrgImage;
-
-        // Make sure the effect icon/text object is active
-        tile.tileEffectAIcon.gameObject.SetActive(true);
-        tile.tileEffectATurnsText.gameObject.SetActive(true);
-
-        tile.tileEffectATurnsText.text = tile.tileEffectARemainingTurns.ToString();
-
-        tile.tileEffectB = tileEffectTwo;
-        tile.tileEffectBTurns = tileEffectTwoTurns;
-        tile.tileEffectBRemainingTurns = tile.tileEffectBTurns;
-        tile.tileEffectBTurnsText.text = tileEffectBRemainingTurns.ToString();
-        tile.tileEffectBIconName = tile.GetTileIconName((int)tileEffectOne);
-        Sprite tileEffectBOrgImage = Resources.Load<Sprite>($"Prefabs/Tiles/{tile.tileEffectBIconName}");
-        tile.tileEffectBIcon.sprite = tileEffectBOrgImage;
-
-        // Make sure the effect icon/text object is active
-        tile.tileEffectBIcon.gameObject.SetActive(true);
-        tile.tileEffectBTurnsText.gameObject.SetActive(true);
-
-        tile.tileEffectBTurnsText.text = tile.tileEffectBRemainingTurns.ToString();
-
-        Debug.Log($"{Time.time} {name} Tile.GetTileEffect (end)");
-    }
-
     public void SetTileLocation()
     {
         Debug.Log($"{Time.time} {name} Tile.SetTileLocation (start)");
@@ -484,7 +329,9 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
             Debug.Log($"{Time.time} ^6.3A Changed position!");
 
             tilePrefab.isMoved = true;
-            roundData.player.isActioned = true;
+
+            //roundData.player.isActioned = true;
+
             // Change tile location
             tilePrefab.gameObject.transform.position = board.transform.GetChild(5).gameObject.transform.GetChild(tileCellPosition).position;
             // Indicate tile cell has new tile
@@ -663,10 +510,14 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     {
         Debug.Log($"{Time.time} {name} Tile.OnPointerDown (start)");
 
-        Debug.Log($"{Time.time} ^1 input click the tile");
-        currentState = TileState.State.Clicked;
-        tileStatusProcessed += 1;
-        BeingSelected();
+        if (isControllable)
+        {
+            Debug.Log($"{Time.time} ^1 input click the tile");
+            currentState = TileState.State.Clicked;
+            tileStatusProcessed += 1;
+            BeingSelected();
+        }
+        
 
         Debug.Log($"{Time.time} {name} Tile.OnPointerDown (end)");
     }
@@ -676,12 +527,16 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
     {
         Debug.Log($"{Time.time} {name} Tile.OnBeginDrag (start)");
 
-        Debug.Log($"{Time.time} ^2 begin drag the tile");
-        currentState = TileState.State.StartDrag;
-        roundData.currentTurnState = TurnState.State.PlayerAction;
+        if (isControllable)
+        {
+            Debug.Log($"{Time.time} ^2 begin drag the tile");
+            currentState = TileState.State.StartDrag;
+            roundData.currentTurnState = TurnState.State.PlayerAction;
 
-        tileStatusProcessed += 1;
-        StartDrag();
+            tileStatusProcessed += 1;
+            StartDrag();
+        }
+        
 
         Debug.Log($"{Time.time} {name} Tile.OnBeginDrag (end)");
     }
@@ -693,8 +548,12 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
 
         //Debug.Log("^3 dragging the tile");
         //isDrag = true;
-        currentState = TileState.State.Dragging;
-        transform.position = Input.mousePosition;
+
+        if (isControllable)
+        {
+            currentState = TileState.State.Dragging;
+            transform.position = Input.mousePosition;
+        }
 
         Debug.Log($"{Time.time} {name} Tile.OnDrag (end)");
     }
@@ -705,61 +564,65 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         Debug.Log($"{Time.time} {name} Tile.OnPointerUp (start)");
 
         Debug.Log($"{Time.time} ^4 input release the tile");
-        currentState = TileState.State.Released;
-        roundData.currentTurnState = TurnState.State.WaitingMobAction;
 
-        tileStatusProcessed += 1;
-        //UnSelected();
-
-        // Sometime player only just clicked the tile, by this will just end the whole dragging process.
-        // To prevent this, just check the status processed(if the tile didn't go through OnBeginDrag, tileStatusProcessed will less than 3)
-        if (tileStatusProcessed < 3)
+        if (isControllable)
         {
-            UnSelected();
+            currentState = TileState.State.Released;
+            //roundData.currentTurnState = TurnState.State.BeforePlayerMoveEnd;
 
-            // Forcing tile to reset
-            ResetTile(this);
-            tileStatusProcessed = 0;
-        }
+            tileStatusProcessed += 1;
+            //UnSelected();
 
-        if (inSlot == true)
-        {
-            // Do nothing, teammate drop handler will deal with it
-            if (interactTeammate != null)
+            // Sometime player only just clicked the tile, by this will just end the whole dragging process.
+            // To prevent this, just check the status processed(if the tile didn't go through OnBeginDrag, tileStatusProcessed will less than 3)
+            if (tileStatusProcessed < 3)
             {
-                if (CompareTag("NormalTile"))
+                UnSelected();
+
+                // Forcing tile to reset
+                ResetTile(this);
+                tileStatusProcessed = 0;
+            }
+
+            if (inSlot == true)
+            {
+                // Do nothing, teammate drop handler will deal with it
+                if (interactTeammate != null)
                 {
-                    Debug.Log($"{Time.time} ^4.2A {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to teammate {interactTeammate.name}");
+                    if (CompareTag("NormalTile"))
+                    {
+                        Debug.Log($"{Time.time} ^4.2A {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to teammate {interactTeammate.entityName}");
+                    }
+                    else if (CompareTag("SpecialTile"))
+                    {
+                        Debug.Log($"{Time.time} ^4.2B {name} (special tile) drop to teammate {interactTeammate.entityName}");
+                    }
                 }
-                else if (CompareTag("SpecialTile"))
+                else
                 {
-                    Debug.Log($"{Time.time} ^4.2B {name} (special tile) drop to teammate {interactTeammate.name}");
+                    Debug.Log($"{Time.time} ^I don't know man, interactTeammate is null");
                 }
             }
             else
             {
-                Debug.Log($"{Time.time} ^I don't know man, interactTeammate is null");
-            }
-        }
-        else
-        {
-            if (interactTile != null)
-            {
-                if (CompareTag("NormalTile"))
+                if (interactTile != null)
                 {
-                    Debug.Log($"{Time.time} ^4.2C {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to {interactTile.name}");
+                    if (CompareTag("NormalTile"))
+                    {
+                        Debug.Log($"{Time.time} ^4.2C {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text} drop to {interactTile.name}");
+                    }
+                    else if (CompareTag("SpecialTile"))
+                    {
+                        Debug.Log($"{Time.time} ^4.2D {name} (special tile) drop to {interactTile.name}");
+                    }
                 }
-                else if (CompareTag("SpecialTile"))
+                else
                 {
-                    Debug.Log($"{Time.time} ^4.2D {name} (special tile) drop to {interactTile.name}");
+                    Debug.Log($"{Time.time} ^I don't know man, interactTile is null");
                 }
-            }
-            else
-            {
-                Debug.Log($"{Time.time} ^I don't know man, interactTile is null");
-            }
 
-            Debug.Log($"{Time.time} {name} Tile.OnPointerUp (end)");
+                Debug.Log($"{Time.time} {name} Tile.OnPointerUp (end)");
+            }
         }
     }
 
@@ -955,17 +818,17 @@ public class Tile : Effectable, IPointerDownHandler, IBeginDragHandler, IDragHan
         Debug.Log($"{Time.time} {name} Tile.OnEndDrag (end)");
     }
 
-    public void OnTurnEnd()
+    public virtual void OnBeforeTurnStart()
+    {
+        Debug.Log($"{Time.time} {name} Tile.OnBeforeTurnStart (start)");
+
+        Debug.Log($"{Time.time} {name} Tile.OnBeforeTurnStart (end)");
+    }
+    public virtual void OnTurnEnd()
     {
         Debug.Log($"{Time.time} {name} Tile.OnTurnEnd (start)");
 
         tileExistedTurns += 1;
-
-        tileEffectARemainingTurns -= 1;
-        tileEffectATurnsText.text = tileEffectARemainingTurns.ToString();
-        
-        tileEffectBRemainingTurns -= 1;
-        tileEffectBTurnsText.text = tileEffectBRemainingTurns.ToString();
 
         Debug.Log($"{Time.time} {name} Tile.OnTurnEnd (end)");
     }

@@ -29,7 +29,7 @@ public class Board : MonoBehaviour
     public int normalTileSpawnRate { get { return _normalTileSpawnRate; } set { _normalTileSpawnRate = value; } }
     private int _specialTileSpawnRate = 80;
     public int specialTileSpawnRate { get { return _specialTileSpawnRate; } set { _specialTileSpawnRate = value; } }
-    private int _specialTileLimit = 5;
+    private int _specialTileLimit = 2;
     public int specialTileLimit { get { return _specialTileLimit; } set { _specialTileLimit = value; } }
     #endregion
 
@@ -47,10 +47,6 @@ public class Board : MonoBehaviour
     public int[] tileCell = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     public List<Tile> tilesInBoard;
     public int[] answerCount = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    #endregion
-
-    #region Events
-    //public static event Action OnEndTurnEvent;
     #endregion
 
     #region Flow
@@ -211,7 +207,7 @@ public class Board : MonoBehaviour
                         //Debug.Log("Condition 2 output value 2: " + (spawnTypeRandom < 100));
                         //Debug.Log("Condition 2 output value 3: " + (CheckTileTypeCount("special") < specialTileLimit));
                         // Another random to control special tile element?
-                        int randomTileEffect = UnityEngine.Random.Range(0, Enum.GetNames(typeof(Tile.TileEffect)).Length);
+                        int randomTileEffect = UnityEngine.Random.Range(0, ImportData.tileEffectDictionary.Count);
 
                         // Spawning special tile
                         Tile newTile = specialTileFactory.CreateTile(randomTilePosition, answerTilesSpawner,answerTilesCells.transform.GetChild(randomTilePosition).gameObject.transform.position, MaxSpawnTileLevel(), randomTileEffect);
@@ -250,7 +246,7 @@ public class Board : MonoBehaviour
 
         for(int i = 0; i < tileLevelScoreArr.Length; i++)
         {
-            if (roundData.powerScore <= tileLevelScoreArr[i])
+            if (roundData.currentPowerScore <= tileLevelScoreArr[i])
             {
                 maxTileLevel = i;
                 break;
@@ -262,7 +258,7 @@ public class Board : MonoBehaviour
     }
     public void DisplayTileCell()
     {
-        Debug.Log($"{Time.time} Board.DisplayTileCell (start)");
+        //Debug.Log($"{Time.time} Board.DisplayTileCell (start)");
 
         string tileCellMap = "";
         for (int i = 0; i < tileCell.Length; i++)
@@ -282,13 +278,14 @@ public class Board : MonoBehaviour
                 tileCellMap = tileCellMap + "\n";
             }
         }
+
         Debug.Log($"{Time.time} board.answerCell now: \n" + tileCellMap);
 
-        Debug.Log($"{Time.time} Board.DisplayTileCell (end)");
+        //Debug.Log($"{Time.time} Board.DisplayTileCell (end)");
     }
     public int CheckBlankCell()
     {
-        Debug.Log($"{Time.time} Board.CheckBlankCell (start)");
+        //Debug.Log($"{Time.time} Board.CheckBlankCell (start)");
 
         int blankCellsCount = 0;
         for (int i = 0; i < tileCell.Length; i++)
@@ -299,7 +296,7 @@ public class Board : MonoBehaviour
             }
         }
 
-        Debug.Log($"{Time.time} Board.CheckBlankCell, return blankCellsCount(local var): {blankCellsCount} (end)");
+        //Debug.Log($"{Time.time} Board.CheckBlankCell, return blankCellsCount(local var): {blankCellsCount} (end)");
         return blankCellsCount;
     }
 
@@ -313,14 +310,24 @@ public class Board : MonoBehaviour
 
         for (int i = 0; i < tileCell.Length; i++)
         {
+            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
             if (tileCell[i] == -1)
             {
-                tilesToBeDestroyed.Add(i);
-                //tileCell[tile.tileCellPosition] = 0;
-                destroyTilesString = destroyTilesString + i + ", ";
+                Tile tile = GameObject.Find("Tile " + i).GetComponent<Tile>();
+                tile.toBeDestroyed = true;
             }
         }
-            
+
+        for (int i = 0; i < tilesInBoard.Count; i++)
+        {
+            if (tilesInBoard[i].toBeDestroyed == true)
+            {
+                tilesToBeDestroyed.Add(tilesInBoard[i].tileCellPositionAtStart);
+                destroyTilesString = destroyTilesString + tilesInBoard[i].tileCellPositionAtStart + ", ";
+                Debug.Log($"destroyTilesString = {destroyTilesString}");
+            }
+        }
+
         foreach (int tilesPosition in tilesToBeDestroyed)
         {
             Tile tile = GameObject.Find("Tile " + tilesPosition).GetComponent<Tile>();
@@ -410,7 +417,7 @@ public class Board : MonoBehaviour
             roundData.currentAnswerWordOrder = answerTile.GetComponent<NormalTile>().tileWordOrder;
             //Debug.Log($"{Time.time} roundData.roundMissingWordOrder = {roundData.currentAnswerWordOrder}");
 
-            answerTile.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color32(160, 60, 60, 255);
+            //answerTile.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color32(160, 60, 60, 255);
 
             roundData.askedAnswerWords.Add(roundData.currentAnswerWord);
             roundData.askedAnswerIdiomsIDs.Add(roundData.currentIdiomID);
@@ -450,7 +457,9 @@ public class Board : MonoBehaviour
         Debug.Log($"{Time.time} Board.CheckAnswerTile (start)");
 
         Debug.Log($"{Time.time} ^6.6B Check any answer in board");
+
         int answerTilesCount = 0;
+
         for (int i = 0; i < answerTilesSpawner.transform.childCount; i++)
         {
             Tile tile = answerTilesSpawner.transform.GetChild(i).GetComponent<Tile>();

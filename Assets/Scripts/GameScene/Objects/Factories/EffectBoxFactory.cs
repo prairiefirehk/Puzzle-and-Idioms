@@ -61,6 +61,7 @@ public class EffectBoxFactory : MonoBehaviour, IFactory
     {
         Debug.Log($"{Time.time} EffectBoxFactory.CreateEffectBox (start)");
 
+
         Transform effectBoxSpawnParent;
         if (target == roundData.currentMob)
         {
@@ -73,6 +74,7 @@ public class EffectBoxFactory : MonoBehaviour, IFactory
 
         EffectBox effectBox = Instantiate(effectBoxPrefab, effectBoxSpawnParent).GetComponent<EffectBox>();
 
+        effectBox.statusEffect = statusEffect;
         effectBox.name = statusEffect.effectName.ToString();
 
         if (target == roundData.currentMob)
@@ -80,19 +82,25 @@ public class EffectBoxFactory : MonoBehaviour, IFactory
             effectBox.effectBoxCellsParent = effectBoxCells.transform.GetChild(0).gameObject;
             //Debug.Log($"{Time.time} {effectBox.effectBoxCellsParent.name}'s local position is {effectBox.effectBoxCellsParent.transform.GetChild(statusEffectOrder).position}");
             effectBox.effectBoxPosition = effectBox.effectBoxCellsParent.transform.GetChild(statusEffectOrder).position;
+            effectBox.effectBackground.transform.localPosition = new Vector2(35, 0);
             effectBox.effectIcon.transform.localPosition = new Vector2(35, 0);
             effectBox.effectCDText.transform.localPosition = new Vector2(-35, -10);
+            effectBox.effectCDText.alignment = TextAlignmentOptions.Right;
         }
         else
         {
             effectBox.effectBoxCellsParent = effectBoxCells.transform.GetChild(1).gameObject;
             effectBox.effectBoxPosition = effectBox.effectBoxCellsParent.transform.GetChild(statusEffectOrder).position;
+            effectBox.effectBackground.transform.localPosition = new Vector2(-35, 0);
             effectBox.effectIcon.transform.localPosition = new Vector2(-35, 0);
             effectBox.effectCDText.transform.localPosition = new Vector2(35, -10);
+            effectBox.effectCDText.alignment = TextAlignmentOptions.Left;
         }
         effectBox.transform.position = effectBox.effectBoxPosition;
 
-        effectBox.iconPicName = effectBox.GetEffectBoxIconName(statusEffect.effectName);
+        Debug.Log($"$statusEffect.effectIconPicName = {statusEffect.effectIconPicName}");
+        effectBox.iconPicName = statusEffect.effectIconPicName;
+        Debug.Log($"$effectBox.iconPicName = {effectBox.iconPicName}");
         Sprite effectBoxIconOrgImage = Resources.Load<Sprite>($"Icons/{effectBox.iconPicName}");
         effectBox.effectIcon.sprite = effectBoxIconOrgImage;
         //effectBox.effectIcon.gameObject.SetActive(true);
@@ -101,9 +109,9 @@ public class EffectBoxFactory : MonoBehaviour, IFactory
         effectBox.effectCDText.text = effectBox.effectCD.ToString();
         //effectBox.effectCDText.gameObject.SetActive(true);
 
-        effectBox.statusEffect = statusEffect;
-        effectBox.currentState = EffectBoxState.State.Occupied;
         
+        effectBox.currentState = EffectBoxState.State.Occupied;
+        Debug.Log($"$Effect box {effectBox.name} spawned at {effectBox.effectBoxCellsParent.name}'s {effectBox.statusEffect.GetOrderOfStatusEffect()} box");
         Debug.Log($"{Time.time} EffectBoxFactory.CreateEffectBox, return effectBox(local var): {effectBox.name}(effectBox.name only) (end)"); 
         return effectBox;
     }

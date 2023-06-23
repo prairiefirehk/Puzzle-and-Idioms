@@ -98,6 +98,7 @@ public class NormalTileFactory : MonoBehaviour, IFactory
         normalTile.currentState = TileState.State.Idle;
 
         // Default setting
+        normalTile.isControllable = true;
         normalTile.isAnswer = false;
 
         //Debug.Log("2. " + normalTile.tileText.text + " Tile position right after create: " + normalTile.tileCellPosition.ToString());

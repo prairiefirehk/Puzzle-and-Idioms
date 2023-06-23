@@ -5,12 +5,13 @@ using UnityEngine;
 public enum StatModifierType
 {
     // Setting enum as 3-digit system as to leave space for future expension
+    // Direct add/minus
     Flat = 100,
 
     // Stackable, eg. 10%+10% = 20% (original will become 120%)
-    PercentAdd = 200,
+    PercentStack = 200,
 
-    // Will multiply no matter what, will calculate after percentAdd, eg. 50% (original will become 120*1.5 = 180%)
+    // Will multiply no matter what, will calculate after PercentStack, eg. 50% (original will become 120*1.5 = 180%)
     PercentMultiple = 300, 
 
     // Directly set the number equal to that number (eg. = 20)

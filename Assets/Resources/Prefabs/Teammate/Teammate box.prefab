@@ -324,6 +324,7 @@ RectTransform:
   - {fileID: 1981153269585241363}
   - {fileID: 8942141367478552390}
   - {fileID: 6447717228582695781}
+  - {fileID: 6318300511835024217}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -422,34 +423,125 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77a02c6c2113fab4e923abba761c35b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _level: 0
-  _maxHp: 0
-  _currentHp: 0
-  _attackPoint: 0
-  _currentAttackPoint: 0
-  _defencePoint: 0
-  _currentDefencePoint: 0
-  _evasionPoint: 0
-  _criticalPoint: 0
-  _type: 
-  _faction: 
-  teammateBox: {fileID: 2101922497819909772}
+  currentStatusEffects: []
+  hasStatusEffect: 0
+  isSkipTurn: 0
+  isStun: 0
+  isBurn: 0
+  isFrozen: 0
+  board: {fileID: 0}
   roundData: {fileID: 0}
   player: {fileID: 0}
-  _id: 0
-  _teammateName: 
-  _picName: 
-  _activeSkillID: 0
-  _passiveSkillID: 0
-  _maxActiveSkillCD: 0
-  _currentActiveSkillCD: 0
-  _currentTotalAttackPoint: 0
+  _currentState: 0
+  _level: 0
+  _ownedAbilities: []
+  _baseHealthPoint: 0
+  _currentMaxHealthValue: 0
+  _currentHealthValue: 0
+  _baseAttackPoint: 0
+  _currentAttackValue: 0
+  _baseDefencePoint: 0
+  _currentDefenceValue: 0
+  _baseDexterityPoint: 0
+  _basePerceptionPoint: 0
+  _baseConstitutionPoint: 0
+  _currentSpeedValue: 0
+  _type: 
+  _faction: 
+  _activeAbility:
+    roundData: {fileID: 0}
+  _activeAbilityID: 0
+  _activeAbilityLevel: 0
+  _maxActiveAbilityCD: 0
+  _currentActiveAbilityCD: 0
+  _maxActiveAbilityCost: 0
+  roundManager: {fileID: 0}
   position: {x: 0, y: 0}
   teammatePic: {fileID: 0}
   currentActiveSkillCDText: {fileID: 7767036784027440522}
+  outputValueText: {fileID: 2383370918662767850}
+  frame: {fileID: 1888875223760978110}
+  _teammateID: 0
+  _teammateName: 
+  _picName: 
+  _currentTotalAttackValue: 0
   lerpSpeed: 0
   outputValue: 0
-  outputValueText: {fileID: 2383370918662767850}
+--- !u!1 &4953283537264014088
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6318300511835024217}
+  - component: {fileID: 5819928287544099282}
+  - component: {fileID: 1888875223760978110}
+  m_Layer: 6
+  m_Name: Frame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &6318300511835024217
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4953283537264014088}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2101922497819909773}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 252, y: 252}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5819928287544099282
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4953283537264014088}
+  m_CullTransparentMesh: 1
+--- !u!114 &1888875223760978110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4953283537264014088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 5266dee23646cc64ab656262542fcf35, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &6012797730632996990
 GameObject:
   m_ObjectHideFlags: 0

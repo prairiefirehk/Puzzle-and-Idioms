@@ -6,8 +6,9 @@ public class TurnState
 {
     public enum State
     {
-        BeforeTurnStart = 000,
-        TurnStart = 001,
+        FirstTimeInit = 000,
+        BeforeTurnStart = 001,
+        TurnStart = 002,
 
         // Player
         BeforePlayerMoveStart = 100,

@@ -59,14 +59,14 @@ public class SpecialTileFactory : MonoBehaviour, IFactory
     #endregion
 
     #region Factory functions
-    public SpecialTile CreateTile(int tileCellPosition, GameObject parent, Vector2 tileLocation, int maxSpawnTileLevel, int tileEffect)
+    public SpecialTile CreateTile(int tileCellPosition, GameObject parent, Vector2 tileLocation, int maxSpawnTileLevel, int tileEffectID)
     {
         Debug.Log($"{Time.time} SpecialTileFactory.CreateTile (start)");    
 
         SpecialTile specialTile = Instantiate(tilePrefab, parent.transform).GetComponent<SpecialTile>();
         specialTile.tileType = "special";
 
-        //specialTile.tileIcon = ;
+        
         specialTile.tileLocation = tileLocation;
         specialTile.SetTileLocation();
         specialTile.tileCellPosition = tileCellPosition;
@@ -75,14 +75,11 @@ public class SpecialTileFactory : MonoBehaviour, IFactory
         specialTile.tileLevel = Random.Range(0, maxSpawnTileLevel);
         specialTile.tileLevelText.text = specialTile.tileLevel.ToString();
 
-        // Turn int into tile effect type object(enum?)
-        specialTile.tileEffect = (Tile.TileEffect)tileEffect;
+        specialTile.tileMainEffect = specialTile.GetTileMainEffect(roundData.player, tileEffectID);
+        specialTile.tileMainEffect.isSource = true;
         //specialTile.tileColor = new Color32(240, 200, 210, 255);
         //specialTile.transform.GetChild(0).GetComponent<Image>().color = specialTile.tileColor;
-        specialTile.tileIcon = specialTile.transform.GetChild(2).GetComponent<Image>();
-        specialTile.tileIconName = specialTile.GetTileIconName(tileEffect);
-        Sprite specialTileOrgImage = Resources.Load<Sprite>($"Prefabs/Tiles/{specialTile.tileIconName}");
-        specialTile.tileIcon.sprite = specialTileOrgImage;
+        specialTile.tileSpecialIcon = specialTile.transform.GetChild(2).GetComponent<Image>();
 
         specialTile.tileSpawnedTurns = roundData.currentTurn;
         specialTile.tileExistedTurns = 1;
@@ -90,6 +87,9 @@ public class SpecialTileFactory : MonoBehaviour, IFactory
         specialTile.outputPower = UnityEngine.Random.Range(minInclusive: 80, 100);
 
         specialTile.currentState = TileState.State.Idle;
+
+        // Default setting
+        specialTile.isControllable = true;
 
         Debug.Log($"{Time.time} SpecialTileFactory.CreateTile, return specialTile(local var): {specialTile.name}(specialTile.name only) (end)");  
         return specialTile;

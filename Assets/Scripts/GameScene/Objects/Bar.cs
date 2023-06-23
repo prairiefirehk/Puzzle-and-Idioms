@@ -53,10 +53,6 @@ public class Bar : MonoBehaviour
         {
             value = 0;
         }
-        if (value > maxValue)
-        {
-            value = maxValue;
-        }
     }
 
     void OnDisable()
@@ -100,7 +96,7 @@ public class Bar : MonoBehaviour
     }
     public void ResizeBarValue(float newValue, float maxValue, int decimalplace)
     {
-        Debug.Log($"{Time.time} {name} Bar.ResizeBarValue (start)");
+        //Debug.Log($"{Time.time} {name} Bar.ResizeBarValue (start)");
 
         //Debug.Log($"{Time.time} {name} old value = {value} and newValue is {newValue}");
         lerpSpeed = 3f * Time.deltaTime;
@@ -114,7 +110,7 @@ public class Bar : MonoBehaviour
         // Processing bar text
         barValueText.text = value.ToString("F" + decimalplace) + "/" + maxValue;
 
-        Debug.Log($"{Time.time} {name} Bar.ResizeBarValue (end)");
+        //Debug.Log($"{Time.time} {name} Bar.ResizeBarValue (end)");
     }
     #endregion
 }

@@ -111,7 +111,7 @@ public class EntityStat
         }
         else if (statA.order > statB.order)
         {
-            controlNum =  1;
+            controlNum = 1;
         }
         else // Which should be equal, right?
         {
@@ -127,7 +127,7 @@ public class EntityStat
         Debug.Log(message: $"{Time.time} EntityStat.CalculateFinalValue (start)");
 
         float finalValue = baseValue;
-        float sumPercentAdd = 0;
+        float sumPercentStack = 0;
 
         // Looping the list and apply all stat modifiers to the value
         for (int i = 0; i < _statModifiers.Count; i++)
@@ -138,16 +138,16 @@ public class EntityStat
             {
                 finalValue += mod.value;
             }
-            else if (mod.type == StatModifierType.PercentAdd)
+            else if (mod.type == StatModifierType.PercentStack)
             {
-                // SumPercentAdd is the temp value for caluating all same stack percent type modifier
-                sumPercentAdd += mod.value;
+                // SumPercentStack is the temp value for caluating all same stack percent type modifier
+                sumPercentStack += mod.value;
 
                 // Add until next modifier is not stack percent type modifier
-                if (i + 1 >= _statModifiers.Count || _statModifiers[i + 1].type != StatModifierType.PercentAdd)
+                if (i + 1 >= _statModifiers.Count || _statModifiers[i + 1].type != StatModifierType.PercentStack)
                 {
-                    finalValue *= 1 + sumPercentAdd;
-                    sumPercentAdd = 0;
+                    finalValue = (100 + sumPercentStack)/100 * finalValue;
+                    sumPercentStack = 0;
                 }
             }
             else if (mod.type == StatModifierType.PercentMultiple)
@@ -161,26 +161,26 @@ public class EntityStat
             
         }
 
-        Debug.Log($"{Time.time} EntityStat.CalculateFinalValue, return finalValue with Math.Round(local var): {(float)Mathf.Round(finalValue)} (end)");
-        return (float)Mathf.Round(finalValue);
+        Debug.Log($"{Time.time} EntityStat.CalculateFinalValue, return finalValue with Math.Round(local var): {(float)Mathf.Round(finalValue)} and without Math.Round: {finalValue} (end)");
+        return finalValue;
     }
 
     public float GetStatValue()
     {
-        Debug.Log(message: $"{Time.time} EntityStat.GetStatValue (start)");
+        //Debug.Log(message: $"{Time.time} EntityStat.GetStatValue (start)");
 
-        Debug.Log(message: $"{Time.time} EntityStat.GetStatValue, return value(local var): {value} (end)");
+        //Debug.Log(message: $"{Time.time} EntityStat.GetStatValue, return value(local var): {value} (end)");
         return value;
     }
 
     
     public void SetStatValue(float inputValue)
     {
-        Debug.Log(message: $"{Time.time} EntityStat.SetStatValue (start)");
+        //Debug.Log(message: $"{Time.time} EntityStat.SetStatValue (start)");
 
         this.value = inputValue;
 
-        Debug.Log(message: $"{Time.time} EntityStat.SetStatValue (end)");
+        //Debug.Log(message: $"{Time.time} EntityStat.SetStatValue (end)");
     }
     
 }

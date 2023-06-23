@@ -10,6 +10,7 @@ public class PopupFactory : MonoBehaviour, IFactory
 {
     #region Scripts
     public RoundData roundData;
+    public UIManage uiManage;
     #endregion
 
     #region Game object references
@@ -24,6 +25,7 @@ public class PopupFactory : MonoBehaviour, IFactory
 
         // Not ideal place
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
+        uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
 
         Debug.Log($"{Time.time} PopupFactory.Awake (end)");
     }
@@ -59,17 +61,38 @@ public class PopupFactory : MonoBehaviour, IFactory
     #endregion
 
     #region Factory functions
+    public Popup CreatePopup(GameObject popupPrefab, GameObject parent, string msg)
+    {
+        Debug.Log($"{Time.time} PopupFactory.CreatePopup (start)");
+
+        Popup popup = Instantiate(popupPrefab, parent.transform).GetComponent<Popup>();
+        
+        popup.body = msg;
+        popup.bodyText.text = popup.body;
+
+        popup.popupID = uiManage.GetPopupCounts();
+        popup.spawnTurnState = roundData.currentTurnState;
+
+        // In Unity inspector name
+        popup.name = "簡易popup";
+
+        Debug.Log($"{Time.time} PopupFactory.CreatePopup, return popup(local var): {popup.name}(popup.name only) (end)");
+        return popup;
+    }
     public Popup CreatePopup(GameObject popupPrefab, GameObject parent, int caseRefID)
     {
         Debug.Log($"{Time.time} PopupFactory.CreatePopup (start)");
 
         Popup popup = Instantiate(popupPrefab, parent.transform).GetComponent<Popup>();
+        
 
         popup.title = ImportData.popups.popup[caseRefID].title.ToString();
         popup.titleText.text = popup.title;
 
         popup.body = ImportData.popups.popup[caseRefID].body.ToString();
         popup.bodyText.text = popup.body;
+
+        popup.popupID = uiManage.GetPopupCounts();
 
         // In Unity inspector name
         popup.name = popup.title;
@@ -97,6 +120,8 @@ public class PopupFactory : MonoBehaviour, IFactory
         popup.buttons.Add(popup.confirmBtn);
 
         popup.confirmBtn.onClick.AddListener(buttonAction1);
+
+        popup.popupID = uiManage.GetPopupCounts();
 
         // In Unity inspector name
         popup.name = popup.title;
@@ -151,6 +176,8 @@ public class PopupFactory : MonoBehaviour, IFactory
 
         popup.dismissBtn.onClick.AddListener(buttonAction1);
         popup.confirmBtn.onClick.AddListener(buttonAction2);
+
+        popup.popupID = uiManage.GetPopupCounts();
 
         // In Unity inspector name
         popup.name = popup.title;

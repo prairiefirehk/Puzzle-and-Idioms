@@ -6,18 +6,29 @@ using UnityEngine.UI;
 [System.Serializable]
 public class TeammateData
 {
-    public int id;
+    // Basic info
+    public int teammateID;
     public string teammateName;
     public string picName;
-    public int level;
-    public int maxHp;
-    public int attackPoint;
-    public int defencePoint;
-    public int evasionPoint;
-    public int criticalPoint;
     public string type;
     public string faction;
-    public int maxActiveSkillCD;
-    public int activeSkillID;
-    public int passiveSkillID;
+
+    // Basic stats
+    public int level;
+    public int baseHealthPoint;
+    public int baseAttackPoint;
+    public int baseDefencePoint;
+    public int baseDexterityPoint;
+    public int basePerceptionPoint;
+    public int baseConstitutionPoint;
+
+    // Ability related
+    public int activeAbilityID;
+    public int activeAbilityLevel;
+    public int maxActiveAbilityCD;
+    public int maxActiveAbilityCost;
+    //public int passiveAbilityID;
+    //public int passiveAbilityLevel;
+    //public int maxPassiveAbilityCD;
+    //public int maxPassiveAbilityCost;
 }

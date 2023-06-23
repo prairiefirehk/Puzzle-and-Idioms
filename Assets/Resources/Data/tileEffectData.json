@@ -1,0 +1,32 @@
+﻿{
+    "tileEffectData":[
+    {
+        "tileEffectID": "0",
+        "tileEffectName": "heart",
+        "tileEffectDesc": "回復血量",
+        "tileEffectType": "Buff",
+        "tileEffectIconPicName": "Tile_effect_icon_heart_pink"
+    },
+    {
+        "tileEffectID": "1",
+        "tileEffectName": "power",
+        "tileEffectDesc": "增加力量",
+        "tileEffectType": "Buff",
+        "tileEffectIconPicName": "Tile_effect_icon_power_green"
+    },
+    {
+        "tileEffectID": "2",
+        "tileEffectName": "ice",
+        "tileEffectDesc": "凝結",
+        "tileEffectType": "Debuff",
+        "tileEffectIconPicName": "Tile_effect_icon_ice_blue"
+    },
+    {
+        "tileEffectID": "3",
+        "tileEffectName": "fire",
+        "tileEffectDesc": "消毀",
+        "tileEffectType": "Debuff",
+        "tileEffectIconPicName": "Tile_effect_icon_fire_red"
+    }
+    ]
+}

@@ -70,19 +70,26 @@ public class RoundManager : MonoBehaviour
     {
         Debug.Log($"{Time.time} RoundManager.GameOver (start)");
 
+        int designatedPopupID;
         switch (status)
         {
             case GameState.State.PlayerLose:
                 //Debug.Log($"{Time.time} GG, you lose");
                 //Player.OnDefeatedEvent -= GameOver;
-                uiManage.SpawnPopup("gameover", 4, () => SettingBtn.StopAdventure(), () => uiManage.currentPopup.DestroyPopup(uiManage.currentPopup));
+                // Shit solutions, the ID will be +1 after calling the function
+                designatedPopupID = uiManage.GetPopupCounts() + 1;
+
+                uiManage.SpawnPopup("gameover", 4, () => SettingBtn.StopAdventure(), () => uiManage.currentPopups[designatedPopupID].DestroyPopup(designatedPopupID));
                 
                 break;
 
             case GameState.State.PlayerWin:
                 //Debug.Log($"{Time.time} GG, you win");
                 //RoundData.OnAllMobDefectedEvent -= GameOver;
-                uiManage.SpawnPopup("gameover", 5, () => SettingBtn.StopAdventure(), () => uiManage.currentPopup.DestroyPopup(uiManage.currentPopup));
+                // Shit solutions, the ID will be +1 after calling the function
+                designatedPopupID = uiManage.GetPopupCounts() + 1;
+
+                uiManage.SpawnPopup("gameover", 5, () => SettingBtn.StopAdventure(), () => uiManage.currentPopups[designatedPopupID].DestroyPopup(designatedPopupID));
 
                 break;
         }

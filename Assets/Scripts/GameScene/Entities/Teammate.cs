@@ -27,26 +27,19 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
     public Image teammatePic;
     public TMP_Text currentActiveSkillCDText;
     public TMP_Text outputValueText;
+    // Temp, for ability
+    public Image frame;
     #endregion
 
     #region Teammate data
-    [SerializeField] private int _id;
-    public int id { get { return _id; } set { _id = value; } }
+    [SerializeField] private int _teammateID;
+    public int teammateID { get { return _teammateID; } set { _teammateID = value; } }
     [SerializeField] private string _teammateName;
     public string teammateName { get { return _teammateName; } set { _teammateName = value; } }
     [SerializeField] private string _picName;
     public string picName { get { return _picName; } set { _picName = value; } }
-    [SerializeField] private EntityStat _activeSkillID;
-    public EntityStat activeSkillID { get { return _activeSkillID; } set { _activeSkillID = value; } }
-    [SerializeField] private EntityStat _passiveSkillID;
-    public EntityStat passiveSkillID { get { return _passiveSkillID; } set { _passiveSkillID = value; } }
-    [SerializeField] private EntityStat _maxActiveSkillCD;
-    public EntityStat maxActiveSkillCD { get { return _maxActiveSkillCD; } set { _maxActiveSkillCD = value; } }
-    [SerializeField] private EntityStat _currentActiveSkillCD;
-    public EntityStat currentActiveSkillCD { get { return _currentActiveSkillCD; } set { _currentActiveSkillCD = value; } }
-
-    [SerializeField] private float _currentTotalAttackPoint;
-    public float currentTotalAttackPoint { get { return _currentTotalAttackPoint; } set { _currentTotalAttackPoint = value; } }
+    [SerializeField] private float _currentTotalAttackValue;
+    public float currentTotalAttackValue { get { return _currentTotalAttackValue; } set { _currentTotalAttackValue = value; } }
 
     public float lerpSpeed;
     //public int weaponType;
@@ -63,6 +56,8 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
         player = GameObject.Find("Round Manager").GetComponent<Player>();
         board = GameObject.Find("Board").GetComponent<Board>();
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
+        roundManager = GameObject.Find("Round Manager").GetComponent<RoundManager>();
+        uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
 
         Debug.Log(message: $"{Time.time} {teammateName} Teammate.Awake (end)");
     }
@@ -85,16 +80,30 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
 
     void Update()
     {
-        if (currentActiveSkillCD.value == 0)
+        if (currentActiveAbilityCD <= 0 && (roundManager.currentGameState == GameState.State.IsFlying || roundManager.currentGameState == GameState.State.IsBattling))
+        {
+            frame.gameObject.SetActive(true);
+            // Temp
+            //currentTotalAttackValue += (attackPoint.value * 10f);
+            if (currentMaxActiveAbilityCD.GetStatValue() <= 1)
             {
-                // Temp
-                currentTotalAttackPoint += (attackPoint.value * 10f);
-                currentActiveSkillCD.value = maxActiveSkillCD.value;
-                //Board.OnNewTurnEvent?.Invoke();
+                currentMaxActiveAbilityCD.SetStatValue(1);
             }
+
+            currentActiveAbilityCD = 0;
+        }
+        else
+        {
+            frame.gameObject.SetActive(false);
+        }
+
+        if (currentActiveAbilityCD > currentMaxActiveAbilityCD.GetStatValue())
+        {
+            currentActiveAbilityCD = (int)currentMaxActiveAbilityCD.GetStatValue();
+        }
         
-        currentActiveSkillCDText.text = currentActiveSkillCD.value.ToString();
-        UpdateOutputValue(currentTotalAttackPoint, 0);
+        currentActiveSkillCDText.text = currentActiveAbilityCD.ToString();
+        UpdateOutputValue(currentTotalAttackValue, 0);
     }
 
     void OnDisable()
@@ -133,11 +142,21 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
         Debug.Log($"{Time.time} {teammateName} Teammate.OnPointerDown (start)");
 
         //Debug.Log($"{Time.time} input clicked the teammate!");
-        if (currentTotalAttackPoint > 0)
+        if (currentTotalAttackValue > 0)
         {
-            player.Attack(roundData.currentMob, currentTotalAttackPoint);
-            currentTotalAttackPoint = 0;
+            player.Attack(roundData.currentMob, currentTotalAttackValue);
+            currentTotalAttackValue = 0;
             player.isActioned = true;
+        }
+        else if (currentActiveAbilityCD <= 0 && roundData.currentPowerScore >= activeAbility.currentAbilityCost)
+        {
+            activeAbility.OnTrigger(this);
+            currentActiveAbilityCD = (int)currentMaxActiveAbilityCD.GetStatValue();
+            player.isActioned = true;
+        }
+        else
+        {
+            Debug.Log($"Nothing happened, no ability or attack was released.");
         }
         
         Debug.Log($"{Time.time} {teammateName} Teammate.OnPointerDown (end)");
@@ -157,74 +176,158 @@ public class Teammate : Entity, IPointerDownHandler, IDropHandler
 
         if (dragTile.CompareTag("NormalTile"))
         {
-            Debug.Log($"{Time.time} ^5.1A.1 teammate {name} receive {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
+            Debug.Log($"{Time.time} ^5.1A.1 teammate {entityName} receive {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text}");
         }
-        // Temp, that should not happen
+
         else if (dragTile.CompareTag("SpecialTile"))
         {
-            Debug.Log($"{Time.time} ^5.1A.2 teammate {name} receive {dragTile.name} (special tile)");
+            Debug.Log($"{Time.time} ^5.1A.2 teammate {entityName} receive {dragTile.name} (special tile)");
         }
         else
         {
             Debug.Log($"{Time.time} ^5.1A.3 Who the fuck are you receiving??");
         }
-            
+
         player.Answer(this);
 
         Debug.Log($"{Time.time} {teammateName} Teammate.OnDrop (end)");
     }
 
-    public void AnswerCorrectly(Tile tile)
+    public void AnsweredCorrectly(Tile tile)
     {
         Debug.Log($"{Time.time} Teammate.AnswerCorrectly (start)");
 
         Debug.Log($"{Time.time} ^5.5A teammate get the correct answer!");
 
+        // Temp
         //Heal(maxHp.value * tile.interactTeammate.defencePoint);
-        if (player.currentHp.value < player.currentMaxHp.value)//(currentHp.GetStatValue() < maxHp.GetStatValue())
+        if (player.currentHealthValue < player.currentMaxHealthValue)//(currentHp.GetStatValue() < maxHp.GetStatValue())
         {
-            player.Heal(player.currentMaxHp.value * 0.15f);
+            player.Heal(player.currentMaxHealthValue * 0.15f);
             //Debug.Log($"$healed hp = {maxHp.value * 0.15f}");
         }
 
-        // Consider to use tile.currentvalueModifier later
-        currentTotalAttackPoint += (attackPoint.value * (tile.tileLevel + 1));
-        //isWaitingForReset = true;
-        tile.toBeDestroyed = true;
-        board.UpdateTileCell();
+        currentActiveAbilityCD -= 1;
+        
+        if (roundManager.currentGameState == GameState.State.IsFlying)
+        {
+            roundData.currentDistance += (int)roundData.player.currentSpeedValue;
+
+            float controlNum = (roundData.roundMobNumber - roundData.currentSpawnedMobNumber) / ((roundData.roundDistance - roundData.currentDistance) / roundData.player.currentSpeedValue);
+            //Debug.Log($"&controlNum = {controlNum}");
+            float randomNum = UnityEngine.Random.Range(0, 100) / 100f;
+            //Debug.Log($"&randomNum = {randomNum}");
+
+            if (randomNum < controlNum)
+            {
+                roundData.flyToBattle = true;
+                //roundManager.currentGameState = GameState.State.IsBattling;
+            }
+        }
+        else if (roundManager.currentGameState == GameState.State.IsBattling)
+        {
+            // Consider to use tile.currentvalueModifier later
+            currentTotalAttackValue += (roundData.player.GetAttackPoint() * GetAttackValue() * (tile.tileLevel + 1));
+        }
+        
+        // Stop the wrong count combo
+        roundData.wrongCountCombo = 0;
 
         // Contribute the score to board
-        roundData.powerScore += tile.GetOutPutPower() * 3;
+        roundData.currentPowerScore += tile.GetOutPutPower() * 3;
 
         // Destroy the tile
+        tile.toBeDestroyed = true;
+        board.UpdateTileCell();
         tile.DestroyTile(tile);
 
-        //// Next round preparation ////
+        // Force next move/ round
         player.isActioned = true;
 
 
         Debug.Log($"{Time.time} Teammate.AnswerCorrectly (end)");
     }
 
-    public void AnswerWrongly(Tile tile)
+    public void AnsweredWrongly(Tile tile)
     {
         Debug.Log($"{Time.time} Teammate.AnswerWrongly (start)");
 
         Debug.Log($"{Time.time} ^5.5B teammate get the wrong answer!");
 
+        if (roundManager.currentGameState == GameState.State.IsFlying)
+        {
+            // Some punishment here
+            roundData.currentDistance -= (int)roundData.player.currentSpeedValue / 2;
+
+        }
+        else if (roundManager.currentGameState == GameState.State.IsBattling)
+        {
+            // ?
+        }
+
         // Some punishment here
-        player.TakeDamage(player.currentMaxHp.value * 0.15f);
-        tile.toBeDestroyed = true;
-        board.UpdateTileCell();
-        roundData.powerScore -= tile.GetOutPutPower() * 2;
+        player.TakeDamage(player.currentMaxHealthValue * 0.15f);
+        roundData.currentPowerScore -= tile.GetOutPutPower() * 2;
+
+        // Record the count of wrong submittion
+        roundData.wrongCountCombo += 1;
+        roundData.totalWrongCount += 1;
 
         // Destroy the tile
+        tile.toBeDestroyed = true;
+        board.UpdateTileCell();
         tile.DestroyTile(tile);
 
-        //// Next round preparation ////
-        player.isActioned = true;
+        if (roundData.wrongCountCombo >= 5)
+        {
+            // Do some visual shit/popup/conversation
+            string popupMessage = $"{roundData.player.entityName}答錯太多次啦! 正確答案係: {roundData.currentAnswerWord}";
+            uiManage.SpawnPopup(popupMessage, "emergency");
+
+            board.answerTile.transform.GetChild(0).GetComponent<Image>().color = new Color32(160, 60, 60, 255);
+            board.answerTile.transform.GetChild(2).GetComponent<TMP_Text>().color = new Color32(255, 255, 255, 255);
+
+            roundData.wrongCountCombo = 0;
+
+            board.answerTile.toBeDestroyed = true;
+            board.UpdateTileCell();
+
+            // Destroy the tile
+            //board.answerTile.DestroyTile(board.answerTile);
+
+            this.Wait(roundData.currentTurnDuration, () => player.isActioned = true);
+        }
+        else
+        {
+            // Force next move/ round
+            player.isActioned = true;
+        }
 
         Debug.Log($"{Time.time} Teammate.AnswerWrongly (end)");
+    }
+
+    public void AnsweredSpecialTile(Tile tile)
+    {
+        Debug.Log($"{Time.time} Teammate.AnsweredSpecialTile (start)");
+
+        Debug.Log($"{Time.time} ^5.5C teammate get the special tile!");
+
+        if (roundManager.currentGameState == GameState.State.IsFlying)
+        {
+            // ?
+        }
+        else if (roundManager.currentGameState == GameState.State.IsBattling)
+        {
+            // ?
+        }
+
+        // Force next move/ round
+        player.isActioned = true;
+
+        // Destroy the tile
+        tile.toBeDestroyed = true;
+        board.UpdateTileCell();
+        tile.DestroyTile(tile);
     }
     #endregion
 }

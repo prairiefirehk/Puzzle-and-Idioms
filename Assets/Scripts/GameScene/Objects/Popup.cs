@@ -5,20 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 public class Popup : MonoBehaviour
 {
-    #region Data of popup
-    public PopupData popupData;
-    [SerializeField] private string _sizeType;
-    public string sizeType { get { return _sizeType; } set { _sizeType = value; } }
-    [SerializeField] private int _caseRefID;
-    public int caseRefID { get { return _caseRefID; } set { _caseRefID = value; } }
-    [SerializeField] private string _title;
-    public string title { get { return _title; } set { _title = value; } }
-    [SerializeField] private string _body;
-    public string body { get { return _body; } set { _body = value; } }
-    [SerializeField] private string _confirmText;
-    public string confirmText { get { return _confirmText; } set { _confirmText = value; } }
-    [SerializeField] private string _dismissText;
-    public string dismissText { get { return _dismissText; } set { _dismissText = value; } }
+    #region Scripts
+    public UIManage uiManage;
     #endregion
 
     #region Game object references
@@ -66,10 +54,39 @@ public class Popup : MonoBehaviour
     public GameObject toolGainedHolder;
     #endregion
 
+    #region Popup data
+    public PopupData popupData;
+    [SerializeField] private string _sizeType;
+    public string sizeType { get { return _sizeType; } set { _sizeType = value; } }
+    [SerializeField] private int _caseRefID;
+    public int caseRefID { get { return _caseRefID; } set { _caseRefID = value; } }
+    [SerializeField] private string _title;
+    public string title { get { return _title; } set { _title = value; } }
+    [SerializeField] private string _body;
+    public string body { get { return _body; } set { _body = value; } }
+    [SerializeField] private string _confirmText;
+    public string confirmText { get { return _confirmText; } set { _confirmText = value; } }
+    [SerializeField] private string _dismissText;
+    public string dismissText { get { return _dismissText; } set { _dismissText = value; } }
+    [SerializeField] private int _popupID;
+    public int popupID { get { return _popupID; } set { _popupID = value; } }
+    [SerializeField] private float _popupDuration = 2f;
+    public float popupDuration { get { return _popupDuration; } set { _popupDuration = value; } }
+
+    // Just for turn msg
+    [SerializeField] private TurnState.State _spawnTurnState;
+    public TurnState.State spawnTurnState { get { return _spawnTurnState; } set { _spawnTurnState = value; } }
+
+    #endregion
+
+
     #region Flow
     void Awake()
     {
         Debug.Log($"{Time.time} {name} Popup.Awake (start)");
+
+        uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
+
         Debug.Log($"{Time.time} {name} Popup.Awake (end)");
     }
 
@@ -104,14 +121,14 @@ public class Popup : MonoBehaviour
     #endregion
 
     #region Popup functions
-    public void DestroyPopup(Popup popupPrefab)
+    public void DestroyPopup(int popupID)
     {
         Debug.Log($"{Time.time} {name} Popup.DestroyPopup (start)");
 
-        Debug.Log($"{Time.time} Popup being destroyed: {popupPrefab.name}");
-
-        Destroy(popupPrefab.gameObject);
-        popupPrefab.transform.SetParent(null);
+        Debug.Log($"{Time.time} Popup being destroyed: {uiManage.currentPopups[popupID].name}");
+        Destroy(uiManage.currentPopups[popupID].gameObject);
+        uiManage.currentPopups[popupID].transform.SetParent(null);
+        uiManage.currentPopups.Remove(popupID);
 
         Debug.Log($"{Time.time} {name} Popup.DestroyPopup (end)");
     }

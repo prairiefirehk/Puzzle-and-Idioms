@@ -11,42 +11,40 @@ public class Mob: Entity
     #region Scripts
     #endregion
 
-    #region Mob data
-    [SerializeField] private int _id;
-    public int id { get { return _id; } set { _id = value; } }
-
-    [SerializeField] private string _mobName;
-    public string mobName { get { return _mobName; } set { _mobName = value; } }
-
-    [SerializeField] private string _picName;
-    public string picName { get { return _picName; } set { _picName = value; } }
-
-    [SerializeField] private EntityStat _maxAttackInterval;
-    public EntityStat maxAttackInterval { get { return _maxAttackInterval; } set { _maxAttackInterval = value; } }
-
-    [SerializeField] private EntityStat _currentMaxAttackInterval;
-    public EntityStat currentMaxAttackInterval { get { return _currentMaxAttackInterval; } set { _currentMaxAttackInterval = value; } }
-
-    [SerializeField] private EntityStat _currentAttackInterval;
-    public EntityStat currentAttackInterval { get { return _currentAttackInterval; } set { _currentAttackInterval = value; } }
-
-    [SerializeField] private int _expReward;
-    public int expReward { get { return _expReward; } set { _expReward = value; } }
-
-    [SerializeField] private int _coinReward;
-    public int coinReward { get { return _coinReward; } set { _coinReward = value; } }
-
-    [SerializeField] private int _jadeReward;
-    public int jadeReward { get { return _jadeReward; } set { _jadeReward = value; } }
-
+    #region Game object references
     [SerializeField] private Image _mobPicture;
     public Image mobPicture { get { return _mobPicture;} set { _mobPicture = value; } }
     #endregion
 
+    #region Mob data
+    [SerializeField] private int _mobID;
+    public int mobID { get { return _mobID; } set { _mobID = value; } }
+
+    [SerializeField] private string _mobName;
+    public string mobName { get { return _mobName; } set { _mobName = value; } }
+
+    [SerializeField] private string _mobPicName;
+    public string mobPicName { get { return _mobPicName; } set { _mobPicName = value; } }
+
+    // CD turn for mob
+    [SerializeField] private int _maxAttackInterval;
+    public int maxAttackInterval { get { return _maxAttackInterval; } set { _maxAttackInterval = value; } }
+    [SerializeField] private EntityStat _currentMaxAttackInterval;
+    public EntityStat currentMaxAttackInterval { get { return _currentMaxAttackInterval; } set { _currentMaxAttackInterval = value; } }
+    [SerializeField] private int _currentAttackInterval;
+    public int currentAttackInterval { get { return _currentAttackInterval; } set { _currentAttackInterval = value; } }
+
+
+    // Rewards by defeating this mob
+    [SerializeField] private int _expReward;
+    public int expReward { get { return _expReward; } set { _expReward = value; } }
+    [SerializeField] private int _coinReward;
+    public int coinReward { get { return _coinReward; } set { _coinReward = value; } }
+    [SerializeField] private int _jadeReward;
+    public int jadeReward { get { return _jadeReward; } set { _jadeReward = value; } }
+    #endregion
+
     #region Events
-    // Add an event for mob defeated
-    //public static event Action OnDefeatedEvent;
-    //public static event Action OnAttackIntervalZero;
     #endregion
 
     #region Flow
@@ -58,8 +56,8 @@ public class Mob: Entity
         player = GameObject.Find("Round Manager").GetComponent<Player>();
         board = GameObject.Find("Board").GetComponent<Board>();
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
-
-        isDead = false;
+        uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
+        roundManager = GameObject.Find("Round Manager").GetComponent<RoundManager>();
 
         Debug.Log($"{Time.time} {mobName} Mob.Awake (end)");
     }
@@ -86,16 +84,18 @@ public class Mob: Entity
     void Update()
     {
         //Debug.Log($" currentMob {mobName} is {currentState}");
+        DisplayCurrentStatusEffects();
 
         if (currentState == EntityState.State.Alive)
         {
+            UpdateEntityStats();
             //Debug.Log( $"{name}'s health: {currentHp}");
-            if (currentHp.value <= 0)
+            if (currentHealthValue <= 0)
             {
                 // For visual
-                currentHp.value = 0f;
+                currentHealthValue = 0f;
 
-                Debug.Log($"{name} just dead!");
+                Debug.Log($"{entityName} just dead!");
                 // Trigger here to send msg to event subscribers that mob is defeated
                 currentState = EntityState.State.Dead;
                 //OnDefeatedEvent?.Invoke();
@@ -103,9 +103,9 @@ public class Mob: Entity
                 //break;
             }
 
-            if (currentHp.value > currentMaxHp.value && (currentHp.value != currentMaxHp.value))
+            if (currentHealthValue > currentMaxHealthValue && (currentHealthValue != currentMaxHealthValue))
             {
-                currentHp.value = currentMaxHp.value;
+                currentHealthValue = currentMaxHealthValue;
             }
         }
     }
@@ -133,9 +133,9 @@ public class Mob: Entity
         Debug.Log($"{Time.time} Mob.CheckAttackInterval (start)");
 
         bool canProceed = false;
-        if (currentAttackInterval.value <= 0)
+        if (currentAttackInterval <= 0)
         {
-            currentAttackInterval.value = 0;
+            currentAttackInterval = 0;
             canProceed = true;
         }
         
@@ -147,22 +147,25 @@ public class Mob: Entity
     {
         Debug.Log($"{Time.time} Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (start)");
 
+        // Change turn state and data
         roundData.currentTurnState = TurnState.State.BeforeMobMoveStart;
+        roundData.currentTurnDuration = roundData.baseTurnDuration;
+
         CheckAlive();
         //CheckStatusEffects();
 
-        if (CheckAttackInterval() && (!isStun) && (currentState == EntityState.State.Alive) && (roundData.player.currentState == EntityState.State.Alive))
+        if (CheckAttackInterval() /* && (!isStun) */ && (currentState == EntityState.State.Alive) && (roundData.player.currentState == EntityState.State.Alive))
         {
-            this.Wait(0.5f, MoveStart);
+            this.Wait(roundData.currentTurnDuration, MoveStart);
         }
         else
         {
-            if (currentAttackInterval.value <= 0 || currentAttackInterval.value > currentMaxAttackInterval.value)
+            if (currentMaxAttackInterval.GetStatValue() <= 0 || currentAttackInterval > currentMaxAttackInterval.GetStatValue())
             {
-                currentAttackInterval.value = currentMaxAttackInterval.value;
+                currentAttackInterval = (int)currentMaxAttackInterval.GetStatValue();
             }
 
-            this.Wait(0.5f, MoveEnd);
+            this.Wait(roundData.currentTurnDuration, MoveEnd);
         }
 
         Debug.Log($"{Time.time} Mob.BeforeMoveStart (override Entities.BeforeMoveStart) (end)");
@@ -171,18 +174,25 @@ public class Mob: Entity
     public override void MoveStart()
     {
         Debug.Log($"{Time.time} Mob.MoveStart (override Entities.MoveStart) (start)");
+
+        // Change turn state and data
         roundData.currentTurnState = TurnState.State.MobMoveStart;
+        roundData.currentTurnDuration = roundData.baseTurnDuration;
 
         // Do some visual shit/popup/conversation
+        string popupMessage = $"輪到{entityName}開始行動啦!";
+        uiManage.SpawnPopup(popupMessage, "normal");
 
-        this.Wait(0.5f, OnAction);
+        this.Wait(roundData.currentTurnDuration, OnAction);
 
         Debug.Log($"{Time.time} Mob.MoveStart (override Entities.MoveStart) (end)");
     }
 
     public override void CheckAction()
     {
+        // Change turn state and data
         roundData.currentTurnState = TurnState.State.WaitingMobAction;
+        roundData.currentTurnDuration = roundData.baseTurnDuration;
 
         // Do some visual shit/popup/conversation
     }
@@ -191,16 +201,30 @@ public class Mob: Entity
     {
         Debug.Log($"{Time.time} Mob.OnAction (override Entities.OnAction) (start)");
 
+        // Change turn state and data
         roundData.currentTurnState = TurnState.State.MobAction;
+        roundData.currentTurnDuration = roundData.baseTurnDuration;
 
         // Do some visual shit/popup/conversation
 
-        Attack(roundData.player, attackPoint.value);
+        // Temp way for decide the mob to use the skill or not
+        int randomAttackMethod = UnityEngine.Random.Range(0, 100);
 
+        if (randomAttackMethod < 60)
+        {
+            Debug.Log($"roundData.player = null? {roundData.player == null}");
+            Attack(roundData.player, currentAttackValue);
+        }
+        else
+        {
+            activeAbility.OnTrigger(this);
+        }
+        
+        isActioned = true;
         // Add extra one for later gerneral minus one in MoveEnd()
-        currentAttackInterval.value = currentMaxAttackInterval.value;
+        currentAttackInterval = (int)currentMaxAttackInterval.GetStatValue();
 
-        this.Wait(0.5f, BeforeMoveEnd); //0.5
+        this.Wait(roundData.currentTurnDuration, BeforeMoveEnd); //0.5
 
         Debug.Log($"{Time.time} Mob.OnAction (override Entities.OnAction) (end)");
     }
@@ -209,11 +233,13 @@ public class Mob: Entity
     {
         Debug.Log($"{Time.time} Mob.BeforeMoveEnd (override Entities.BeforeMoveEnd) (start)");
 
+        // Change turn state and data
         roundData.currentTurnState = TurnState.State.BeforeMobMoveEnd;
+        roundData.currentTurnDuration = roundData.baseTurnDuration;
 
         // Do some visual shit/popup/conversation
 
-        this.Wait(0.5f, MoveEnd);
+        this.Wait(roundData.currentTurnDuration, MoveEnd); //0.5
 
         Debug.Log($"{Time.time} Mob.BeforeMoveEnd (override Entities.BeforeMoveEnd) (end)");
     }
@@ -222,18 +248,35 @@ public class Mob: Entity
     {
         Debug.Log($"{Time.time} Mob.MoveEnd (override Entities.MoveEnd) (start)");
 
+        // Change turn state and data
         roundData.currentTurnState = TurnState.State.MobMoveEnd;
+        roundData.currentTurnDuration = roundData.baseTurnDuration;
 
         // Do some visual shit/popup/conversation
-        
+        string popupMessage;
+        if (currentState == EntityState.State.Alive)
+        {
+            if (isActioned)
+            {
+                popupMessage = $"{entityName}嘅行動完結咗";
+            }
+            else 
+            {
+                popupMessage = $"{entityName}冇任何行動";
+            }
+
+            uiManage.SpawnPopup(popupMessage, "normal");
+        }
+
         moveEnded = true;
+
         if (roundData.player.moveEnded)
         {
-            this.Wait(0.5f, roundData.TurnEnd);
+            this.Wait(roundData.currentTurnDuration, roundData.TurnEnd);
         }
         else
         {
-            this.Wait(0.5f, roundData.player.BeforeMoveStart);
+            this.Wait(roundData.currentTurnDuration, roundData.player.BeforeMoveStart);
         }
 
         Debug.Log($"{Time.time} Mob.MoveEnd (override Entities.MoveEnd) (end)");
@@ -244,39 +287,7 @@ public class Mob: Entity
     {
         Debug.Log($"{Time.time} Mob.Attack (override Entities.Attack) (start)");
 
-        // Temp testing solution
-        StatusEffect burn = new StatusEffect(StatusEffectName.Burning, 21, 1, 500, 100,
-                                            target, "Mob: Burn!", 
-                                            new List<string>{"currentMaxHp"}, new List<StatModifier>{new StatModifier(-200, StatModifierType.Flat, 1)});
-
-        StatusEffect freeze = new StatusEffect(StatusEffectName.Freezing, 21, 1, 100, 50,
-                                            target, "Mob: Freeze!", 
-                                            new List<string>{"currentMaxHp"}, new List<float>{2000});
-
-        StatusEffect stun = new StatusEffect(StatusEffectName.Stuning, 2, 1, 100, 0,
-                                            target, "Mob: Stun!", 
-                                            new List<string>{"currentHp", "currentMaxHp"}, new List<float>{10000, 10000});
-        
-        int randomAttackSkillNumber = UnityEngine.Random.Range(0, Enum.GetNames(typeof(StatusEffectName)).Length);
-        //Debug.Log($"randomAttackSkillNumber = {randomAttackSkillNumber}");
-        //Debug.Log($"Enum.GetNames(typeof(StatusEffectName)).Length = {Enum.GetNames(typeof(StatusEffectName)).Length}");
-        switch(randomAttackSkillNumber)
-        {
-            case 0:
-                burn.OnInflict();
-                base.Attack(target, (value + burn.instantValue));
-                break;
-
-            case 1:
-                freeze.OnInflict();
-                base.Attack(target, (value + freeze.instantValue));
-                break;
-
-            case 2:
-                stun.OnInflict();
-                base.Attack(target, (value + stun.instantValue));
-                break;
-        }
+        base.Attack(target, value);
 
         int randomTileNumber = UnityEngine.Random.Range(0, board.tilesInBoard.Count);
 
@@ -304,9 +315,9 @@ public class Mob: Entity
 
         Tile tile = GameObject.Find("Answer tiles spawner").transform.GetChild(randomTileNumber).GetComponent<Tile>();
 
-        int randomTileEffect = UnityEngine.Random.Range(0, Enum.GetNames(typeof(Tile.TileEffect)).Length);
+        int randomTileEffectID = UnityEngine.Random.Range(0, ImportData.tileEffectDictionary.Count);
         int randomTileEffectTurns = UnityEngine.Random.Range(0, 99);
-        tile.GetTileEffect(tile, (Tile.TileEffect)randomTileEffect, randomTileEffectTurns);
+        tile.GetTileEffect(this, randomTileEffectID, randomTileEffectTurns);
 
         Debug.Log($"{Time.time} Mob.Attack (override Entities.Attack) (end)");
     }

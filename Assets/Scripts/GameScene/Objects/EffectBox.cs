@@ -12,6 +12,7 @@ public class EffectBox : MonoBehaviour
     #endregion
     #region Game object reference
     //public GameObject effectPrefab;
+    public Image effectBackground;
     public Image effectIcon;
     public TMP_Text effectCDText;
     #endregion
@@ -82,36 +83,10 @@ public class EffectBox : MonoBehaviour
             effectBoxPosition = transform.position;
         }
 
+        Debug.Log($"$Effect box {name} is now at {effectBoxCellsParent.name}'s {statusEffect.GetOrderOfStatusEffect()} box, effectCD is {effectCD}");
         Debug.Log($"{Time.time} {name} EffectBox.UpdateEffectBoxCDText (end)");
     }
-
-    public string GetEffectBoxIconName(StatusEffectName name)
-    {
-        Debug.Log($"{Time.time} {name} EffectBox.GetEffectBoxIconName (start)");
-
-        switch(name)
-        {
-            case StatusEffectName.Burning:
-                iconPicName = "Burn_effect_icon_red_60_hq";
-                break;
-
-            case StatusEffectName.Freezing:
-                iconPicName = "Frozen_effect_icon_blue_60_hq";
-                break;
-                    
-            case StatusEffectName.Stuning:
-                iconPicName = "Stun_effect_icon_yellow_60_hq";
-                break;
-                    
-            default:
-                iconPicName = "Burn_effect_icon_red_60_hq";
-                //Debug.Log($"{Time.time} Hey dude can't load effect box icon's name!");
-                break;
-        }
-        Debug.Log($"{Time.time} {name} EffectBox.GetEffectBoxIconName, return picName(local var): {iconPicName} (end)");
-        return iconPicName;
-    }
-
+    
     public void DestroyEffectBox()
     {
         Debug.Log($"{Time.time} {name} EffectBox.ResetEffectBoxItem (start)");

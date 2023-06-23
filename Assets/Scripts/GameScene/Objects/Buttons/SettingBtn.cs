@@ -19,8 +19,8 @@ public class SettingBtn : MonoBehaviour
         Debug.Log("SettingBtn.Awake (start)");
 
         // Not ideal place
-        //uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
-        //settingBtn = gameObject.GetComponent<Button>();
+        uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
+        settingBtn = gameObject.GetComponent<Button>();
 
         Debug.Log("SettingBtn.Awake (end)");
     }
@@ -36,8 +36,8 @@ public class SettingBtn : MonoBehaviour
     {
         Debug.Log("SettingBtn.Start (start)");
 
-        uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
-        settingBtn = gameObject.GetComponent<Button>();
+        //uiManage = GameObject.Find("UI Manager").GetComponent<UIManage>();
+        //settingBtn = gameObject.GetComponent<Button>();
 
         Debug.Log("SettingBtn.Start (end)");
     }
@@ -65,7 +65,10 @@ public class SettingBtn : MonoBehaviour
     {
         Debug.Log($"SettingBtn.OnClick (start)");
 
-        uiManage.SpawnPopup("medium", 3, () => uiManage.currentPopup.DestroyPopup(uiManage.currentPopup), () => StopAdventure());
+        // Shit solutions, the ID will be +1 after calling the function
+        int designatedPopupID = uiManage.GetPopupCounts() + 1;
+        Debug.Log($"$designatedPopupID = {designatedPopupID}");
+        uiManage.SpawnPopup("medium", 3, () => uiManage.currentPopups[designatedPopupID].DestroyPopup(designatedPopupID), () => StopAdventure());
 
         Debug.Log($"SettingBtn.OnClick (end)");
     }

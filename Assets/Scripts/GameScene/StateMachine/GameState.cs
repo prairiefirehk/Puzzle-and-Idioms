@@ -8,7 +8,8 @@ public class GameState
     {
         IsInitalizing = 000,
         IsBattling = 100,
-        PlayerWin = 200,
-        PlayerLose = 300,
+        IsFlying = 200,
+        PlayerWin = 300,
+        PlayerLose = 400,
     }
 }

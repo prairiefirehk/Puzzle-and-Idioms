@@ -38,10 +38,8 @@ public class NormalTile : Tile
         tile = this.gameObject;
         tileText = tile.transform.GetChild(2).GetComponent<TMP_Text>();
         tileLevelText = tile.transform.GetChild(3).GetComponent<TMP_Text>();
-        tileEffectAIcon = tile.transform.GetChild(4).transform.GetChild(0).GetComponent<Image>();
-        tileEffectBIcon = tile.transform.GetChild(4).transform.GetChild(1).GetComponent<Image>();
-        tileEffectATurnsText = tile.transform.GetChild(5).GetComponent<TMP_Text>();
-        tileEffectBTurnsText = tile.transform.GetChild(6).GetComponent<TMP_Text>();
+        tileEffectIcon = tile.transform.GetChild(4).transform.GetChild(0).GetComponent<Image>();
+        tileEffectTurnsText = tile.transform.GetChild(4).transform.GetChild(1).GetComponent<TMP_Text>();
 
         tileRect = this.GetComponent<RectTransform>();
         tileLocation = this.transform.position;
@@ -70,13 +68,10 @@ public class NormalTile : Tile
         baseValueModifier = valueModifierArr[0];
         //Debug.Log("I set the base score first: " + baseValueModifier);
 
-        currentvalueModifier = roundData.player.attackPoint.value * baseValueModifier;
+        currentvalueModifier = roundData.player.attackPoint.GetStatValue() * baseValueModifier;
 
         tileLevelText.gameObject.SetActive(true);
-        tileEffectAIcon.gameObject.SetActive(false);
-        tileEffectBIcon.gameObject.SetActive(false);
-        tileEffectATurnsText.gameObject.SetActive(false);
-        tileEffectBTurnsText.gameObject.SetActive(false);
+        tileEffectParent.gameObject.SetActive(false);
         // Set false for answer cheat here
 
         Debug.Log($"{Time.time} {name} NormalTile.Awake (end)");
@@ -145,11 +140,11 @@ public class NormalTile : Tile
             {
                 if (CompareTag("NormalTile"))
                 {
-                    Debug.Log($"{Time.time} ^5.1B.1 {name} received {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
+                    Debug.Log($"{Time.time} ^5.1B.1 {name} received {dragTile.name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
                 }
                 else if (CompareTag("SpecialTile"))
                 {
-                    Debug.Log($"{Time.time} ^5.1B.2 {name} received {name} (special tile)");
+                    Debug.Log($"{Time.time} ^5.1B.2 {name} received {dragTile.name} (special tile)");
                 }
 
                 // DragTile itself is answer
@@ -166,8 +161,8 @@ public class NormalTile : Tile
                     }
 
                     // Some punishment here
-                    roundData.player.TakeDamage((float)0.15 * roundData.player.currentMaxHp.value);
-                    roundData.powerScore -= GetOutPutPower() * 2;
+                    roundData.player.TakeDamage((float)0.15 * roundData.player.currentMaxHealthValue);
+                    roundData.currentPowerScore -= GetOutPutPower() * 2;
 
                     // Reset new round
                     //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -189,18 +184,18 @@ public class NormalTile : Tile
                     // The tile is answer
                     if (isAnswer == true)
                     {
-                        if (CompareTag("NormalTile"))
+                        if (dragTile.CompareTag("NormalTile"))
                         {
                             Debug.Log($"{Time.time} ^5.2B.1 merge the wrong answer {dragTile.name} (normal tile) {dragTile.transform.GetChild(2).GetComponent<TMP_Text>().text} -> correct answer {name} (normal tile) {transform.GetChild(2).GetComponent<TMP_Text>().text}");
                         }
-                        else if (CompareTag("SpecialTile"))
+                        else if (dragTile.CompareTag("SpecialTile"))
                         {
-                            Debug.Log($"{Time.time} ^5.2B.2 merge the wrong answer {dragTile.name} (special tile) {name} -> correct answer {name} (normal tile)");
+                            Debug.Log($"{Time.time} ^5.2B.2 merge the wrong answer {dragTile.name} (special tile) -> correct answer {name} (normal tile)");
                         }
 
                         // Some punishment here
-                        roundData.player.TakeDamage((float)0.15 * roundData.player.currentMaxHp.value);
-                        roundData.powerScore -= GetOutPutPower() * 2;
+                        roundData.player.TakeDamage((float)0.15 * roundData.player.currentMaxHealthValue);
+                        roundData.currentPowerScore -= GetOutPutPower() * 2;
 
                         // Reset new round
                         //Debug.Log("dragTile.interactTile: " + dragTile.interactTile.name);
@@ -238,7 +233,7 @@ public class NormalTile : Tile
                         roundData.player.isActioned = true;
 
                         // Contribute the score to board
-                        roundData.powerScore += GetOutPutPower();
+                        roundData.currentPowerScore += GetOutPutPower();
 
                         //board.tileCell[dragTile.tileCellPosition] = -1;
                         board.UpdateTileCell();
@@ -249,20 +244,20 @@ public class NormalTile : Tile
 
         Debug.Log($"{Time.time} {name} NormalTile.OnDrop (override Entities.OnDrop) (end)");
     }
-
-    public void OnNewTurn()
+    public override void OnBeforeTurnStart()
     {
-        Debug.Log($"{Time.time} {name} NormalTile.OnNewTurn (start)");
+        base.OnBeforeTurnStart();
+    }
 
-        tileExistedTurns += 1;
+    public override void OnTurnEnd()
+    {
+        base.OnTurnEnd();
 
-        tileEffectARemainingTurns -= 1;
-        tileEffectATurnsText.text = tileEffectARemainingTurns.ToString();
-        
-        tileEffectBRemainingTurns -= 1;
-        tileEffectBTurnsText.text = tileEffectBRemainingTurns.ToString();
-
-        Debug.Log($"{Time.time} {name} NormalTile.OnNewTurn (end)");
+        if (currentTileEffect != null)
+        {
+            currentTileEffect.tileEffectRemainingTurns -= 1;
+            tileEffectTurnsText.text = currentTileEffect.tileEffectRemainingTurns.ToString();
+        }
     }
     #endregion
 }

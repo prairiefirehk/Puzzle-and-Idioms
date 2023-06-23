@@ -16,9 +16,25 @@ public class StatusEffect
     #endregion
 
     #region Status effect data
-    private StatusEffectName _effectName;
-    public StatusEffectName effectName { get { return _effectName; } set { _effectName = value; } }
+    private int _effectID;
+    public int effectID { get { return _effectID; } set { _effectID = value; } }
+    private string _effectName;
+    public string effectName { get { return _effectName; } set { _effectName = value; } }
+    private string _effectDesc;
+    public string effectDesc { get { return _effectDesc; } set { _effectDesc = value; } }
+    private string _effectType;
+    public string effectType { get { return _effectType; } set { _effectType = value; } }
+    private string _effectIconPicName;
+    public string effectIconPicName { get { return _effectIconPicName; } set { _effectIconPicName = value; } }
     
+    // Damage within turns
+    //private float _instantValue;
+    //public float instantValue { get { return _instantValue; } set { _instantValue = value; } }
+    private float _sustainValue;
+    public float sustainValue { get { return _sustainValue; } set { _sustainValue = value; } }
+
+    private Entity _effectTarget;
+    public Entity effectTarget { get { return _effectTarget; } set { _effectTarget = value; } }
     private int _effectTurns;
     public int effectTurns { get { return _effectTurns; } set { _effectTurns = value; } }
     private int _effectRemainingTurns;
@@ -26,29 +42,30 @@ public class StatusEffect
     private int _effectLevel;
     public int effectLevel { get { return _effectLevel; } set { _effectLevel = value; } }
 
-    private float _instantValue;
-    public float instantValue { get { return _instantValue; } set { _instantValue = value; } }
-    private float _sustainValue;
-    public float sustainValue { get { return _sustainValue; } set { _sustainValue = value; } }
+    private List<string> _affectedStatsWithModifier;
+    public List<string> affectedStatsWithModifier { get { return _affectedStatsWithModifier; } set { _affectedStatsWithModifier = value; } }
+    private List<string> _affectedStatsModifierType;
+    public List<string> affectedStatsModifierType { get { return _affectedStatsModifierType; } set { _affectedStatsModifierType = value; } }
+    private List<int> _affectedStatsModifierOrder;
+    public List<int> affectedStatsModifierOrder { get { return _affectedStatsModifierOrder; } set { _affectedStatsModifierOrder = value; } }
+    private List<int> _affectedStatsModifierValue;
+    public List<int> affectedStatsModifierValue { get { return _affectedStatsModifierValue; } set { _affectedStatsModifierValue = value; } }
+    private List<StatModifier> _affectedStatsModifier;
+    public List<StatModifier> affectedStatsModifier { get { return _affectedStatsModifier; } set { _affectedStatsModifier = value; } }
 
-    private Entity _effectTarget;
-    public Entity effectTarget { get { return _effectTarget; } set { _effectTarget = value; } }
-    private string _effectDesc;
-    public string effectDesc { get { return _effectDesc; } set { _effectDesc = value; } }
+    /*
+    private List<string> _affectedStatsDirectChange;
+    public List<string> affectedStatsDirectChange { get { return _affectedStatsDirectChange; } set { _affectedStatsDirectChange = value; } }
+    private List<int> _affectedStatsDirectValue;
+    public List<int> affectedStatsDirectValue { get { return _affectedStatsDirectValue; } set { _affectedStatsDirectValue = value; } }
 
-    private string type;
+    // Boolean for checking types of changing stats it contains
+    private Boolean _hasModifiedStats = false;
+    public Boolean hasModifiedStats { get { return _hasModifiedStats; } set { _hasModifiedStats = value; } }
+    private Boolean _hasDirectChangedStats = false;
+    public Boolean hasDirectChangedStats { get { return _hasDirectChangedStats; } set { _hasDirectChangedStats = value; } }
+    */
 
-    private List<string> _affectedStatWithModi;
-    public List<string> affectedStatWithModi { get { return _affectedStatWithModi; } set { _affectedStatWithModi = value; } }
-
-    private List<StatModifier> _affectedStatModifier;
-    public List<StatModifier> affectedStatModifier { get { return _affectedStatModifier; } set { _affectedStatModifier = value; } }
-
-    private List<string> _affectedStatsByDirectChange;
-    public List<string> affectedStatsByDirectChange { get { return _affectedStatsByDirectChange; } set { _affectedStatsByDirectChange = value; } }
-
-    private List<float> _affectedStatsDirectChangeValue;
-    public List<float> affectedStatsDirectChangeValue { get { return _affectedStatsDirectChangeValue; } set { _affectedStatsDirectChangeValue = value; } }
     #endregion
     /*
     private List<int> _affectedStatModifierValue;
@@ -57,113 +74,12 @@ public class StatusEffect
     public List<StatModifierType> effectModifierCalcType { get { return _effectModifierCalcType; } set { _effectModifierCalcType = value; } }
     */
 
-    // I know this is shit solution, ok?
-    // For creating status effect that affecting stats with statsModifiers
-    public StatusEffect(StatusEffectName effectName, int effectTurns, int effectLevel, float instantValue, float sustainValue, Entity effectTarget, string effectDesc, List<string> affectedStatsWithModi, List<StatModifier> affectedStatsModifier)
-    {
-        this.effectName = effectName;
-        this.effectTurns = effectTurns;
-        this.effectLevel = effectLevel;
-        this.instantValue = instantValue;
-        this.sustainValue = sustainValue;
-        this.effectTarget = effectTarget;
-        this.effectDesc = effectDesc;
-
-        this.affectedStatWithModi = new List<string>();
-        this.affectedStatModifier = new List<StatModifier>();
-
-        this.type = "affectWithModifiers";
-        // For adding the affected stats with stats modifier
-        for(int i = 0; i < affectedStatsWithModi.Count; i++)
-        {
-            this.affectedStatWithModi.Add(affectedStatsWithModi[i]);
-        }
-
-        for(int i = 0; i < affectedStatsModifier.Count; i++)
-        {
-            this.affectedStatModifier.Add(affectedStatsModifier[i]);
-        }
-
-        this.effectRemainingTurns = effectTurns + 1;
-    }
-
-    // For creating status effect that affecting stats by direct change the value
-    public StatusEffect(StatusEffectName effectName, int effectTurns, int effectLevel, float instantValue, float sustainValue, Entity effectTarget, string effectDesc, List<string> affectedStatsByDirectChange, List<float> affectedStatsDirectChangeValue)
-    {
-        this.effectName = effectName;
-        this.effectTurns = effectTurns;
-        this.effectLevel = effectLevel;
-        this.instantValue = instantValue;
-        this.sustainValue = sustainValue;
-        this.effectTarget = effectTarget;
-        this.effectDesc = effectDesc;
-
-        this.affectedStatsByDirectChange = new List<string>();
-        this.affectedStatsDirectChangeValue = new List<float>();
-
-        this.type = "affectDirectly";
-        // For adding the affected stats by direct change value
-        for(int i = 0; i < affectedStatsByDirectChange.Count; i++)
-        {
-            this.affectedStatsByDirectChange.Add(affectedStatsByDirectChange[i]);
-        }
-
-        for(int i = 0; i < affectedStatsDirectChangeValue.Count; i++)
-        {
-            this.affectedStatsDirectChangeValue.Add(affectedStatsDirectChangeValue[i]);
-        }
-
-        this.effectRemainingTurns = effectTurns;
-    }
-
-    // For creating status effect that affecting stats by both ways
-    public StatusEffect(StatusEffectName effectName, int effectTurns, int effectLevel, float instantValue, float sustainValue, Entity effectTarget, string effectDesc, List<string> affectedStatsWithModi, List<StatModifier> affectedStatsModifier, List<string> affectedStatsByDirectChange, List<float> affectedStatsDirectChangeValue)
-    {
-        this.effectName = effectName;
-        this.effectTurns = effectTurns;
-        this.effectLevel = effectLevel;
-        this.instantValue = instantValue;
-        this.sustainValue = sustainValue;
-        this.effectTarget = effectTarget;
-        this.effectDesc = effectDesc;
-
-        this.affectedStatWithModi = new List<string>();
-        this.affectedStatModifier = new List<StatModifier>();
-        this.affectedStatsByDirectChange = new List<string>();
-        this.affectedStatsDirectChangeValue = new List<float>();
-
-        this.type = "affectByBoth";
-        // For adding the affected stats with stats modifier
-        for(int i = 0; i < affectedStatsWithModi.Count; i++)
-        {
-            this.affectedStatWithModi.Add(affectedStatsWithModi[i]);
-        }
-
-        for(int i = 0; i < affectedStatsModifier.Count; i++)
-        {
-            this.affectedStatModifier.Add(affectedStatsModifier[i]);
-        }
-
-        // For adding the affected stats by direct change value
-        for(int i = 0; i < affectedStatsByDirectChange.Count; i++)
-        {
-            this.affectedStatsByDirectChange.Add(affectedStatsByDirectChange[i]);
-        }
-
-        for(int i = 0; i < affectedStatsDirectChangeValue.Count; i++)
-        {
-            this.affectedStatsDirectChangeValue.Add(affectedStatsDirectChangeValue[i]);
-        }
-
-        this.effectRemainingTurns = effectTurns + 1;
-    }
-
-
+    #region Status effect functions
     // Within the caster's move, which giving status effect to the target
     // Called only once
     public virtual void OnInflict()
     {
-        Debug.Log($"{Time.time} StatusEffect.OnInflict (start)");
+        Debug.Log($"{Time.time} {effectName} StatusEffect.OnInflict (start)");
 
         // Check if there is the same status effect from the target
         if (HasSameStatusEffect())
@@ -183,110 +99,93 @@ public class StatusEffect
         // Add the new status effect into the list
         effectTarget.currentStatusEffects.Add(this);
         effectTarget.hasStatusEffect = true;
-        
-        // Apply new status effect flag to the target
-        switch (effectName)
+
+        // Get the remaining turns for the status effect
+        effectRemainingTurns = effectTurns;
+
+        // Apply new StatModifier to the target's stat
+        //if (hasModifiedStats)
         {
-            case StatusEffectName.Burning:
-                effectTarget.isBurn = true;
-                break;
-            
-            case StatusEffectName.Freezing:
-                effectTarget.isFrozen = true;
-                break;
-
-            case StatusEffectName.Stuning:
-                effectTarget.isStun = true;
-                break;
-
-            // And more...
-        }
-
-        if (type == "affectWithModifiers" || type == "affectByBoth")
-        {
-            // Apply new StatModifier to the target's stat
-            for (int i = 0; i < affectedStatWithModi.Count; i++)
+            for (int i = 0; i < affectedStatsWithModifier.Count; i++)
             {
-                switch (affectedStatWithModi[i])
+                switch (affectedStatsWithModifier[i])
                 {
-                    case "currentMaxHp":
-                        effectTarget.currentMaxHp.AddModifier(affectedStatModifier[i]);
+                    case "currentMaxHealthPoint":
+                        Debug.Log($"$effectTarget.currentMaxHealthPoint.value before = {effectTarget.currentMaxHealthPoint.GetStatValue()}");
+                        effectTarget.currentMaxHealthPoint.AddModifier(affectedStatsModifier[i]);
+                        Debug.Log($"$effectTarget.currentMaxHealthPoint.value after = {effectTarget.currentMaxHealthPoint.GetStatValue()}");
                         break;
 
                     case "currentAttackPoint":
-                        effectTarget.currentAttackPoint.AddModifier(affectedStatModifier[i]);
+                        Debug.Log($"$effectTarget.currentAttackPoint.value before = {effectTarget.currentAttackPoint.GetStatValue()}");
+                        effectTarget.currentAttackPoint.AddModifier(affectedStatsModifier[i]);
+                        Debug.Log($"$effectTarget.currentAttackPoint.value after = {effectTarget.currentAttackPoint.GetStatValue()}");
                         break;
 
                     case "currentDefencePoint":
-                        effectTarget.currentDefencePoint.AddModifier(affectedStatModifier[i]);
+                        Debug.Log($"$effectTarget.currentDefencePoint.value before = {effectTarget.currentDefencePoint.GetStatValue()}");
+                        effectTarget.currentDefencePoint.AddModifier(affectedStatsModifier[i]);
+                        Debug.Log($"$effectTarget.currentDefencePoint.value after = {effectTarget.currentDefencePoint.GetStatValue()}");
                         break;
 
-                    case "currentEvasionPoint":
-                        effectTarget.currentEvasionPoint.AddModifier(affectedStatModifier[i]);
-                        break;
-
-                    case "currentCriticalPoint":
-                        effectTarget.currentCriticalPoint.AddModifier(affectedStatModifier[i]);
+                    case "currentPerceptionPoint":
+                        Debug.Log($"$effectTarget.currentPerceptionPoint.value before = {effectTarget.currentPerceptionPoint.GetStatValue()}");
+                        effectTarget.currentPerceptionPoint.AddModifier(affectedStatsModifier[i]);
+                        Debug.Log($"$effectTarget.currentPerceptionPoint.value after = {effectTarget.currentPerceptionPoint.GetStatValue()}");
                         break;
 
                     case "currentDexterityPoint":
-                        effectTarget.currentDexterityPoint.AddModifier(affectedStatModifier[i]);
+                        Debug.Log($"$effectTarget.currentDexterityPoint.value before = {effectTarget.currentDexterityPoint.GetStatValue()}");
+                        effectTarget.currentDexterityPoint.AddModifier(affectedStatsModifier[i]);
+                        Debug.Log($"$effectTarget.currentDexterityPoint.value after = {effectTarget.currentDexterityPoint.GetStatValue()}");
+                        break;
+
+                    case "currentConstitutionPoint":
+                        Debug.Log($"$effectTarget.currentConstitutionPoint.value before = {effectTarget.currentConstitutionPoint.GetStatValue()}");
+                        effectTarget.currentConstitutionPoint.AddModifier(affectedStatsModifier[i]);
+                        Debug.Log($"$effectTarget.currentConstitutionPoint.value after = {effectTarget.currentConstitutionPoint.GetStatValue()}");
+                        break;
+
+                    case "currentMaxAttackInterval":
+                        effectTarget.GetComponent<Mob>().currentMaxAttackInterval.AddModifier(affectedStatsModifier[i]);
+                        break;
+
+                    case "currentMaxActiveAbilityCD":
+                        foreach (KeyValuePair<TeammateType, Teammate> teammate in effectTarget.GetComponent<Player>().teammates)
+                        {
+                            Debug.Log($"$teammate({teammate.Value.teammateName}).Value.currentMaxActiveAbilityCD.value before = {teammate.Value.currentMaxActiveAbilityCD.GetStatValue()}");
+                            teammate.Value.currentMaxActiveAbilityCD.AddModifier(affectedStatsModifier[i]);
+                            Debug.Log($"$teammate({teammate.Value.teammateName}).Value.currentMaxActiveAbilityCD.value after = {teammate.Value.currentMaxActiveAbilityCD.GetStatValue()}");
+                        }
+                        break;
+                        
+                    // And more...
+                }
+            }
+        }
+        
+        /*
+        if (hasDirectChangedStats)
+        {
+            for (int i = 0; i < affectedStatsWithModifier.Count; i++)
+            {
+                switch (affectedStatsWithModifier[i])
+                {
+                    case "currentAttackInterval":
+                        effectTarget.GetComponent<Mob>().currentAttackInterval += affectedStatsDirectValue[i];
+                        break;
+
+                    case "currentActiveAbilityCD":
+                        effectTarget.GetComponent<Teammate>().currentActiveAbilityCD += affectedStatsDirectValue[i];
                         break;
                     
                     // And more...
                 }
             }
         }
-
-        // Apply new affected stat's value to the target
-        else
-        {
-            for (int i = 0; i < affectedStatsByDirectChange.Count; i++)
-            {
-                switch (affectedStatsByDirectChange[i])
-                {
-                    case "currentHp":
-                        effectTarget.currentHp.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    case "currentMaxHp":
-                        effectTarget.currentMaxHp.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    case "currentAttackPoint":
-                        effectTarget.currentAttackPoint.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    case "currentDefencePoint":
-                        effectTarget.currentDefencePoint.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    case "currentEvasionPoint":
-                        effectTarget.currentEvasionPoint.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    case "currentCriticalPoint":
-                        effectTarget.currentCriticalPoint.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    case "currentDexterityPoint":
-                        effectTarget.currentDexterityPoint.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    // Testing
-                    case "currentAttackInterval":
-                        effectTarget.gameObject.GetComponent<Mob>().currentAttackInterval.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    case "currentMaxAttackInterval":
-                        effectTarget.gameObject.GetComponent<Mob>().currentMaxAttackInterval.value = affectedStatsDirectChangeValue[i];
-                        break;
-
-                    // And more...
-                }
-            }
-        }
-
+        */
+        
+        
         // Apply the instant damage to the target
         //effectTarget.TakeDamage(instantValue);
 
@@ -310,20 +209,20 @@ public class StatusEffect
         roundData = GameObject.Find("Round Manager").GetComponent<RoundData>();
         effectBox = roundData.effectBoxFactory.CreateEffectBox(effectTarget, this, GetOrderOfStatusEffect());
 
-        Debug.Log($"{Time.time} StatusEffect.OnInflict (end)"); 
+        Debug.Log($"{Time.time} {effectName} StatusEffect.OnInflict (end)");
     }
 
     // On every new turn
-    public virtual void OnTurnStart()
+    public virtual void OnBeforeTurnStart()
     {
-        Debug.Log($"{Time.time} StatusEffect.OnTurnStart (start)"); 
+        Debug.Log($"{Time.time} StatusEffect.OnBeforeTurnStart (start)"); 
 
         effectRemainingTurns -= 1;
 
         // Apply the sustain damage to the target
         effectTarget.TakeDamage(sustainValue);
 
-        Debug.Log($"{Time.time} StatusEffect.OnTurnStart (end)");
+        Debug.Log($"{Time.time} StatusEffect.OnBeforeTurnStart (end)");
     }
 
     // On every turn ending
@@ -349,114 +248,58 @@ public class StatusEffect
     // On removing itself
     public virtual void OnRemove()
     {
-        Debug.Log($"StatusEffect.OnRemove (start)"); 
+        Debug.Log($"{Time.time} StatusEffect.OnRemove (start)"); 
 
         // Remove icon and CD text in effect box/arena
         effectBox.DestroyEffectBox();
 
         // Remove the statModifier from the target
-        if (type == "affectWithModifiers" || type == "affectByBoth")
+        //if (hasModifiedStats)
         {
-            for (int i = 0; i < affectedStatWithModi.Count; i++)
+            for (int i = 0; i < affectedStatsWithModifier.Count; i++)
             {
-                switch (this.affectedStatWithModi[i])
+                switch (this.affectedStatsWithModifier[i])
                 {
-                    case "currentMaxHp":
-                        effectTarget.currentMaxHp.RemoveModifier(affectedStatModifier[i]);
+                    case "currentMaxHealthPoint":
+                        effectTarget.currentMaxHealthPoint.RemoveModifier(affectedStatsModifier[i]);
                         break;
 
                     case "currentAttackPoint":
-                        effectTarget.currentAttackPoint.RemoveModifier(affectedStatModifier[i]);
+                        effectTarget.currentAttackPoint.RemoveModifier(affectedStatsModifier[i]);
                         break;
 
                     case "currentDefencePoint":
-                        effectTarget.currentDefencePoint.RemoveModifier(affectedStatModifier[i]);
+                        effectTarget.currentDefencePoint.RemoveModifier(affectedStatsModifier[i]);
                         break;
 
-                    case "currentEvasionPoint":
-                        effectTarget.currentEvasionPoint.RemoveModifier(affectedStatModifier[i]);
-                        break;
-
-                    case "currentCriticalPoint":
-                        effectTarget.currentCriticalPoint.RemoveModifier(affectedStatModifier[i]);
+                    case "currentPerceptionPoint":
+                        effectTarget.currentPerceptionPoint.RemoveModifier(affectedStatsModifier[i]);
                         break;
 
                     case "currentDexterityPoint":
-                        effectTarget.currentDexterityPoint.RemoveModifier(affectedStatModifier[i]);
-                        break;    
-
-                    // And more...
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < affectedStatsByDirectChange.Count; i++)
-            {
-                switch (affectedStatsByDirectChange[i])
-                {
-                    case "currentHp":
-                        if (effectTarget.currentHp.value > effectTarget.maxHp.value)
-                        {
-                            effectTarget.currentHp.value = effectTarget.maxHp.value;
-                        }
+                        effectTarget.currentDexterityPoint.RemoveModifier(affectedStatsModifier[i]);
                         break;
 
-                    case "currentMaxHp":
-                        effectTarget.currentMaxHp.value = effectTarget.maxHp.value;
-                        break;
-
-                    case "currentAttackPoint":
-                        effectTarget.currentAttackPoint.value = effectTarget.attackPoint.value;
-                        break;
-
-                    case "currentDefencePoint":
-                        effectTarget.currentDefencePoint.value = effectTarget.defencePoint.value;
-                        break;
-
-                    case "currentEvasionPoint":
-                        effectTarget.currentEvasionPoint.value = effectTarget.evasionPoint.value;
-                        break;
-
-                    case "currentCriticalPoint":
-                        effectTarget.currentCriticalPoint.value = effectTarget.criticalPoint.value;
-                        break;
-
-                    case "currentDexterityPoint":
-                        effectTarget.currentDexterityPoint.value = effectTarget.dexterityPoint.value;
-                        break;
-
-                    // Testing
-                    case "currentAttackInterval":
-                        effectTarget.gameObject.GetComponent<Mob>().currentAttackInterval.value = effectTarget.gameObject.GetComponent<Mob>().currentMaxAttackInterval.value;
+                    case "currentConstitutionPoint":
+                        effectTarget.currentConstitutionPoint.RemoveModifier(affectedStatsModifier[i]);
                         break;
 
                     case "currentMaxAttackInterval":
-                        effectTarget.gameObject.GetComponent<Mob>().currentMaxAttackInterval.value = effectTarget.gameObject.GetComponent<Mob>().currentMaxAttackInterval.value;
+                        effectTarget.GetComponent<Mob>().currentMaxAttackInterval.RemoveModifier(affectedStatsModifier[i]);
+                        break;
+
+                    case "currentMaxActiveAbilityCD":
+                        foreach (KeyValuePair<TeammateType, Teammate> teammate in effectTarget.GetComponent<Player>().teammates)
+                        {
+                            Debug.Log($"$teammate({teammate.Value.teammateName}).Value.currentMaxActiveAbilityCD.value before = {teammate.Value.currentMaxActiveAbilityCD.GetStatValue()}");
+                            teammate.Value.currentMaxActiveAbilityCD.RemoveModifier(affectedStatsModifier[i]);
+                            Debug.Log($"$teammate({teammate.Value.teammateName}).Value.currentMaxActiveAbilityCD.value after = {teammate.Value.currentMaxActiveAbilityCD.GetStatValue()}");
+                        }
                         break;
 
                     // And more...
                 }
             }
-        }
-
-        // Remove the status effect flag from the target
-        switch (this.effectName)
-        {
-            case StatusEffectName.Burning:
-                effectTarget.isBurn = false;
-                break;
-            
-            case StatusEffectName.Freezing:
-                effectTarget.isFrozen = false;
-                break;
-
-            case StatusEffectName.Stuning:
-                effectTarget.isStun = false;
-                effectTarget.isSkipTurn = false;
-                break;
-
-            // And more...
         }
 
         //effectTarget.currentStatusEffects.Remove(this);
@@ -475,11 +318,19 @@ public class StatusEffect
 
         bool hasSameEffect = false;
 
-        foreach (StatusEffect statusEffect in effectTarget.currentStatusEffects)
+        //Debug.Log($"$effectTarget.name {effectTarget.name}");
+
+        if (effectTarget != null)
         {
-            if (statusEffect.effectName == this.effectName)
+            if (effectTarget.currentStatusEffects != null)
             {
-                hasSameEffect = true;
+                foreach (StatusEffect statusEffect in effectTarget.currentStatusEffects)
+                {
+                    if (statusEffect.effectName == this.effectName)
+                    {
+                        hasSameEffect = true;
+                    }
+                }
             }
         }
         
@@ -503,4 +354,5 @@ public class StatusEffect
         Debug.Log($"{Time.time} StatusEffect.GetOrderOfStatusEffect, return orderOfStatusEffect(local val): {orderOfStatusEffect} (end)"); 
         return orderOfStatusEffect;
     }
+    #endregion
 }
