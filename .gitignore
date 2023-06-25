@@ -1,0 +1,48 @@
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# VS/MD user-specific files
+*.suo
+*.user
+*.userprefs
+*.usertasks
+
+# Visual Studio code files
+.vs/
+.vscode/
+
+# Unity3D generated meta files (see https://docs.unity3d.com/Manual/Tags.html)
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Unity3D generated file on crash reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.unitypackage
+*.dmg
+*.app
+
+# MacOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files to keep
+!/Assets/
+!/ProjectSettings/
+!/Packages/
+
+# Custom
+Assets/Resources/Fonts/
